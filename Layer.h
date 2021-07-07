@@ -16,45 +16,16 @@ public:
 
 	Layer(std::string* DrawnTilesRead[], TileHash* GlobalTileHash, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
 		//if they end up being stored on seperate files, just assign a null to ensure all variables have something and not garbage.
-
-		// printf("Layer Started\n");
 		AddTiles(DrawnTilesRead);
-		// printf("Tiles Added to Layer Successfully\n");
 		CollisionData = new int[LEVEL_HEIGHT * LEVEL_WIDTH]; //Every layer should have data for every position 
 		AddCollision(GlobalTileHash);
 		SelfHiddenSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0, 0, 0, 0);
 		SelfHiddenTexture = NULL;
 		CreateTransparency("0x000000"); // takes the black background and makes it transparent 
-		// printf("Texture and Surface defaults made!\n");
 		BlitMatrixLayer(GlobalTileHash, SurfacePropertyMap);
 		MakeSelfTexture();
-
-		//after addcollision and add tiles are done, matrices are made
-		//blit this for all tiles in the DrawnTiles std::string** same way we used to through tilemap
-		// 
-		// Call Blit this AFTER all layers have been read and stored. Make it a seperate part of FileHandler
-		// 
-		//Turn that selfSurface into a selfTexture
-
-
 	}
 
-	/*Layer(int CollisionRead[], std::string* DrawnTilesRead[], int LW, int LH, int TW, int TH) { //if we had both info available for some reason.
-		LEVEL_WIDTH = LW;
-		LEVEL_HEIGHT = LH;
-		TILE_WIDTH = TW;
-		TILE_HEIGHT = TH;
-
-		//if they end up being stored on seperate files, just assign a null to ensure all variables have something and not garbage.
-		CollisionData = CollisionRead;
-		AddTiles(DrawnTilesRead);
-		SelfHiddenSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0, 0, 0, 0);
-		CreateTransparency("0x000000"); // takes the black background and makes it transparent 
-		//AddCollision(CollisionRead);
-		BlitMatrixLayer();
-		MakeSelfTexture();
-
-	}*/
 
 	~Layer() {
 		printf("deconstructor for layer called\n");
@@ -100,8 +71,6 @@ public:
 	}
 
 	void BlitMatrixLayer(TileHash* GlobalTileHash, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
-
-		// printf("going through Blit Layer\n");
 		Arr = new int* [LEVEL_HEIGHT];
 		int pos = 0;
 		for (int p = 0; p < LEVEL_HEIGHT; p++) {
@@ -109,7 +78,7 @@ public:
 			for (int i = 0; i < LEVEL_WIDTH; i++) {
 
 				if (0 == DrawnTiles[pos]->compare("\0")) {
-					Arr[p][i] = CollisionData[pos]; //2 is reserved for the 'no tile' information. This could then be dynamicallys tated to be collision or none in the override stage.
+					Arr[p][i] = CollisionData[pos];
 				}
 				else {
 					Arr[p][i] = CollisionData[pos];
@@ -118,14 +87,12 @@ public:
 				pos += 1;
 			}
 		}
-
-		//make a texture
-
 	}
 
 	void MakeSelfTexture() {
 		SelfHiddenTexture = SDL_CreateTextureFromSurface(gRenderer, SelfHiddenSurface);
 	}
+
 	void MapThis() {
 		//This isn't really a 'map' this, but it should take a global amt of it's layer #, and then add it to a level class
 		//this level class then at the end of gathering all collision data and graphic data should handle rendering the textures on screen in proper order

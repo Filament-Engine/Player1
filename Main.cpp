@@ -16,15 +16,19 @@
 */
 // our own defined header files
 #include "SomeGlobals.h"
-#include "FPSTimer.h" // class used to calculate fps
 #include "Quality_Functions.h" // this contains functions that are not used for displaying information, but are used to make other functions less complicated
+#include "FPSTimer.h" // class used to calculate fps
 #include "Startup.h"
 #include "Tile.h"
 #include "SurfaceProperty.h"
+//Map for traversing all Loaded images.
+std::map<std::string, SurfaceProperty*> SurfacePropertyMap;
 #include "FileFunctions.h"
 #include "GenerateOffSetMap.h"
 #include "SurfaceCreation.h"
 #include "Layer.h"
+#include "Sprite.h"
+Sprite* Object1; // we can create this sprite now so that it can be used in level/player/objectlayer
 #include "Level+.h"
 #include "CreatePlayer.h"
 #include "TileCreation.h"
@@ -38,22 +42,17 @@
 	//CreateTransparancy Edit
 
 
-
-//Class Holds information pertinent to the Surface/Img properties. Dimensions, Texture, Transparancy, etc.
-//Map for traversing all Loaded images.
-std::map<std::string, SurfaceProperty*> SurfacePropertyMap;
-
-
 //Initialize a HashTable for future use.
 TileHash* GlobalTileHash; //INSERT - we also need all globals that are not const to be written to a 'Save properties' folder/document. This would be later, so on load up, we'd read in those constants perhaps... but I'm unsure hwo exactly it works.
 Player* Player1;
 Level* gLevel1;
 
-//collision baseed on tiles makes collision before it hits a wall. 'blocked mysteriously'. 
-//Collision shouldn't be inherited.
-//Pixel collision - might use vector of three values, maybe 4 for orientation. 
-//Player collision could be based on user defined height/width to avoid the probelms?
-//the movement still based on the upper corner of the tile, but the collision based on the collision box (they are not equivalent).
+std::vector<Sprite*> AllSprites; // NEW
+
+// AllSprites.insert(AllSprites.end(), Object1);
+
+
+
 
 //Grabs everything from the file. Maps paths to letter names, creates tiles, and finds screen dimensions
 void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
@@ -129,6 +128,15 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 			if (FoundTileSetHeader && FoundCollisionHeader && FoundTileHeader && FoundCollisionOverrideHeader) {
 				printf("COMBINE TEXTURES\n");
 				CreatePlayer(&Player1, gLevel1, SurfacePropertyMap); // Creates the player
+
+				Object1 = new Sprite(52, 34, "AA259", SurfacePropertyMap); // TEMP
+				AllSprites.push_back(Object1); // NEW -- TEMPORARY
+				gLevel1->CreateObjectLayer(AllSprites);
+
+				AllSprites.clear(); // this is removing the AllSprites data because we have this data transfered into gLevel1->SpriteLayer instead
+
+				printf("deleted, but we have %d\n", gLevel1->SpriteLayer->AllSprites[0]->xPos);
+
 				gLevel1->CombineTextures();
 				gLevel1->RenderThis(Player1);
 
@@ -141,6 +149,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 		sourceIMG.close();
 	}
 }
+
 // handles the loop in main. this determines fps and user inputted events
 void handleLoop() {
 	// fps timers
@@ -199,7 +208,21 @@ void handleLoop() {
 				case SDLK_d: // if the user presses 'd'
 					xVel += xVec;
 					break;
+				case SDLK_RIGHT: // if the user presses right arrow key
+					Object1->MoveX(xVec);
+					break;
+				case SDLK_DOWN: // if the user presses up arrow key
+					Object1->MoveY(yVec);
+					break;
+				case SDLK_LEFT: // if the user presses right arrow key
+					Object1->MoveX(-xVec);
+					break;
+				case SDLK_UP: // if the user presses up arrow key
+					Object1->MoveY(-yVec);
+					break;
+
 				}
+
 			}
 			else if (e.type == SDL_KEYUP && e.key.repeat == 0) // if the user releases a key, go through this statement
 			{
@@ -248,14 +271,6 @@ void handleLoop() {
 
 	}
 }
-//universal timer
-
-//smoother scroll - fps consistant, tie to clock, stretch pixel, don't redraw (things) unncessarily
-//frame of animation based on universal timer for specific animation tile set tile.
-//intregal divison, counter%delay then integer divison. is intger faster or slower than decimal divison?
-//if you put five aniamtion tiles on a map, (series on tile set) that tileset would store five 'counters' to denote what animation it's on.
-//then depending on place thand offset.
-//four frames in animation, can put any four as the'start'
 
 int main(int argc, char* args[]) {
 	long int TotalTilesOfSurface;
@@ -271,7 +286,8 @@ int main(int argc, char* args[]) {
 	else
 	{
 		FileHandler(MapRepo, TotalTilesOfSurface);
-		//TEMP
+
+		
 		handleLoop();
 	}
 

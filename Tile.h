@@ -141,10 +141,8 @@ void Tile::BlitThis(int Targetx, int Targety, SDL_Surface*& LayerHiddenSurface, 
 	TargetTile.x = Targetx * TILE_WIDTH;
 	TargetTile.y = Targety * TILE_HEIGHT;
 	TargetTile.w = TILE_WIDTH;
-	TargetTile.h = TILE_WIDTH;
-	//Comment out ScreenSurface blit
-	//SDL_BlitSurface(SurfacePropertyMap[IMGSource]->GetSelfSurface(), &SourceTile, gScreenSurface, &TargetTile); //gScreenSurface is surface of our window.
-	SDL_BlitSurface(SurfacePropertyMap[IMGSource]->GetSelfSurface(), &SourceTile, LayerHiddenSurface, &TargetTile); //not displayed at this time.
+	TargetTile.h = TILE_HEIGHT;
+	SDL_BlitSurface(SurfacePropertyMap[IMGSource]->GetSelfSurface(), &SourceTile, LayerHiddenSurface, &TargetTile);
 }
 
 // TileHash Functions Defined

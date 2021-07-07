@@ -3,22 +3,7 @@
 
 class Player;
 class Level;
-class ObjectLayer;
 
-class ObjectLayer {
-private:
-public:
-	SDL_Surface* TargetSurface;
-	SDL_Texture* CombinedObjects;
-	Player* PlayerObject;
-	ObjectLayer() {
-		printf("ObjectLayer Created\n");
-		//surface will be the size of the level, because we will render all sprites - although they may not necessarily be animated. I'm also unsure if we want all of them, or if we will find a way to organize relativity between sprites for rendering. Porblems ofr later.
-		TargetSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH, LEVEL_HEIGHT, 32, 0, 0, 0, 0);
-		CombinedObjects = NULL;
-		PlayerObject = NULL;
-	};
-};
 class Level {
 public:
 	SDL_Rect* Camera;
@@ -30,7 +15,7 @@ public:
 	int** CombinedCollision;
 	//make use of swap to exchange orders dynamically perhaps.
 	int LayerSplit = 1;
-	ObjectLayer* SpriteLayer; //replacing PlayerLayer I think.
+	ObjectLayer* SpriteLayer;
 	SDL_Texture* TextureBuffer;
 	int NumLayers; // this is the number of layers
 
@@ -41,11 +26,12 @@ public:
 	void RenderThis(Player* PlayerName);
 	void CreateCamera(int x, int y);
 	void MapAllCollision();
+	void CreateObjectLayer(std::vector<Sprite*> AllSprites);
 };
 class Player {
 	//QUESTION - should we prepare the class to handle multiple different tiles to be a 'object' or should we just assume it is one rectangle and the animations are swapping between those?
 private:
-	SDL_Rect* SourceTile; // change
+	SDL_Rect* SourceTile;
 public:
 	int xPos;
 	int yPos;
@@ -99,21 +85,22 @@ public:
 		//Surface -> Texture
 		TempOrigin = SDL_CreateRGBSurface(0, SourceTile->w, SourceTile->h, 32, 0, 0, 0, 0);
 		printf("checking\n");
-		SDL_BlitSurface(SurfacePropertyMap[SourceName]->GetSelfSurface(), SourceTile, TempOrigin, SelfTile); // ERROR HERE
+		SDL_BlitSurface(SurfacePropertyMap[SourceName]->GetSelfSurface(), SourceTile, TempOrigin, SelfTile);
+
 		printf("checking2\n");
 		//case Temp Origin to a texture
 		SelfImg = SDL_CreateTextureFromSurface(gRenderer, TempOrigin);
 		xVel = xVelocity;
 		yVel = yVelocity;
 
-		level->SpriteLayer->PlayerObject = this;
+		// level->SpriteLayer->PlayerObject = this;
 
 	}
 	~Player() {
 		printf("Destruct Player\n");
 	}
 	// moves the player, moved the camera, detects for collision, detects for level barriers, all along the y-axis. returns 1 if the player icon moves, 0 if not.
-	bool MoveY(int yVelocity, Level* level) { //move 
+	bool MoveY(int yVelocity, Level* level) { //moves the palyer in the y direction
 		yPos += yVelocity;
 
 		if (yVelocity < 0) { // if moving up -- detecting collision
@@ -156,7 +143,7 @@ public:
 		}
 	}
 	// moves the player, moved the camera, detects for collision, detects for level barriers, all along the x-axis. returns 1 if the player icon moves, 0 if not.
-	bool MoveX(int xVelocity, Level* level) { //move
+	bool MoveX(int xVelocity, Level* level) { //moves the player in the x direction
 		xPos += xVelocity;
 		if (xVelocity < 0) { // if moving left
 			if (1 == level->CombinedCollision[yPos / TILE_HEIGHT][(xPos / TILE_WIDTH)] || 1 == level->CombinedCollision[(yPos + GetHeight() - 1) / TILE_HEIGHT][(xPos / TILE_WIDTH)]) { // check for left collision
@@ -168,7 +155,6 @@ public:
 		else if (xVelocity > 0 && xPos < LEVEL_WIDTH * TILE_WIDTH - GetWidth()) { // if moving right -- the second statemenet means it won't go through if it's at the edge
 			if (1 == level->CombinedCollision[yPos / TILE_HEIGHT][(xPos + GetWidth() - 1) / TILE_WIDTH] || 1 == level->CombinedCollision[(yPos + GetHeight() - 1) / TILE_HEIGHT][(xPos + GetWidth() - 1) / TILE_WIDTH]) { // check for right collision
 				xPos -= xVelocity; // reverts the movement change
-				// printf("cannot move right!\n");
 				return 0; // fails it
 			}
 		}
@@ -176,11 +162,11 @@ public:
 			level->Camera->x += xVelocity;
 			return 0; // the player icon did not move (only the camera)
 		}
-		else if (xPos < (SCREEN_WIDTH * TILE_WIDTH / 2) && level->Camera->x > 0) { // NEW 
+		else if (xPos < (SCREEN_WIDTH * TILE_WIDTH / 2) && level->Camera->x > 0) {
 			level->Camera->x += xVelocity;  // this will only happen when we're moving left, thus, xVelocity would be negative. therefore, we are subtracting through addition.
 			return 0;
 		}
-		else if (xPos > (LEVEL_WIDTH * TILE_WIDTH) - (SCREEN_WIDTH * TILE_WIDTH / 2) && level->Camera->x < LEVEL_WIDTH * TILE_WIDTH - SCREEN_WIDTH * TILE_WIDTH - 1) { // NEW
+		else if (xPos > (LEVEL_WIDTH * TILE_WIDTH) - (SCREEN_WIDTH * TILE_WIDTH / 2) && level->Camera->x < LEVEL_WIDTH * TILE_WIDTH - SCREEN_WIDTH * TILE_WIDTH - 1) {
 			level->Camera->x += xVelocity; // this will only happen when we're moving right, thus, xVelocity would be positive. thus, we are just adding as normal.
 			return 0;
 		}
@@ -223,7 +209,6 @@ Level::Level() {
 	for (int i = 0; i < LEVEL_HEIGHT; i++) {
 		CollisionOverride[i] = new int[LEVEL_WIDTH];
 	}
-	SpriteLayer = new ObjectLayer;
 	CreateCamera(0, 0);
 	CombinedHigher = NULL;
 	CombinedLower = NULL;
@@ -336,7 +321,10 @@ void Level::RenderThis(Player* PlayerName) {
 		SDL_RenderCopy(gRenderer, RenderOrder[i]->SelfHiddenTexture, Camera, gFullWindowRect);
 	}
 	PlayerName->RenderThis(); // renders the player here
-
+	
+	SpriteLayer->BlitObjects(); // this is so we can rerender the objects -- allows them to be movable!
+	// SpriteLayer->MakeSelfTexture();
+	SDL_RenderCopy(gRenderer, SpriteLayer->CombinedObjects, Camera, gFullWindowRect); // this renders the texture of the objectLayer
 
 	// for layers above the player, we will want to do another for loop here
 	SDL_RenderPresent(gRenderer);
@@ -387,4 +375,7 @@ void Level::MapAllCollision() { // NEW
 	}
 
 	// now we will go through the collision override and override any collision points in CombinedCollision
+}
+void Level::CreateObjectLayer(std::vector<Sprite*> AllSprites) {
+	SpriteLayer = new ObjectLayer(AllSprites);
 }
