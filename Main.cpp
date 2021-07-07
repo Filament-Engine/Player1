@@ -49,8 +49,6 @@ Level* gLevel1;
 
 std::vector<Sprite*> AllSprites; // NEW
 
-// AllSprites.insert(AllSprites.end(), Object1);
-
 
 
 
@@ -134,8 +132,6 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				gLevel1->CreateObjectLayer(AllSprites);
 
 				AllSprites.clear(); // this is removing the AllSprites data because we have this data transfered into gLevel1->SpriteLayer instead
-
-				printf("deleted, but we have %d\n", gLevel1->SpriteLayer->AllSprites[0]->xPos);
 
 				gLevel1->CombineTextures();
 				gLevel1->RenderThis(Player1);

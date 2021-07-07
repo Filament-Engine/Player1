@@ -99,7 +99,7 @@ public:
 
 		AllSprites = ASprites;
 
-		TargetSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH*TILE_WIDTH, LEVEL_HEIGHT*TILE_HEIGHT, 32, 0, 0, 0, 0); // ERROR WAS HERE -- SHOW JACOB!!! BECAUSE IT'S FUNNY
+		TargetSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0, 0, 0, 0); // ERROR WAS HERE -- SHOW JACOB!!! BECAUSE IT'S FUNNY
 		CombinedObjects = NULL;
 		CreateTransparency("0x000000");
 		BlitObjects();
@@ -114,6 +114,7 @@ public:
 	}
 
 	void BlitObjects() {
+		SDL_FillRect(TargetSurface, NULL, 0x000000);
 		for (int i = 0; i < AllSprites.size(); i++) {
 			AllSprites[i]->BlitThis(TargetSurface);
 		}
@@ -121,6 +122,9 @@ public:
 	}
 
 	void MakeSelfTexture() {
+		if (CombinedObjects != NULL) {
+			SDL_DestroyTexture(CombinedObjects);
+		}
 		CombinedObjects = SDL_CreateTextureFromSurface(gRenderer, TargetSurface);
 	}
 };
