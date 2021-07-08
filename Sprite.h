@@ -10,16 +10,21 @@ public:
 	std::string IMGName;
 	int OrderCreation; //NEW holds onto the order of creation, so if this was the first object it is either 1 or 0.
 	int directionX; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
+	int leftXlimit; //NEW don't know how I want to handle it for now, but will store in sprite for now.
+	int rightXlimit; 
 
-	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order, int Velx) {
+
+	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order) {
 		xPos = x;
 		yPos = y;
 		label = l;
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
-		directionX = Velx; // NEW, this is like the velocity and starti ndirection of the sprite;
+		directionX = 0; // NEW, this is like the velocity and starti ndirection of the sprite;
 		OrderCreation = Order;//NEW
+		leftXlimit = 0; //edited by user potentially idk what default we want.
+		rightXlimit = 0;
 
 		std::string temp; // this temp is used to get the position of the source tile
 		int i = 0;
@@ -52,13 +57,19 @@ public:
 		TargetTile->h = TILE_HEIGHT;
 		
 	}
-
-	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
+	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order, int Velx, int LeftXLimit, int RightXLimit) {
 		xPos = x;
 		yPos = y;
 		label = l;
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
+
+		directionX = Velx; // NEW, this is like the velocity and starti ndirection of the sprite;
+		leftXlimit=LeftXLimit;
+		rightXlimit=RightXLimit;
+		OrderCreation = Order;//NEW
+
+
 
 		std::string temp; // this temp is used to get the position of the source tile
 		int i = 0;
@@ -78,7 +89,7 @@ public:
 			SourceY++;  // adds one to the y sourceY position
 		}
 		SourceX = pos; // makes the sourceX is remainder
-		
+
 		SourceTile = new SDL_Rect();
 		TargetTile = new SDL_Rect();
 
@@ -121,14 +132,14 @@ public:
 	}
 
 	void BlitThis(SDL_Surface* TargetSurface) {
-		TargetTile->x = xPos;
+		//TargetTile->x = xPos;
 		TargetTile->y = yPos;
 		TargetTile->w = TILE_WIDTH;
 		TargetTile->h = TILE_HEIGHT;
 		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile); 
 	}
 
-	int AutoX(int leftXlimit, int rightXlimit) { 
+	int AutoX() { 
 
 		//I'm thinking I will likely have to not move all sprites the same way. so I'll call one function that is internal to the sprite
 		// Behavior(bools, 0, 1, 0, 1, ,1 ,0,0,0) {
@@ -150,29 +161,44 @@ public:
 		
 
 		//for turn around, if we use SDL_TextureEx, we could flip the sprite, or we could load a 'opposite sprite' based on another tileset the user inputs if fliping is more taxing. 
-		if (directionX > 0) { //going right
-			if (xPos + directionX < rightXlimit) {
-				xPos + directionX;
+		
+		 
+			if (directionX > 0) { //going right
+				//printf("Object %d, is going right\n", OrderCreation + 1);
+				if (xPos + directionX < rightXlimit) {
+					//printf("Go Right\n");
+					xPos += directionX;
+				}
+				else {
+					//turn around
+					//printf("Turn Left\n");
+					directionX = -directionX;
+					//move - this could be disabled potentially
+					xPos += directionX;
+				}
 			}
-			else {
-				//turn around
-				directionX = -directionX;
-				//move - this could be disabled potentially
-				xPos + directionX;
+			else if (directionX < 0) { //going left
+				//printf("Object %d, is going left\n", OrderCreation + 1);
+				if (xPos + directionX > leftXlimit) {
+					//printf("Go Left\n");
+					xPos += directionX;
+				}
+				else {
+					//turn around
+					//printf("Turn Right\n");
+					directionX = -directionX;
+					//move -this coudl be disabled 
+					xPos += directionX;
+				}
 			}
-		}
-		else if (directionX < 0) { //going left
-			if (xPos + directionX > leftXlimit) {
-				xPos += directionX;
-			} 
-			else {
-				//turn around
-				directionX = -directionX;
-				//move -this coudl be disabled 
-				xPos += directionX;
-			}
-		}
+			SDL_Delay(500);
+			//success (assume for now)
+			MoveTargetTileX();
+		
+		return 1; //success
 
+		//fail -for now don't care
+		//UndoAutoX();
 
 		//Okay now check LM in object layer,
 		//IF FAILS, add to a queue and figure out what blocked it
@@ -181,6 +207,8 @@ public:
 	}
 
 	void MoveTargetTileX() {
+		printf("Object%d,  too xPos %d\n", OrderCreation + 1, xPos);
+		TargetTile->x = xPos;
 		//called on success of autoMoveX, means I can move the tile location on lm, 
 		//so remove it's previous position
 		//move targettile=xpos
@@ -257,6 +285,7 @@ public:
 		for (int i = 0; i < AllSprites.size(); i++) {
 			AllSprites[i]->BlitThis(TargetSurface);
 		}
+		printf("BlitObjects in SpriteLayer\n");
 		MakeSelfTexture(); // renders the actual texture after blitting objects.
 	}
 
