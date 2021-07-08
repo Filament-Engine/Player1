@@ -9,14 +9,16 @@ public:
 	SDL_Rect* TargetTile;
 	std::string IMGName;
 	int OrderCreation; //NEW holds onto the order of creation, so if this was the first object it is either 1 or 0.
+	int directionX; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
 
-	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order) {
+	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order, int Velx) {
 		xPos = x;
 		yPos = y;
 		label = l;
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
+		directionX = Velx; // NEW, this is like the velocity and starti ndirection of the sprite;
 		OrderCreation = Order;//NEW
 
 		std::string temp; // this temp is used to get the position of the source tile
@@ -48,7 +50,7 @@ public:
 
 		TargetTile->w = TILE_WIDTH;
 		TargetTile->h = TILE_HEIGHT;
-
+		
 	}
 
 	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
@@ -125,6 +127,74 @@ public:
 		TargetTile->h = TILE_HEIGHT;
 		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile); 
 	}
+
+	int AutoX(int leftXlimit, int rightXlimit) { 
+
+		//I'm thinking I will likely have to not move all sprites the same way. so I'll call one function that is internal to the sprite
+		// Behavior(bools, 0, 1, 0, 1, ,1 ,0,0,0) {
+		// if (first) { moveX }
+		// if (second) {AutoX }
+		// etc
+		//That way we can pass in behavior on creation. Check with adam.
+
+		//I want to move but one tile. 
+
+		//So I have an xPos which prepresents where on the map it WANTS to go
+		//TargetTile->x is where it WILL go. 
+		//So I edit PosX - check matrix new position, if free, go, if not, flag (return a value maybe?)
+		//I will then ave another function that 'undoes' the wanted action of xPos on a fail when we back up through the stack.
+		//FOR NOW, just get something that moves in a pace.
+
+		//CHECK, that leftXlimit, rightXlimit and direction (howfast and starting direction) won't wander ebcause direction goes over or something.
+		//if it does, DONT adjust it, just let the user know.
+		
+
+		//for turn around, if we use SDL_TextureEx, we could flip the sprite, or we could load a 'opposite sprite' based on another tileset the user inputs if fliping is more taxing. 
+		if (directionX > 0) { //going right
+			if (xPos + directionX < rightXlimit) {
+				xPos + directionX;
+			}
+			else {
+				//turn around
+				directionX = -directionX;
+				//move - this could be disabled potentially
+				xPos + directionX;
+			}
+		}
+		else if (directionX < 0) { //going left
+			if (xPos + directionX > leftXlimit) {
+				xPos += directionX;
+			} 
+			else {
+				//turn around
+				directionX = -directionX;
+				//move -this coudl be disabled 
+				xPos += directionX;
+			}
+		}
+
+
+		//Okay now check LM in object layer,
+		//IF FAILS, add to a queue and figure out what blocked it
+		//Check the values backwards, if fails again - CALL 'UndoMovementX' or something. haven't decided how I want to do that.for now it'll be jerryrigged.
+		//if success, great. Change TargetTile then (Because objects are moving on the object layer independent of the player. They move like the background if they are still, they move themselves too) 
+	}
+
+	void MoveTargetTileX() {
+		//called on success of autoMoveX, means I can move the tile location on lm, 
+		//so remove it's previous position
+		//move targettile=xpos
+
+		//move it's position in the matrix
+
+
+	}
+	void UndoAutoX() {
+		xPos -= directionX; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
+
+	}
+
+
 };
 
 
