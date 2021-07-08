@@ -47,3 +47,60 @@ SDL_Rect* gFullWindowRect = NULL;
 //Part of HiddenTexture we wish to display at any given time. Moving the x,y coordinate of the SDL_Rect Object.
 //SDL_Renderer - we will be rendering using the GPU using this renderer.
 SDL_Renderer* gRenderer = NULL;
+
+
+//Struct tree for the first attempt at handling events.
+	//Event Order/Diagram
+	
+//Event arr[] = [Move Button (Player), Collision, Handle Collides, Move (Objects that can move), Collision, Handle Collides, DrawLevel]
+
+//Those above won't actually be in an array, but it will be when we go through the tree, or parts ofthe tree.
+
+//Organizationally, I think I will load all sprites into the tree without distinction (Because Adam's document has only 'sprite').
+//Ideally we'd have the ability to 'classify' sprites as a type, like 'npc', 'monster', 'chest', 'unmoving', etc. 
+//This would help because we would only need ot go down a narrow bit of hte tree. 
+
+//Or we would give it a bool to see if the page enabled it. Default would be false for all, unless user selected then it's true, and attempts to get the info form the suer input. Not sure how we'd implement however.
+
+
+//Tree - on object creation. Player as root. - or maybe not....
+//Tree's onl useful if I get collision working 
+//Make array in Level [LevelWidth*LevelHeight], each object, on move and creation, if x,y %TileV !=0, then CollisionObject[x,y/TileV]=1, and CollisionObject[x,y/TileV  +1] (because it would've rounded down I believe, so throw more collision to its right).
+//When putting collision in, if 1 is already at its location, - note it, then afterall the movements, if there is still a 1 in that location 'collide' (2),  if not, write your 1 there.
+//Decide how we'll handle collision basedo n that sprite/objects collision. 
+
+//collision order
+//Player move, check against Map, check against Objects     - if Collide, wait, but this one should resolve first.
+//Object move, check against map, check against Objects     - if Collide, wait until all objects have moved. 
+
+//How to tell which object Collided with what?
+//If you hit a 
+
+
+//[0,0,1,2,1,0,0]
+//[Null, Null, $%$, $%$ ->?%$%?, %$%, Null, Null]
+//if Arr[position] !=Null (when trying to fill) {
+//		Note down the object which you collided with, ->Vector<[Moving Object, Potentialhit Object, ContestedPosition]>
+//else {
+//      Fill Arr[Position]=this
+//}
+
+//Now that all collisions have 'happened',
+//go through hte vector, and check 
+//	If Arr[ContestedPosition] ==Null {
+//		Fill
+// }
+// Else {
+//		Check between the two collision types (This in itself will need a tree to determine which collision takes precedent)
+//		If PotentialHit Object.Collisiontype=1;
+//		DONT MOVE, Allow it to occupy the position  <- this is tile based for now, but if they collide we can ask deeper like, are their pixels going to occupy the smae or overlapped locations
+// }
+// 
+// 
+// 
+// 
+//
+
+
+
+

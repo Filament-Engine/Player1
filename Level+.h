@@ -27,6 +27,7 @@ public:
 	void CreateCamera(int x, int y);
 	void MapAllCollision();
 	void CreateObjectLayer(std::vector<Sprite*> AllSprites);
+	void Level::CreateObjectLayer();
 };
 class Player {
 	//QUESTION - should we prepare the class to handle multiple different tiles to be a 'object' or should we just assume it is one rectangle and the animations are swapping between those?
@@ -215,6 +216,7 @@ Level::Level() {
 
 	CombinedTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, LEVEL_WIDTH, LEVEL_HEIGHT);
 	NumLayers = 0;
+	SpriteLayer = NULL; 
 
 	//TextureBuffer= SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, LEVEL_WIDTH, LEVEL_HEIGHT);
 	//may want to make it only the window but for now who cares.
@@ -315,6 +317,7 @@ void Level::CombineTextures() { //trigger each time a layer is 'hidden' later as
 }
 // renders the level to the window
 void Level::RenderThis(Player* PlayerName) {
+	
 	// printf(".1.");
 	// printf("number of layers is %d\n", NumLayers);
 	for (int i = 0; i < NumLayers; i++) { // instead of comparing it to NumLayers, we may want to compare it to the bottom layers -- the layers below the player
@@ -378,4 +381,7 @@ void Level::MapAllCollision() { // NEW
 }
 void Level::CreateObjectLayer(std::vector<Sprite*> AllSprites) {
 	SpriteLayer = new ObjectLayer(AllSprites);
+}
+void Level::CreateObjectLayer() {
+	SpriteLayer = new ObjectLayer;
 }

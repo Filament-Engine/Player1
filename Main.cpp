@@ -42,7 +42,7 @@ Sprite* Object1; // we can create this sprite now so that it can be used in leve
 	//CreateTransparancy Edit
 
 
-//Initialize a HashTable for future use.
+//Initialize a HashTable for future use. 
 TileHash* GlobalTileHash; //INSERT - we also need all globals that are not const to be written to a 'Save properties' folder/document. This would be later, so on load up, we'd read in those constants perhaps... but I'm unsure hwo exactly it works.
 Player* Player1;
 Level* gLevel1;
@@ -127,10 +127,53 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("COMBINE TEXTURES\n");
 				CreatePlayer(&Player1, gLevel1, SurfacePropertyMap); // Creates the player
 
-				Object1 = new Sprite(52, 34, "AA259", SurfacePropertyMap); // TEMP
-				AllSprites.push_back(Object1); // NEW -- TEMPORARY
-				gLevel1->CreateObjectLayer(AllSprites);
 
+
+				//summary
+				// Object -> Print -> Map, repeat
+				// This allows the first object created to be 0, and when maping it it then increases the vector in object layer
+				// which allows the next object to be 1, rinser repeat
+				gLevel1->CreateObjectLayer();
+				//NEW - the order of creation gives them an 'int name' which shoudl be unchanged for the rest of the program .might make it static later.
+				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
+				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
+				Object1 = new Sprite(52, 34, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
+
+
+				//lets just see if it works again
+				Sprite* Object2 = new Sprite(52, 34, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation); 
+				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
+
+				
+
+
+				//After pushing back all the objects
+				gLevel1->SpriteLayer->AllocateQue2(); //New - so it is now ready for taking on the order of which to mvoe the sprites.
+
+
+
+				//Where are they relative to the tiles on the map when they firest spawn (shoudl be on top of each other)
+				//position should be (x, y) = (48=3, 2) thus we have position 
+				// 0, 16, 23, 48 64
+				// 0, 16, 23, 48 64 
+				// 0, 16, 23, OB OB [r2, c3, c4] 
+				// 0, 16, 23, OB OB [r3, c3, c4]
+
+				//okay we got both objects in to R2, c3, c4.
+
+				gLevel1->SpriteLayer->DisplayTileBasedArray();
+
+
+
+
+
+
+				//I'm adding directly to object so this is redundant.
 				AllSprites.clear(); // this is removing the AllSprites data because we have this data transfered into gLevel1->SpriteLayer instead
 
 				gLevel1->CombineTextures();
@@ -268,10 +311,10 @@ void handleLoop() {
 	}
 }
 
-int main(int argc, char* args[]) {
+int wmain(int argc, char* args[]) {
 	long int TotalTilesOfSurface;
 	//FileHandler assumed ot be 'load file'
-	std::string MapRepo = UserDirectory() + "Collision Dummy.txt"; //CHANGE ME - Requires knowing Repo from Save Files
+	std::string MapRepo = UserDirectory() + "72,000.txt"; //CHANGE ME - Requires knowing Repo from Save Files
 
 
 		//Load media
