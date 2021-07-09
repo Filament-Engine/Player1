@@ -252,16 +252,16 @@ void handleLoop() {
 					xVel += xVec;
 					break;
 				case SDLK_RIGHT: // if the user presses right arrow key
-					//Object1->MoveX(xVec);
+					Object1->MoveX(xVec);
 					break;
 				case SDLK_DOWN: // if the user presses up arrow key
-					//Object1->MoveY(yVec);
+					Object1->MoveY(yVec);
 					break;
 				case SDLK_LEFT: // if the user presses right arrow key
-					//Object1->MoveX(-xVec);
+					Object1->MoveX(-xVec);
 					break;
 				case SDLK_UP: // if the user presses up arrow key
-					//Object1->MoveY(-yVec);
+					Object1->MoveY(-yVec);
 					break;
 
 				}
