@@ -8,16 +8,12 @@
 #include <sstream> //used to convert strings to int, but may be better manually doing so.
 #include <vector> //used to dynamically grow SurfaceSource memory. May remove if we can itterate through the map keys in a seperate function.
 #include <cmath>
-/*
-//for windows file pathing
-#include <windows.h>
-#include <shlobj.h>
-#include <algorithm>
-*/
 // our own defined header files
 #include "SomeGlobals.h"
 #include "Quality_Functions.h" // this contains functions that are not used for displaying information, but are used to make other functions less complicated
 #include "FPSTimer.h" // class used to calculate fps
+#include "Camera.h"
+Camera *gCamera;
 #include "Startup.h"
 #include "Tile.h"
 #include "SurfaceProperty.h"
@@ -28,6 +24,7 @@ std::map<std::string, SurfaceProperty*> SurfacePropertyMap;
 #include "SurfaceCreation.h"
 #include "Layer.h"
 #include "Sprite.h"
+#include "Player.h"
 Sprite* Object1; // we can create this sprite now so that it can be used in level/player/objectlayer
 #include "Level+.h"
 #include "CreatePlayer.h"
@@ -74,7 +71,8 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 		FoundTileSetHeader = ScreenTileDimension(sourceIMG, line);
 		//NEW - temporary, declared here since we are only working with one level, and might as well, although ideally we'd only do so right when we need to
 		//placed here since we need the screen width and height at minimum. -although we could wait to declare override array..
-		gLevel1 = new Level;
+		gCamera = new Camera(0, 0); // TEMP
+		gLevel1 = new Level();
 
 		//create the window/screen surface
 		if (!init()) // gWindow, gScreenSurface, gRenderer, SCREEN_WIDTH * TILE_WIDTH, SCREEN_HEIGHT * TILE_HEIGHT))
@@ -125,7 +123,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 			//If everything was read as it should be by eof
 			if (FoundTileSetHeader && FoundCollisionHeader && FoundTileHeader && FoundCollisionOverrideHeader) {
 				printf("COMBINE TEXTURES\n");
-				CreatePlayer(&Player1, gLevel1, SurfacePropertyMap); // Creates the player
+				CreatePlayer(&Player1, SurfacePropertyMap); // Creates the player
 
 
 
@@ -138,7 +136,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 				
-				Object1 = new Sprite(69, 65, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object1 = new Sprite(52, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
@@ -179,8 +177,6 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				gLevel1->CombineTextures();
 				gLevel1->RenderThis(Player1);
 
-				 
-
 
 			}
 			else {
@@ -209,9 +205,6 @@ void handleLoop() {
 	int yVel = 0; // velocity of y position
 	int xVec = 1; //how many pixels x movement is on x axis
 	int yVec = 1; //how many pixels y movement is on y axis
-	// Camera movements
-	int xPos = 0; // Target Tile position on original texture
-	int yPos = 0; // Target Tile position on original texture
 
 	//Limits of the level
 	//0 is implicit
@@ -223,8 +216,6 @@ void handleLoop() {
 	// loop variables
 	bool quit = false; // handles the loop; whether we want to quit, or continue
 	SDL_Event e; // event handler
-
-
 
 	// begin loop
 	while (!quit) {
@@ -286,14 +277,20 @@ void handleLoop() {
 			}
 		}
 
-		Player1->MoveY(yVel, gLevel1);
-		Player1->MoveX(xVel, gLevel1);
+		// these two things below me are purely for testing / demonstration purposes
+		// gCamera->MoveX(xVel);
+		// gCamera->MoveY(yVel);
+
+		Player1->MoveY(yVel, gLevel1->CombinedCollision);
+		Player1->MoveX(xVel, gLevel1->CombinedCollision);
 
 		//test to see if auto movement works 
-		gLevel1->SpriteLayer->MoveAllSprites();
-		 
+		for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
+			gLevel1->SpriteLayer->AllSprites[i]->AutoX();
+			
+		}
 
-		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
+		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
 
 		gLevel1->RenderThis(Player1);
@@ -319,9 +316,10 @@ void handleLoop() {
 }
 
 int wmain(int argc, char* args[]) {
+	// gCamera = new Camera(0, 0);
 	long int TotalTilesOfSurface;
 	//FileHandler assumed ot be 'load file'
-	std::string MapRepo = UserDirectory() + "72,000.txt"; //CHANGE ME - Requires knowing Repo from Save Files
+	std::string MapRepo = UserDirectory() + "Collision Dummy.txt"; //CHANGE ME - Requires knowing Repo from Save Files
 
 
 		//Load media
