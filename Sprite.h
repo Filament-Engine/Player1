@@ -147,7 +147,7 @@ public:
 		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile); 
 	}
 
-	int AutoX() { 
+	void AutoX() { 
 
 		//I'm thinking I will likely have to not move all sprites the same way. so I'll call one function that is internal to the sprite
 		// Behavior(bools, 0, 1, 0, 1, ,1 ,0,0,0) {
@@ -206,7 +206,7 @@ public:
 
 
 		
-
+	
 
 		//fail -for now don't care
 		//UndoAutoX();
@@ -228,7 +228,7 @@ public:
 
 
 	}
-	void MoveTargetTileX() {
+	void MoveTargetTileY() {
 		printf("Object%d,  too yPos %d\n", OrderCreation + 1, yPos);
 		TargetTile->y = yPos;
 		//called on success of autoMoveX, means I can move the tile location on lm, 
@@ -707,7 +707,7 @@ public:
 
 	bool CheckFutureSpritePosition(Sprite* ObjectSprite) {
 		int x1, x2, y1, y2;
-		bool failx1, failx2, faily1, faily2;
+		bool failx1=false, failx2=false, faily1 =false, faily2 =false;
 		x1 = ObjectSprite->xPos;
 		x2 = ObjectSprite->xPos + TILE_WIDTH;
 		y1 = ObjectSprite->yPos;
