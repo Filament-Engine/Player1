@@ -251,16 +251,16 @@ void handleLoop() {
 					xVel += xVec;
 					break;
 				case SDLK_RIGHT: // if the user presses right arrow key
-					Object1->MoveX(xVec);
+					Object1->xVec += xVec;
 					break;
 				case SDLK_DOWN: // if the user presses up arrow key
-					Object1->MoveY(yVec);
+					Object1->yVec += yVec;
 					break;
 				case SDLK_LEFT: // if the user presses right arrow key
-					Object1->MoveX(-xVec);
+					Object1->xVec +=-xVec;
 					break;
 				case SDLK_UP: // if the user presses up arrow key
-					Object1->MoveY(-yVec);
+					Object1->yVec += -yVec;
 					break;
 
 				}
@@ -282,6 +282,20 @@ void handleLoop() {
 				case SDLK_d: // if the user releases 'd'
 					xVel -= xVec;
 					break;
+
+				case SDLK_RIGHT: // if the user presses right arrow key
+					Object1->xVec += -xVec;
+					break;
+				case SDLK_DOWN: // if the user presses up arrow key
+					Object1->yVec += -yVec;
+					break;
+				case SDLK_LEFT: // if the user presses right arrow key
+					Object1->xVec += xVec;
+					break;
+				case SDLK_UP: // if the user presses up arrow key
+					Object1->yVec += yVec;
+					break;
+
 				}
 			}
 		}
