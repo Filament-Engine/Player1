@@ -1,4 +1,8 @@
 #pragma once
+
+
+
+
 class Sprite {
 public:
 	int xPos; // here the xPos is where the sprite is placed on the y position
@@ -12,6 +16,8 @@ public:
 	int directionX; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
 	int leftXlimit; //NEW don't know how I want to handle it for now, but will store in sprite for now.
 	int rightXlimit; 
+	
+
 
 
 	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order) {
@@ -25,6 +31,8 @@ public:
 		OrderCreation = Order;//NEW
 		leftXlimit = 0; //edited by user potentially idk what default we want.
 		rightXlimit = 0;
+		
+
 
 		std::string temp; // this temp is used to get the position of the source tile
 		int i = 0;
@@ -68,7 +76,7 @@ public:
 		leftXlimit=LeftXLimit;
 		rightXlimit=RightXLimit;
 		OrderCreation = Order;//NEW
-
+		
 
 
 		std::string temp; // this temp is used to get the position of the source tile
@@ -162,7 +170,9 @@ public:
 
 		//for turn around, if we use SDL_TextureEx, we could flip the sprite, or we could load a 'opposite sprite' based on another tileset the user inputs if fliping is more taxing. 
 		
-		 
+			
+
+
 			if (directionX > 0) { //going right
 				//printf("Object %d, is going right\n", OrderCreation + 1);
 				if (xPos + directionX < rightXlimit) {
@@ -191,11 +201,12 @@ public:
 					xPos += directionX;
 				}
 			}
-			SDL_Delay(500);
-			//success (assume for now)
-			MoveTargetTileX();
+			//SDL_Delay(500);
+
+
+
 		
-		return 1; //success
+
 
 		//fail -for now don't care
 		//UndoAutoX();
@@ -217,11 +228,24 @@ public:
 
 
 	}
+	void MoveTargetTileX() {
+		printf("Object%d,  too yPos %d\n", OrderCreation + 1, yPos);
+		TargetTile->y = yPos;
+		//called on success of autoMoveX, means I can move the tile location on lm, 
+		//so remove it's previous position
+		//move targettile=xpos
+
+		//move it's position in the matrix
+
+
+	}
 	void UndoAutoX() {
 		xPos -= directionX; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
 
 	}
+	
 
+	
 
 };
 
@@ -234,7 +258,7 @@ public:
 	std::string** DrawnObjects;
 	std::vector<Sprite*> AllSprites; //this stores order of creation
 	std::vector<Sprite*>** LM;
-	std::vector<int> Queue2; //this is the acutal order the stack completes in.
+	std::vector<Sprite*> Queue2; //this is the acutal order the stack completes in.
 
 
 	ObjectLayer(std::vector<Sprite*> ASprites) {
@@ -301,7 +325,7 @@ public:
 		printf("Allocating a vector of size %d", AllSprites.size());
 		Queue2.resize(AllSprites.size());
 		for (int i = 0; i < AllSprites.size(); i++) {
-			Queue2[i] = i;
+			Queue2[i] = AllSprites[i];
 		}
 		//so the idea is that when we process the order, then want to work backwards, when we do .swap, we will then be able to go thrhough it and complete it in the order the stackc reated
 	}
@@ -309,13 +333,38 @@ public:
 	//Re orders Que2 for the next set of movements
 	void ReCreateQue2() {
 		for (int i = 0; i < AllSprites.size(); i++) {
-			Queue2[i] = i;
+			Queue2[i] = AllSprites[i];
 		}
 	}
+
+
+	void MoveAllSprites() {
+		for (int i = 0; i < std::distance(AllSprites.begin(), AllSprites.end()); i++) {
+			AllSprites[i]->AutoX();
+			if (CheckFutureSpritePosition(AllSprites[i])) { //if it returns 1
+				RemoveSpriteFromMap(AllSprites[i]);
+				AllSprites[i]->MoveTargetTileX();
+				AllSprites[i]->MoveTargetTileX();
+				ReMapSprite(AllSprites[i]); //update position on the vector
+
+			}
+			else { //if returned 0
+				AllSprites[i]->UndoAutoX(); //TEMP YOU DO NOT WANTTO UNDO BEFORE STACK CHECK AND MOVES
+
+				//place on stack, at the end of all this move, we'll go through the stack/queue or somethin
+			}
+
+		}
+	}
+
+
+
 
 	//Adds object to AllSprites Vector, As well as places it on the initial collision map
 	void MapSprite(Sprite* ObjectSprite) {
 		AllSprites.push_back(ObjectSprite);
+		
+
 		//Add it's approx position to the matrix
 		//so in LM, find this objects x and y pos, and then approx basedo n the upper left hand corner being the low value
 		//it's position in the matrix. Then go down three times to the vector and put it in if applicable.
@@ -323,6 +372,11 @@ public:
 		//four values associate with possible four tiles a object could be in.
 			//doesn't matter how small an object, it can only ever fit in four at a time. 
 			//if it's bigger then you've got issues, maybe you can bind a larger object all together and say to ignore its partners in collision?. 
+		
+	
+		
+		
+		//Put into matrix -ONLY DO ONCE PER SPRITE. 
 		int x1 =NULL;
 		int x2 =NULL;
 		int y1 =NULL;
@@ -385,8 +439,6 @@ public:
 		
 
 	}
-
-
 	void DisplayTileBasedArray() {
 		/*
 		LM = new std::vector<Sprite*>**[LEVEL_HEIGHT];
@@ -419,6 +471,364 @@ public:
 		}
 
 	}
+	void RemoveSpriteFromMap(Sprite* ObjectSprite) {
+
+		int x1, x2, y1, y2;
+		x1 = ObjectSprite->xPos;
+		x2 = ObjectSprite->xPos + TILE_WIDTH;
+		y1 = ObjectSprite->yPos;
+		y2 = ObjectSprite->yPos + TILE_HEIGHT;
+
+
+		//NOTE - YOU CANT RELY on the first in order going first, this is because A may be blocked by G, so G resolves first, but if they are on the same 'tile' then A is the begiing of hte vector, which gets stupid after a while, because you move without knowing if G got out of the way.
+		if (y1 % TILE_HEIGHT == 0) {
+			//printf("Just remove y1, ");
+			//just map y1 - perfectly placed in tilemap
+			if (x1 % TILE_WIDTH == 0) {
+				//printf("and x1 = ");
+				//just map x1 - perfectly placed in tilemap
+				//printf(" %d, %d, \n", x1 / TILE_WIDTH, y1 / TILE_HEIGHT);
+				y1 = y1 / TILE_HEIGHT;
+				x1 = x1 / TILE_WIDTH;
+				LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end(), ObjectSprite));
+			}
+			else {
+				//printf("and x1, x2 = ");
+				//map x1 and x2
+				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
+				x1 = x1 / TILE_WIDTH;
+				x2 = x2 / TILE_WIDTH;
+				//printf(" %d, %d, %d\n", x1 / TILE_WIDTH, x2 / TILE_WIDTH, y1);
+
+				LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end(), ObjectSprite));
+				LM[y1][x2].erase(find(LM[y1][x2].begin(), LM[y1][x2].end(), ObjectSprite));
+			}
+		}
+		else {
+			//map y1 and y2
+			//printf("Just remove y1, y2, ");
+			if (x1 % TILE_WIDTH == 0) {
+				//just map x1 - perfectly placed in tilemap
+				//printf("and x1 = ");
+				y1 = y1 / TILE_HEIGHT;
+				y2 = y2 / TILE_HEIGHT;
+				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
+
+				LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end(), ObjectSprite));
+				LM[y2][x1].erase(find(LM[y2][x1].begin(), LM[y2][x1].end(), ObjectSprite));
+			}
+			else {
+				//map x1 and x2
+				//printf("and x1, x2 = ");
+				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+				x2 = x2 / TILE_WIDTH;
+				y1 = y1 / TILE_HEIGHT;
+				y2 = y2 / TILE_HEIGHT;
+				//printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
+				LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end(), ObjectSprite));
+				LM[y1][x2].erase(find(LM[y1][x2].begin(), LM[y1][x2].end(), ObjectSprite));
+				LM[y2][x1].erase(find(LM[y2][x1].begin(), LM[y2][x1].end(), ObjectSprite));
+				LM[y2][x2].erase(find(LM[y2][x2].begin(), LM[y2][x2].end(), ObjectSprite));
+			}
+		}
+
+
+
+	}
+	void ReMapSprite(Sprite* ObjectSprite) {
+		//Put into matrix -ONLY DO ONCE PER SPRITE. 
+		int x1 = NULL;
+		int x2 = NULL;
+		int y1 = NULL;
+		int y2 = NULL;
+		int OrderedPosition = 0;
+		//The null will allow us to skip it if there is no info there.
+		x1 = ObjectSprite->xPos;
+		x2 = ObjectSprite->xPos + TILE_WIDTH;
+		y1 = ObjectSprite->yPos;
+		y2 = ObjectSprite->yPos + TILE_HEIGHT;
+
+
+		//NOTE - replace pushbacks with inserts - unless empty vector
+
+		if (y1 % TILE_HEIGHT == 0) {
+			//printf("Just map y1, ");
+			//just map y1 - perfectly placed in tilemap
+			if (x1 % TILE_WIDTH == 0) {
+				//printf("and x1 = ");
+				//just map x1 - perfectly placed in tilemap
+				//printf(" %d, %d, \n", x1 / TILE_WIDTH, y1 / TILE_HEIGHT);
+				y1 = y1 / TILE_HEIGHT;
+				x1 = x1 / TILE_WIDTH;
+				
+				if (LM[y1][x1].size() == 0) {
+					LM[y1][x1].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
+				}
+
+
+			}
+			else {
+				//printf("and x1, x2 = ");
+				//map x1 and x2
+				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
+				//printf(" %d, %d, %d\n", x1 / TILE_WIDTH, x2 / TILE_WIDTH, y1);
+				x1 = x1 / TILE_WIDTH;
+				x2 = x2 / TILE_WIDTH;
+
+				if (LM[y1][x1].size() == 0) {
+					LM[y1][x1].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y1][x1].insert(LM[y1][x1].begin()+OrderedPosition,ObjectSprite);
+					OrderedPosition = 0;
+				}
+
+
+				if (LM[y1][x2].size() == 0) {
+					LM[y1][x2].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y1][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y1][x2].insert(LM[y1][x2].begin() + OrderedPosition, ObjectSprite);
+					 
+				}
+
+			 
+			}
+		}
+
+		else {
+			//map y1 and y2
+			//printf("Just map y1, y2, ");
+			if (x1 % TILE_WIDTH == 0) {
+				//just map x1 - perfectly placed in tilemap
+				//printf("and x1 = ");
+				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
+				y1 = y1 / TILE_HEIGHT;
+				y2 = y2 / TILE_HEIGHT;
+
+
+				if (LM[y1][x1].size() == 0) {
+					LM[y1][x1].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
+					OrderedPosition = 0;
+				}
+
+				if (LM[y2][x1].size() == 0) {
+					LM[y2][x1].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y2][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y2][x1].insert(LM[y2][x1].begin() + OrderedPosition, ObjectSprite);
+				}
+				 
+			}
+
+
+			else {
+				//map x1 and x2
+				//("and x1, x2 = ");
+				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+				x2 = x2 / TILE_WIDTH;
+				y1 = y1 / TILE_HEIGHT;
+				y2 = y2 / TILE_HEIGHT;
+				///printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
+
+				if (LM[y1][x1].size() == 0) {
+					LM[y1][x1].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
+					OrderedPosition = 0;
+				}
+
+				if (LM[y1][x2].size() == 0) {
+					LM[y1][x2].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y1][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y1][x2].insert(LM[y1][x2].begin() + OrderedPosition, ObjectSprite);
+					OrderedPosition = 0;
+				}
+
+				if (LM[y2][x1].size() == 0) {
+					LM[y2][x1].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y2][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y2][x1].insert(LM[y2][x1].begin() + OrderedPosition, ObjectSprite);
+					OrderedPosition = 0;
+				}
+
+				if (LM[y2][x2].size() == 0) {
+					LM[y2][x2].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y2][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y2][x2].insert(LM[y2][x2].begin() + OrderedPosition, ObjectSprite);
+				}
+
+				
+
+			}
+		}
+
+
+	}
+
+	bool CheckFutureSpritePosition(Sprite* ObjectSprite) {
+		int x1, x2, y1, y2;
+		bool failx1, failx2, faily1, faily2;
+		x1 = ObjectSprite->xPos;
+		x2 = ObjectSprite->xPos + TILE_WIDTH;
+		y1 = ObjectSprite->yPos;
+		y2 = ObjectSprite->yPos + TILE_HEIGHT;
+
+
+
+
+
+		//NOTE only one fail should happen, if multiple happen let it just undo the movement once, NO NEED FOR MORE THAN ONE UNDO
+		if (y1 % TILE_HEIGHT == 0) {
+			//printf("Just remove y1, ");
+			//just map y1 - perfectly placed in tilemap
+			if (x1 % TILE_WIDTH == 0) {
+				//printf("and x1 = ");
+				//just map x1 - perfectly placed in tilemap
+				//printf(" %d, %d, \n", x1 / TILE_WIDTH, y1 / TILE_HEIGHT);
+				y1 = y1 / TILE_HEIGHT;
+				x1 = x1 / TILE_WIDTH;
+
+				if (LM[y1][x1].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx1 = true;
+					faily1 = true;
+				}
+
+
+
+
+			}
+			else {
+				//printf("and x1, x2 = ");
+				//map x1 and x2
+				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
+				x1 = x1 / TILE_WIDTH;
+				x2 = x2 / TILE_WIDTH;
+				//printf(" %d, %d, %d\n", x1 / TILE_WIDTH, x2 / TILE_WIDTH, y1);
+
+				if (LM[y1][x1].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx1 = true;
+					faily1 = true;
+				}
+				if (LM[y1][x2].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					faily1 = true;
+					failx2 = true;
+				}
+
+
+
+			}
+		}
+		else {
+			//map y1 and y2
+			//printf("Just remove y1, y2, ");
+			if (x1 % TILE_WIDTH == 0) {
+				//just map x1 - perfectly placed in tilemap
+				//printf("and x1 = ");
+				y1 = y1 / TILE_HEIGHT;
+				y2 = y2 / TILE_HEIGHT;
+				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
+
+				if (LM[y1][x1].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx1 = true;
+					faily1 = true;
+				}
+				if (LM[y2][x1].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx1 = true;
+					faily2 = true;
+				}
+
+
+			}
+			else {
+				//map x1 and x2
+				//printf("and x1, x2 = ");
+				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+				x2 = x2 / TILE_WIDTH;
+				y1 = y1 / TILE_HEIGHT;
+				y2 = y2 / TILE_HEIGHT;
+				//printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
+				if (LM[y1][x1].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx1 = true;
+					faily1 = true;
+				}
+				if (LM[y1][x2].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx2 = true;
+					faily1 = true;
+				}
+				if (LM[y2][x1].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx1 = true;
+					faily2 = true;
+				}
+				if (LM[y2][x2].size() > 0) {
+					printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+					failx2 = true;
+					faily2 = true;
+				}
+
+
+
+
+			}
+		}
+
+		if (failx1 || failx2 || faily1 || faily2) { //Vector occupied!
+			return 0;
+		}
+		else {
+			return 1; //nothing ran into
+		}
+
+	}
+
 
 
 

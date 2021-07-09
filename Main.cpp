@@ -138,7 +138,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 				
-				Object1 = new Sprite(52, 34, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object1 = new Sprite(69, 65, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
@@ -179,8 +179,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				gLevel1->CombineTextures();
 				gLevel1->RenderThis(Player1);
 
-				SDL_Delay(5000); //trying to figure out why object two spawned on hte left for a second.
-				//why does object two not get blitted either :/
+				 
 
 
 			}
@@ -291,10 +290,8 @@ void handleLoop() {
 		Player1->MoveX(xVel, gLevel1);
 
 		//test to see if auto movement works 
-		for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
-			gLevel1->SpriteLayer->AllSprites[i]->AutoX();
-			
-		}
+		gLevel1->SpriteLayer->MoveAllSprites();
+		 
 
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
