@@ -300,7 +300,7 @@ void handleLoop() {
 
 		//test to see if auto movement works 
 		for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
-			gLevel1->SpriteLayer->AllSprites[i]->Behavior();	
+			gLevel1->SpriteLayer->MoveAllSprites();	
 		}
 
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
