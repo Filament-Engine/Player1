@@ -536,7 +536,7 @@ public:
 	void MakeSelfTexture() {
 		if (CombinedObjects != NULL) {
 			SDL_DestroyTexture(CombinedObjects);
-		}
+		} 
 		CombinedObjects = SDL_CreateTextureFromSurface(gRenderer, TargetSurface);
 	}
 
@@ -1219,6 +1219,7 @@ public:
 
 						//NOTE - NEEDS WORK, WHAT IF THERE ARE TWO TILES, (ORDER THE COLLIDED SPRITE TO PRIROTIZE THE LEFT UPEPER CORNER, SO YOU CAN ASSUME OR SOMETHING, THEN CHECK THE OTHER IF APPLICABLE?)
 						//add self to stack
+						printf("Object%d Can't be pushedback? Or is it the vector that's bad?\n", Queue2[i]->OrderCreation + 1);
 						SpriteStack[SpriteStackCounter].push_back(Queue2[i]); //ERROR HERE - somehow.
 
 
