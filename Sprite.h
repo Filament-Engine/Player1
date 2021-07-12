@@ -1,4 +1,5 @@
 #pragma once
+#include <stdlib.h> // this is for the random function
 
 class Sprite {
 public:
@@ -19,6 +20,11 @@ public:
 	bool DoMoveY = false;
 	bool DoAutoY = false;
 	bool DoFindPlayer = false;
+	bool DoRandomMove = false;
+
+	// for random
+	int RandomX;
+	int RandomY;
 
 	int xVec;
 	int yVec;
@@ -81,13 +87,17 @@ public:
 			printf("MoveX\n");
 			DoMoveX = true;
 		}
-		if (MovementType == "MoveY") {
+		else if (MovementType == "MoveY") {
 			printf("MoveY\n");
 			DoMoveY = true;
 		}
-		if (MovementType == "FindPlayer") {
+		else if (MovementType == "FindPlayer") {
 			printf("FindPlayer\n");
 			DoFindPlayer = true;
+		}
+		else if (MovementType == "RandomMove") {
+			printf("Random\n");
+			DoRandomMove = true;
 		}
 
 
@@ -146,7 +156,7 @@ public:
 			directionV = Vel; // NEW, this is like the velocity and starting direction of the sprite;
 			leftVlimit = LeftVLimit;
 			rightVlimit = RightVLimit;
-			OrderCreation = Order;//NEW
+			OrderCreation = Order; // NEW
 			DoAutoX = true;
 		}
 		else if (Axis == "AxisY") {
@@ -222,6 +232,36 @@ public:
 
 	void FindPlayer() {
 		printf("oh boy am i finding the player... we will get this set up once player is a subclass of sprite\n");
+	}
+
+	void RandomMove() {
+		if (TIME == 0) {
+			RandomX = rand() % 4; // 0/1 means don't move, 2 means move up, 3 means move down
+			RandomY = rand() % 4; // 0/1 means don't move, 2 means move left, 3 means move right.
+		}
+		if (TIME >= 16) {
+			RandomX = 0;
+			RandomY = 0;
+		}
+
+
+		if (RandomX == 2) {
+			// printf("moving left\n");
+			MoveX(-1);
+		}
+		else if (RandomX == 3) {
+			// printf("moving right\n");
+			MoveX(1);
+		}
+
+		if (RandomY == 2) {
+			// printf("moving up\n");
+			MoveY(-1);
+		}
+		else if (RandomY == 3) {
+			// printf("moving down\n");
+			MoveY(1);
+		}
 	}
 
 	void AutoY() {
@@ -340,6 +380,9 @@ public:
 		}
 		if (DoFindPlayer) {
 			FindPlayer();
+		}
+		if (DoRandomMove) {
+			RandomMove();
 		}
 
 

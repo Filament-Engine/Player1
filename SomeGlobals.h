@@ -1,5 +1,8 @@
 #pragma once
 #include <SDL.h>
+
+int TIME = 0; // NEW -- used for randomMove, and likely other things too! functions as a sort of clock
+
 // determines the size of the level
 int LEVEL_WIDTH;
 int LEVEL_HEIGHT;

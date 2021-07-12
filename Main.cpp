@@ -136,7 +136,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 				
-				Object1 = new Sprite(52, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "FindPlayer"); // TEMP
+				Object1 = new Sprite(52, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomMove"); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
@@ -307,6 +307,10 @@ void handleLoop() {
 
 
 		gLevel1->RenderThis(Player1);
+		TIME++;
+		if (TIME >= MAX_FPS) {
+			TIME = 0;
+		}
 
 		// calculating fps
 		float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.f); // calculates fps
