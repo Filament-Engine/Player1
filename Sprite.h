@@ -1161,26 +1161,28 @@ public:
 					Queue2[i]->Behavior();
 					//Will it Collide?
 
-					printf("If you see the next things, then it should be empty...\n");
+					
 					if (Queue2[i]->OrderCreation + 1 == 1) {
+						printf("If you see the next things, then it should be empty... MemAddress of Object1 =%p\n", Queue2[i]);
+
 						printf("R4, C4 ["); //y x
 						for (int d = 0; d < LM[4][4].size(); d++) { //UL
-							printf("%d, ", LM[4][4][d]);
+							printf("%d, ", LM[4][4][d]->OrderCreation);
 						}
 						printf("]\n");
 						printf("R5, C4 ["); //y x
 						for (int d = 0; d < LM[5][4].size(); d++) { //UR
-							printf("%d, ", LM[5][4][d]);
+							printf("%d, ", LM[5][4][d]->OrderCreation);
 						}
 						printf("]\n");
 						printf("R4, C5 ["); //y x
 						for (int d = 0; d < LM[4][5].size(); d++) { //LL
-							printf("%d, ", LM[4][5][d]);
+							printf("%d, ", LM[4][5][d]->OrderCreation);
 						}
 						printf("]\n");
 						printf("R5, C5 ["); //y x
 						for (int d = 0; d < LM[5][5].size(); d++) { //LR
-							printf("%d, ", LM[5][5][d]);
+							printf("%d, ", LM[5][5][d]->OrderCreation);
 						}
 						printf("]\n");
 					}
