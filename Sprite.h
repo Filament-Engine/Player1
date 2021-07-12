@@ -457,7 +457,13 @@ public:
 	Sprite* GetThis() {
 		return this;
 	}
-
+	void BlitThis(SDL_Surface* TargetSurface) {
+		TargetTile->x = xPos;
+		TargetTile->y = yPos;
+		TargetTile->w = TILE_WIDTH;
+		TargetTile->h = TILE_HEIGHT;
+		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile);
+	}
 	
 
 };
