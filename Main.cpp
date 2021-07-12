@@ -136,7 +136,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 				
-				Object1 = new Sprite(52, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object1 = new Sprite(70, 73, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
@@ -299,10 +299,10 @@ void handleLoop() {
 		Player1->MoveX(xVel, gLevel1->CombinedCollision);
 
 		//test to see if auto movement works 
-		for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
-			gLevel1->SpriteLayer->AllSprites[i]->AutoX();
+		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
+			gLevel1->SpriteLayer->MoveAllSprites();
 			
-		}
+		//}
 
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
@@ -333,7 +333,9 @@ int wmain(int argc, char* args[]) {
 	// gCamera = new Camera(0, 0);
 	long int TotalTilesOfSurface;
 	//FileHandler assumed ot be 'load file'
-	std::string MapRepo = UserDirectory() + "Collision Dummy.txt"; //CHANGE ME - Requires knowing Repo from Save Files
+	
+	//Please keep this jack if possible. So long as we're not currently caring about map collision.
+	std::string MapRepo = UserDirectory() + "72,000.txt"; //CHANGE ME - Requires knowing Repo from Save Files
 
 
 		//Load media
