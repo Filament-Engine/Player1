@@ -1138,8 +1138,8 @@ public:
 
 
 			if (Queue2[i] != NULL) { //because the stack replaces with null, unless its the end of stack
-				printf("4\n" );
-				
+				printf("4\n");
+
 				//Find the Que item, if it's in a stack, and resolve it.
 				std::vector<Sprite*> InterestedStack;
 				for (int i = 0; i < SpriteStackCounter; i++) {
@@ -1147,8 +1147,8 @@ public:
 						InterestedStack = SpriteStack[i];
 					}
 				}
-				printf("5\n" );
-				
+				printf("5\n");
+
 				//Was not an end of stack
 				if (InterestedStack.size() < 1) {
 
@@ -1160,6 +1160,32 @@ public:
 					//Adjust future position
 					Queue2[i]->Behavior();
 					//Will it Collide?
+
+					printf("If you see the next things, then it should be empty...\n");
+					if (Queue2[i]->OrderCreation + 1 == 1) {
+						printf("R4, C4 ["); //y x
+						for (int d = 0; d < LM[4][4].size(); d++) { //UL
+							printf("%d, ", LM[4][4][d]);
+						}
+						printf("]\n");
+						printf("R5, C4 ["); //y x
+						for (int d = 0; d < LM[5][4].size(); d++) { //UR
+							printf("%d, ", LM[5][4][d]);
+						}
+						printf("]\n");
+						printf("R4, C5 ["); //y x
+						for (int d = 0; d < LM[4][5].size(); d++) { //LL
+							printf("%d, ", LM[4][5][d]);
+						}
+						printf("]\n");
+						printf("R5, C5 ["); //y x
+						for (int d = 0; d < LM[5][5].size(); d++) { //LR
+							printf("%d, ", LM[5][5][d]);
+						}
+						printf("]\n");
+					}
+
+
 					printf("7\n");
 
 
@@ -1207,7 +1233,7 @@ public:
 						DisplayTileBasedArray();
 						Queue2[i]->UndoBehavior();
 						//Remap it, because it was unable to move right away
-						ReMapSprite(Queue2[i]);
+						
 						printf("(else) Remapped Object%d\n", Queue2[i]->OrderCreation + 1);
 
 						printf("12\n");
@@ -1231,7 +1257,10 @@ public:
 					
 						MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, SpriteStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
 						printf("14\n");
-						
+						//remap after so it doesn't run into itself when moving.
+						ReMapSprite(Queue2[i]);
+
+
 						SpriteStackCounter += 1; //After recursion is done, we wait. If another stack is started it should happen in a new whole stack.
 						printf("15\n");
 						
@@ -1307,12 +1336,16 @@ public:
 
 		//determine which Sprite is Created First
 		for (int i = 0; i < 4; i++) {
-			if (NextSprite = NULL) { //while we have nothing for smallest sprite
+
+			if (NextSprite == NULL) { //while we have nothing for smallest sprite
 				NextSprite = ArrHolder[i];
+
 			}
-			else { //while NextSprite is a Sprite, try finding the lowest possible
+			else if (ArrHolder[i]!=NULL) { //while NextSprite is a Sprite, try finding the lowest possible
+
+				printf("Arr%d = %d\n", i, ArrHolder[i]->OrderCreation);
 				if (NextSprite->OrderCreation > ArrHolder[i]->OrderCreation) {
-					NextSprite = ArrHolder[i];
+					NextSprite = ArrHolder[i]; 
 				}
 			}
 
