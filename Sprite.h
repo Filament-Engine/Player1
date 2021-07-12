@@ -149,6 +149,8 @@ public:
 		}
 	}
 
+	
+	
 	void BlitThis(SDL_Surface* TargetSurface) {
 		TargetTile->x = xPos;
 		TargetTile->y = yPos;
@@ -240,6 +242,18 @@ public:
 
 
 	}
+	void UndoBehavior() {
+		if (DoAutoX) {
+			UndoAutoX();
+		}
+		if (DoMoveX) {
+			UndoMoveX(xVec);
+		}
+		if (DoMoveY) {
+			UndoMoveY(yVec);
+		}
+
+	}
 
 	void MoveTargetTileX() {
 		//printf("Object%d,  too xPos %d\n", OrderCreation + 1, xPos);
@@ -266,6 +280,30 @@ public:
 	void UndoAutoX() {
 		xPos -= directionX; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
 
+	}
+	int UndoMoveX(int x) {
+		xPos -= x;
+		//This uno may be unncessary, since the original moveX and Y handle this. There is an edge case where the user wants them to be 'bounced' back 
+		//a certain distance, so I'll keep it for now.
+		if (xPos < 0 || xPos + TILE_WIDTH - 1 >= LEVEL_WIDTH * TILE_WIDTH) {
+			xPos += x;
+			return 0;
+		}
+		else {
+			//TargetTile->x += x;
+			return 1;
+		}
+	}
+	int UndoMoveY(int y) {
+		yPos -= y;
+		if (yPos < 0 || yPos + TILE_HEIGHT - 1 >= LEVEL_HEIGHT * TILE_HEIGHT) {
+			yPos += y;
+			return 0;
+		}
+		else {
+			//TargetTile->y += y;
+			return 1;
+		}
 	}
 	
 
@@ -509,6 +547,7 @@ public:
 
 			}
 		}
+		printf("\n");
 
 	}
 	void RemoveSpriteFromMap2(Sprite* ObjectSprite) {
@@ -901,8 +940,12 @@ public:
 			DisplayTileBasedArray();
 			//printf("6\n");
 			//SDL_Delay(1000);
-			AllSprites[0]->UndoAutoX(); //TEMP YOU DO NOT WANTTO UNDO BEFORE STACK CHECK AND MOVES
-			//printf("7\n");
+			// 
+			AllSprites[0]->UndoBehavior(); //TEMP YOU DO NOT WANTTO UNDO BEFORE STACK CHECK AND MOVES
+
+			ReMapSprite(AllSprites[0]); //update position on the vector
+										
+										//printf("7\n");
 			//SDL_Delay(5000);
 			//place on stack, at the end of all this move, we'll go through the stack/queue or somethin
 		}
