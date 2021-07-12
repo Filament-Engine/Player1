@@ -338,6 +338,9 @@ public:
 		if (DoMoveY) {
 			MoveY(yVec);
 		}
+		if (DoFindPlayer) {
+			FindPlayer();
+		}
 
 
 	}
@@ -354,7 +357,6 @@ public:
 		if (DoMoveY) {
 			UndoMoveY(yVec);
 		}
-
 	}
 
 	void MoveTargetTileX() {
