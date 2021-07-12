@@ -493,7 +493,7 @@ public:
 		BlitObjects();
 
 	}
-	ObjectLayer() {
+	ObjectLayer() { //this is currently being used rather than the above.
 		printf("ObjectLayer Created\n");
 
 		//the vector is increased each time an object appears
@@ -513,6 +513,8 @@ public:
 			}
 		}
 
+		//test to see if you need to push back empty vector
+		printf("vector exists? %p\n", LM[4][4]);
 
 		printf("\nVector Matrix Made for Object Collision approx\n");
 
@@ -937,7 +939,7 @@ public:
 
 	}
 
-	void CheckFutureSpritePosition(Sprite* ObjectSprite, int* FutureCode) {
+	void CheckFutureSpritePosition(Sprite* ObjectSprite, int FutureCode[8]) {
 		int x1, x2, y1, y2;
 		bool failx1 = false, failx2 = false, faily1 = false, faily2 = false;
 		x1 = ObjectSprite->xPos;
@@ -1053,6 +1055,8 @@ public:
 			}
 		}
 
+
+		//CHECK/CHANGE - PRETTY SURE THIS DOES NOT RETUR ALL THE COLLISION VECTORS, SIMPLY BASED ON THAT if y is perfect, X MIGHT NOT BE.
 		if (failx1 || failx2 || faily1 || faily2) { //Vector occupied!
 			printf("Object%d is trying to go to somewhere occupied\n", ObjectSprite->OrderCreation + 1);
 			SDL_Delay(250);
@@ -1077,15 +1081,23 @@ public:
 				}
 
 			}
+			else {
+				printf("4, 5 Should have a value\n");
+				FutureCode[0] = -1;
+				FutureCode[1] = -1;
+				FutureCode[2] = -1;
+				FutureCode[3] = -1;
+			}
 			if (faily2) {
 				if (failx1) {
-
+					printf("4, 5 Should have a value\n");
 					FutureCode[4] = y1;
 					FutureCode[5] = x1;
 				}
 				else {
 					FutureCode[4] = -1;
 					FutureCode[5] = -1;
+					printf("4, 5 should be negative 1\n");
 				}
 				if (failx2) {
 					FutureCode[6] = y1;
@@ -1096,6 +1108,13 @@ public:
 					FutureCode[7] = -1;
 				}
 
+			}
+			else {
+				printf("4, 5 Should have a value\n");
+				FutureCode[4] = -1;
+				FutureCode[5] = -1;
+				FutureCode[6] = -1;
+				FutureCode[7] = -1;
 			}
 
 
@@ -1127,7 +1146,7 @@ public:
 		//Reset
 		ReCreateQue2();
 
-		printf("2, Que.sizE()=%d\n",Queue2.size() );
+		 
 	
 		
 		//Collision Loop
@@ -1162,30 +1181,7 @@ public:
 					//Will it Collide?
 
 					
-					if (Queue2[i]->OrderCreation + 1 == 1) {
-						printf("If you see the next things, then it should be empty... MemAddress of Object1 =%p\n", Queue2[i]);
-
-						printf("R4, C4 ["); //y x
-						for (int d = 0; d < LM[4][4].size(); d++) { //UL
-							printf("%d, ", LM[4][4][d]->OrderCreation);
-						}
-						printf("]\n");
-						printf("R5, C4 ["); //y x
-						for (int d = 0; d < LM[5][4].size(); d++) { //UR
-							printf("%d, ", LM[5][4][d]->OrderCreation);
-						}
-						printf("]\n");
-						printf("R4, C5 ["); //y x
-						for (int d = 0; d < LM[4][5].size(); d++) { //LL
-							printf("%d, ", LM[4][5][d]->OrderCreation);
-						}
-						printf("]\n");
-						printf("R5, C5 ["); //y x
-						for (int d = 0; d < LM[5][5].size(); d++) { //LR
-							printf("%d, ", LM[5][5][d]->OrderCreation);
-						}
-						printf("]\n");
-					}
+					 
 
 
 					printf("7\n");
@@ -1199,6 +1195,7 @@ public:
 						CollidedSprite2 = LM[FutureCode[2]][FutureCode[3]];
 					}
 					if (FutureCode[4] != -1) {
+						printf("y=%d, c=%d\n", FutureCode[4], FutureCode[5]);
 						CollidedSprite3 = LM[FutureCode[4]][FutureCode[5]];
 					}
 					if (FutureCode[6] != -1) {
@@ -1224,31 +1221,7 @@ public:
 						printf("(if) Object%d x = %d \n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos);
 
 
-						if (Queue2[i]->OrderCreation + 1 == 1) {
-							printf("Remap itself... MemAddress of Object1 =%p\n", Queue2[i]);
-
-							printf("R4, C4 ["); //y x
-							for (int d = 0; d < LM[4][4].size(); d++) { //UL
-								printf("%d, ", LM[4][4][d]->OrderCreation);
-							}
-							printf("]\n");
-							printf("R5, C4 ["); //y x
-							for (int d = 0; d < LM[5][4].size(); d++) { //UR
-								printf("%d, ", LM[5][4][d]->OrderCreation);
-							}
-							printf("]\n");
-							printf("R4, C5 ["); //y x
-							for (int d = 0; d < LM[4][5].size(); d++) { //LL
-								printf("%d, ", LM[4][5][d]->OrderCreation);
-							}
-							printf("]\n");
-							printf("R5, C5 ["); //y x
-							for (int d = 0; d < LM[5][5].size(); d++) { //LR
-								printf("%d, ", LM[5][5][d]->OrderCreation);
-							}
-							printf("]\n");
-						}
-
+						 
 
 
 
