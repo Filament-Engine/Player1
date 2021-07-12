@@ -1,8 +1,5 @@
 #pragma once
 
-
-
-
 class Sprite {
 public:
 	int xPos; // here the xPos is where the sprite is placed on the y position
@@ -13,17 +10,20 @@ public:
 	SDL_Rect* TargetTile;
 	std::string IMGName;
 	int OrderCreation; //NEW holds onto the order of creation, so if this was the first object it is either 1 or 0.
-	int directionX; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
-	int leftXlimit; //NEW don't know how I want to handle it for now, but will store in sprite for now.
-	int rightXlimit; 
+	int directionV; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
+	int leftVlimit; //NEW don't know how I want to handle it for now, but will store in sprite for now.
+	int rightVlimit;
 	
-	bool DoAutoX;
-	bool DoMoveX;
-	bool DoMoveY;
+	bool DoAutoX = false;
+	bool DoMoveX = false;
+	bool DoMoveY = false;
+	bool DoAutoY = false;
+	bool DoFindPlayer = false;
 
 	int xVec;
 	int yVec;
 
+	// normal constructor -- uses moveX and moveY
 	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order) {
 		xPos = x;
 		yPos = y;
@@ -31,13 +31,12 @@ public:
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
-		directionX = 0; // NEW, this is like the velocity and starti ndirection of the sprite;
+		directionV = 0; // NEW, this is like the velocity and starti ndirection of the sprite;
 		OrderCreation = Order;//NEW
-		leftXlimit = 0; //edited by user potentially idk what default we want.
-		rightXlimit = 0;
+		leftVlimit = 0; //edited by user potentially idk what default we want.
+		rightVlimit = 0;
 		DoMoveX = true;
 		DoMoveY = true;
-		DoAutoX = false;
 		xVec = 0;
 		yVec = 0;
 
@@ -72,20 +71,34 @@ public:
 		TargetTile->h = TILE_HEIGHT;
 		
 	}
-	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order, int Velx, int LeftXLimit, int RightXLimit) {
+	// constructor for different types of movement, such as only moveX, only moveY, but for now, and for  findplayer -- we pass it in as a string
+	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order, std::string MovementType) {
 		xPos = x;
 		yPos = y;
 		label = l;
 
+		if (MovementType == "MoveX") {
+			printf("MoveX\n");
+			DoMoveX = true;
+		}
+		if (MovementType == "MoveY") {
+			printf("MoveY\n");
+			DoMoveY = true;
+		}
+		if (MovementType == "FindPlayer") {
+			printf("FindPlayer\n");
+			DoFindPlayer = true;
+		}
+
+
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
-		directionX = Velx; // NEW, this is like the velocity and starti ndirection of the sprite;
-		leftXlimit=LeftXLimit;
-		rightXlimit=RightXLimit;
+		directionV = 0; // NEW, this is like the velocity and starti ndirection of the sprite;
 		OrderCreation = Order;//NEW
-		DoMoveX = false;
-		DoMoveY = false;
-		DoAutoX = true;
+		leftVlimit = 0; //edited by user potentially idk what default we want.
+		rightVlimit = 0;
+		DoMoveX = true;
+		DoMoveY = true;
 		xVec = 0;
 		yVec = 0;
 
@@ -120,7 +133,65 @@ public:
 		TargetTile->h = TILE_HEIGHT;
 
 	}
+	// constructors for AutoX and Y
+	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order, int Vel, int LeftVLimit, int RightVLimit, std::string Axis) {
+		xPos = x;
+		yPos = y;
+		label = l;
 
+		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
+
+		if (Axis == "AxisX") {
+			printf("AxisX\n");
+			directionV = Vel; // NEW, this is like the velocity and starting direction of the sprite;
+			leftVlimit = LeftVLimit;
+			rightVlimit = RightVLimit;
+			OrderCreation = Order;//NEW
+			DoAutoX = true;
+		}
+		else if (Axis == "AxisY") {
+			printf("AxisY\n");
+			directionV = Vel;
+			leftVlimit = LeftVLimit;
+			rightVlimit = RightVLimit;
+			OrderCreation = Order;//NEW
+			DoAutoY = true;
+		}
+
+		xVec = 0;
+		yVec = 0;
+
+		std::string temp; // this temp is used to get the position of the source tile
+		int i = 0;
+		while (label[i + 2] != '\0') {
+			temp += label[i + 2];
+			i++;
+		}
+		int SourcePos = stoi(temp); // this is the number part of label-- the number
+		int SourceX;
+		int SourceY = 0;
+
+
+		int pos = SourcePos;
+		int width = SurfacePropertyMap[IMGName]->width / TILE_WIDTH;
+		while (pos >= width) {
+			pos -= width;
+			SourceY++;  // adds one to the y sourceY position
+		}
+		SourceX = pos; // makes the sourceX is remainder
+
+		SourceTile = new SDL_Rect();
+		TargetTile = new SDL_Rect();
+
+		SourceTile->x = SourceX * TILE_WIDTH;
+		SourceTile->y = SourceY * TILE_HEIGHT;
+		SourceTile->w = TILE_WIDTH;
+		SourceTile->h = TILE_HEIGHT;
+
+		TargetTile->w = TILE_WIDTH;
+		TargetTile->h = TILE_HEIGHT;
+
+	}
 	~Sprite() {
 		printf("Deconstructor for sprite called!\n");
 	}
@@ -149,14 +220,39 @@ public:
 		}
 	}
 
-	
-	
-	void BlitThis(SDL_Surface* TargetSurface) {
-		TargetTile->x = xPos;
-		TargetTile->y = yPos;
-		TargetTile->w = TILE_WIDTH;
-		TargetTile->h = TILE_HEIGHT;
-		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile); 
+	void FindPlayer() {
+		printf("oh boy am i finding the player... we will get this set up once player is a subclass of sprite\n");
+	}
+
+	void AutoY() {
+		if (directionV > 0) { //going right
+				//printf("Object %d, is going right\n", OrderCreation + 1);
+			if (yPos + directionV < rightVlimit) {
+				//printf("Go Right\n");
+				yPos += directionV;
+			}
+			else {
+				//turn around
+				//printf("Turn Left\n");
+				directionV = -directionV;
+				//move - this could be disabled potentially
+				yPos += directionV;
+			}
+		}
+		else if (directionV < 0) { //going left
+			//printf("Object %d, is going left\n", OrderCreation + 1);
+			if (yPos + directionV > leftVlimit) {
+				//printf("Go Left\n");
+				yPos += directionV;
+			}
+			else {
+				//turn around
+				//printf("Turn Right\n");
+				directionV = -directionV;
+				//move -this coudl be disabled 
+				yPos += directionV;
+			}
+		}
 	}
 
 	void AutoX() { 
@@ -185,32 +281,32 @@ public:
 			
 
 
-			if (directionX > 0) { //going right
+			if (directionV > 0) { //going right
 				//printf("Object %d, is going right\n", OrderCreation + 1);
-				if (xPos + directionX < rightXlimit) {
+				if (xPos + directionV < rightVlimit) {
 					//printf("Go Right\n");
-					xPos += directionX;
+					xPos += directionV;
 				}
 				else {
 					//turn around
 					//printf("Turn Left\n");
-					directionX = -directionX;
+					directionV = -directionV;
 					//move - this could be disabled potentially
-					xPos += directionX;
+					xPos += directionV;
 				}
 			}
-			else if (directionX < 0) { //going left
+			else if (directionV < 0) { //going left
 				//printf("Object %d, is going left\n", OrderCreation + 1);
-				if (xPos + directionX > leftXlimit) {
+				if (xPos + directionV > leftVlimit) {
 					//printf("Go Left\n");
-					xPos += directionX;
+					xPos += directionV;
 				}
 				else {
 					//turn around
 					//printf("Turn Right\n");
-					directionX = -directionX;
+					directionV = -directionV;
 					//move -this coudl be disabled 
-					xPos += directionX;
+					xPos += directionV;
 				}
 			}
 			//SDL_Delay(500);
@@ -233,6 +329,9 @@ public:
 		if (DoAutoX) {
 			AutoX();
 		}
+		if (DoAutoY) {
+			AutoY();
+		}
 		if (DoMoveX) {
 			MoveX(xVec);
 		}
@@ -245,6 +344,9 @@ public:
 	void UndoBehavior() {
 		if (DoAutoX) {
 			UndoAutoX();
+		}
+		if (DoAutoY) {
+			UndoAutoY();
 		}
 		if (DoMoveX) {
 			UndoMoveX(xVec);
@@ -274,11 +376,13 @@ public:
 		//move targettile=xpos
 
 		//move it's position in the matrix
-
-
 	}
 	void UndoAutoX() {
-		xPos -= directionX; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
+		xPos -= directionV; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
+
+	}
+	void UndoAutoY() {
+		yPos -= directionV; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
 
 	}
 	int UndoMoveX(int x) {
@@ -306,7 +410,13 @@ public:
 		}
 	}
 	
-
+	void BlitThis(SDL_Surface* TargetSurface) {
+		TargetTile->x = xPos;
+		TargetTile->y = yPos;
+		TargetTile->w = TILE_WIDTH;
+		TargetTile->h = TILE_HEIGHT;
+		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile);
+	}
 	
 
 };
@@ -403,7 +513,6 @@ public:
 	void MoveAllSprites2() {
 		//for (int i = 0; i < std::distance(AllSprites.begin(), AllSprites.end()); i++) {
 		printf("Object%d x = %d \n", AllSprites[0]->OrderCreation + 1, AllSprites[0]->xPos);
-
 			RemoveSpriteFromMap2(AllSprites[0]);
 			printf("1\n");
 			SDL_Delay(1000);
