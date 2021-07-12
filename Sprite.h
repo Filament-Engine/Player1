@@ -1218,10 +1218,40 @@ public:
 						//Removeit from the Que
 						//
 						//Remap it - so that if a later tile tries moving there, it can't.
-						ReMapSprite(AllSprites[0]); //update position on the vector
+						ReMapSprite(Queue2[i]); //update position on the vector
 						printf("10\n");
 						//printf("(if) Remapped Object%d\n", Queue2[i]->OrderCreation + 1);
 						printf("(if) Object%d x = %d \n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos);
+
+
+						if (Queue2[i]->OrderCreation + 1 == 1) {
+							printf("Remap itself... MemAddress of Object1 =%p\n", Queue2[i]);
+
+							printf("R4, C4 ["); //y x
+							for (int d = 0; d < LM[4][4].size(); d++) { //UL
+								printf("%d, ", LM[4][4][d]->OrderCreation);
+							}
+							printf("]\n");
+							printf("R5, C4 ["); //y x
+							for (int d = 0; d < LM[5][4].size(); d++) { //UR
+								printf("%d, ", LM[5][4][d]->OrderCreation);
+							}
+							printf("]\n");
+							printf("R4, C5 ["); //y x
+							for (int d = 0; d < LM[4][5].size(); d++) { //LL
+								printf("%d, ", LM[4][5][d]->OrderCreation);
+							}
+							printf("]\n");
+							printf("R5, C5 ["); //y x
+							for (int d = 0; d < LM[5][5].size(); d++) { //LR
+								printf("%d, ", LM[5][5][d]->OrderCreation);
+							}
+							printf("]\n");
+						}
+
+
+
+
 						Queue2[i] = NULL;
 					}
 
@@ -1513,6 +1543,6 @@ public:
 
 
 	}
-
+	
 
 };
