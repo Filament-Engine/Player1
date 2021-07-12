@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 // creates the player class; this is the default that we currently are using
-void CreatePlayer(Player** player, Level* level, std::map<std::string, SurfaceProperty*> SPMap) {
+void CreatePlayer(Player** player, std::map<std::string, SurfaceProperty*> SPMap) {
 	int DefaultSpawnX = 0;
 	int DefaultSpawnY = 0;
 	int DefaultPixelH = 16;
@@ -18,5 +18,5 @@ void CreatePlayer(Player** player, Level* level, std::map<std::string, SurfacePr
 
 	int xVelocity = 1;
 	int yVelocity = 1;
-	*player = new Player(DefaultSpawnX, DefaultSpawnY, DefaultPixelH, DefaultPixelW, DefaultSourceName, SourceCoordx, SourceCoordy, SourcePixelH, SourcePixelW, xVelocity, yVelocity, SPMap, level);
+	*player = new Player(DefaultSpawnX, DefaultSpawnY, DefaultPixelH, DefaultPixelW, DefaultSourceName, SourceCoordx, SourceCoordy, SourcePixelH, SourcePixelW, xVelocity, yVelocity, SPMap);
 };
