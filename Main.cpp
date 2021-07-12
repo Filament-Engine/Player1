@@ -150,7 +150,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				
 
 
-				//After pushing back all the objects
+				//After pushing back all the objects -DONE ONCE
 				gLevel1->SpriteLayer->AllocateQue2(); //New - so it is now ready for taking on the order of which to mvoe the sprites.
 
 
