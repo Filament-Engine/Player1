@@ -220,7 +220,6 @@ public:
 			return 1;
 		}
 	}
-
 	bool MoveY(int y) { // it's possible we will want int y to be an argument in the object class instead of this function
 		yPos += y;
 		if (yPos < 0 || yPos + TILE_HEIGHT - 1 >= LEVEL_HEIGHT * TILE_HEIGHT) {
@@ -232,11 +231,9 @@ public:
 			return 1;
 		}
 	}
-
 	void FindPlayer() {
 		printf("oh boy am i finding the player... we will get this set up once player is a subclass of sprite\n");
 	}
-
 	void RandomMove() {
 		if (TIME == 0) {
 			RandomX = rand() % 4; // 0/1 means don't move, 2 means move up, 3 means move down
@@ -266,7 +263,6 @@ public:
 			MoveY(1);
 		}
 	}
-
 	void AutoY() {
 		if (directionV > 0) { //going right
 				//printf("Object %d, is going right\n", OrderCreation + 1);
@@ -297,7 +293,6 @@ public:
 			}
 		}
 	}
-
 	void AutoX() { 
 
 		//I'm thinking I will likely have to not move all sprites the same way. so I'll call one function that is internal to the sprite
@@ -367,7 +362,6 @@ public:
 		//Check the values backwards, if fails again - CALL 'UndoMovementX' or something. haven't decided how I want to do that.for now it'll be jerryrigged.
 		//if success, great. Change TargetTile then (Because objects are moving on the object layer independent of the player. They move like the background if they are still, they move themselves too) 
 	}
-
 	void Behavior() {
 		if (DoAutoX) {
 			AutoX();
@@ -406,7 +400,6 @@ public:
 			UndoMoveY(yVec);
 		}
 	}
-
 	void MoveTargetTileX() {
 		//printf("Object%d,  too xPos %d\n", OrderCreation + 1, xPos);
 		TargetTile->x = xPos;
@@ -1096,7 +1089,7 @@ public:
 
 			}
 			else {
-				printf("4, 5 Should have a value\n");
+				 
 				FutureCode[0] = -1;
 				FutureCode[1] = -1;
 				FutureCode[2] = -1;
@@ -1105,16 +1098,16 @@ public:
 			if (faily2) {
 				if (failx1) {
 					printf("4, 5 Should have a value\n");
-					FutureCode[4] = y1;
+					FutureCode[4] = y2;
 					FutureCode[5] = x1;
 				}
 				else {
 					FutureCode[4] = -1;
 					FutureCode[5] = -1;
-					printf("4, 5 should be negative 1\n");
+				 
 				}
 				if (failx2) {
-					FutureCode[6] = y1;
+					FutureCode[6] = y2;
 					FutureCode[7] = x2;
 				}
 				else {
@@ -1124,7 +1117,7 @@ public:
 
 			}
 			else {
-				printf("4, 5 Should have a value\n");
+			 
 				FutureCode[4] = -1;
 				FutureCode[5] = -1;
 				FutureCode[6] = -1;
@@ -1225,7 +1218,8 @@ public:
 					//If does not:
 					if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
 						printf("9\n");
-
+						printf("sizes of vectors(1,2,3,4)= %d, %d, %d, %d.\n", CollidedSprite1.size(), CollidedSprite2.size(), CollidedSprite3.size(), CollidedSprite4.size());
+						DisplayTileBasedArray();
 						//Move it
 						Queue2[i]->MoveTargetTileX();
 						Queue2[i]->MoveTargetTileY();
