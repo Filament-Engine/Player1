@@ -143,7 +143,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 
 				//lets just see if it works again
-				Sprite* Object2 = new Sprite(52, 34, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 38, 60, "AxisX"); // TEMP
+				Sprite* Object2 = new Sprite(52, 34, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 38, 120, "AxisX"); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
@@ -299,9 +299,9 @@ void handleLoop() {
 		Player1->MoveX(xVel, gLevel1->CombinedCollision);
 
 		//test to see if auto movement works 
-		for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
+		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
 			gLevel1->SpriteLayer->MoveAllSprites();	
-		}
+		//}
 
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
