@@ -1330,7 +1330,7 @@ public:
 		Sprite* ArrHolder[4]; //UL, UR, LL, LR
 		Sprite* NextSprite = NULL;
 		int CurrentStackCounter = InheritedSpriteStackCounter;
-		int ItteratorToItter;
+		std::vector<int> ItteratorToItter;
 
 		//initialize Array
 		for (int i = 0; i < 4; i++) {
@@ -1363,18 +1363,16 @@ public:
 
 		//determine which Sprite is Created First
 		for (int i = 0; i < 4; i++) {
+			if (ArrHolder[i]!=NULL) { //while NextSprite is a Sprite, try finding the lowest possible
+				printf("Arr%d = Object%d found\n", i, ArrHolder[i]->OrderCreation + 1);
 
-			if (NextSprite == NULL) { //while we have nothing for smallest sprite
-				NextSprite = ArrHolder[i];
-				ItteratorToItter = i;
-
-			}
-			else if (ArrHolder[i]!=NULL) { //while NextSprite is a Sprite, try finding the lowest possible
-
-				printf("Arr%d = %d\n", i, ArrHolder[i]->OrderCreation);
-				if (NextSprite->OrderCreation > ArrHolder[i]->OrderCreation) {
+				if (NextSprite == NULL) { //while we have nothing for smallest sprite
+					NextSprite = ArrHolder[i];
+					ItteratorToItter.push_back(i);
+				}
+				else if (NextSprite->OrderCreation >= ArrHolder[i]->OrderCreation) {
 					NextSprite = ArrHolder[i]; 
-					ItteratorToItter = i;
+					ItteratorToItter.push_back(i);
 				}
 			}
 
@@ -1383,18 +1381,24 @@ public:
 
 		//itterate itterator
 		if (NextSprite != NULL) { //may be unnecessary
-			if (ItteratorToItter == 0) {
-				itter1++;
+			for (int i = 0; i < ItteratorToItter.size(); i++) {
+				if (ItteratorToItter[i] == 0) {
+					itter1++;
+				}
+				else if (ItteratorToItter[i] == 1) {
+					itter2++;
+				}
+				else if (ItteratorToItter[i] == 2) {
+					itter3++;
+				}
+				else if (ItteratorToItter[i] == 3) {
+					itter4++;
+				}
 			}
-			else if (ItteratorToItter == 1) {
-				itter2++;
-			}
-			else if (ItteratorToItter == 2) {
-				itter3++;
-			}
-			else if (ItteratorToItter == 3) {
-				itter4++;
-			}
+			//
+
+
+
 
 			printf("Itterated itters\n");
 
@@ -1404,13 +1408,15 @@ public:
 
 			//CHECK CHECK - CHECK - I THINK THIS WILL BE FINE HERE
 			if (Queue2[NextSprite->OrderCreation] != NULL) { //If the NextSprite is not in a stack, AND still in hte Que
-
+				printf("16\n");
 				//Remove from map (So it doesn't collide with self)
 				RemoveSpriteFromMap(NextSprite);
 				//Adjust future position
 				NextSprite->Behavior();
+				printf("17\n");
 				//Will it Collide?
 				CheckFutureSpritePosition(NextSprite, FutureCode);
+				printf("18\n");
 				if (FutureCode[0] != -1) {
 					CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
 				}
@@ -1423,33 +1429,47 @@ public:
 				if (FutureCode[6] != -1) {
 					CollidedSprite4 = LM[FutureCode[6]][FutureCode[7]];
 				}
+				printf("19\n");
+
 
 				//If does not:
 				if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
 					//Success, wait for main loop to move it. Then if it was done in the main loop, check if the next in this stack was less than what it was waiting for
 					//Queue2[NextSprite->OrderCreation] = NULL; //we DONT want to set it to null, otherwise we'd have to check every number against the stack, instead of just the ends.
+					printf("20\n");
 					SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
 					printf("Stack ended with the sprite Sprite%d\n", NextSprite->OrderCreation + 1);
+					//NOTE - So it doesn't double up on hte movement in the Que loop. should find a better way of doing this.
+					NextSprite->UndoBehavior(); //NEW
+					ReMapSprite(NextSprite); //NEW
+					printf("20.5\n");
 				}
 				//If it does:
 				else { //if occupied tile
 					printf("Stack can still grow\n");
 					DisplayTileBasedArray();
-
+					printf("21\n");
 
 					//IDEALLY, you check the pixels, then call the first one that failed, but contniue for all those in the vector that actually stopped it
 					//NOTE - NEEDS WORK, WHAT IF THERE ARE TWO TILES, (ORDER THE COLLIDED SPRITE TO PRIROTIZE THE LEFT UPEPER CORNER, SO YOU CAN ASSUME OR SOMETHING, THEN CHECK THE OTHER IF APPLICABLE?)
 					//add self to stack
 					SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
+					printf("21\n");
 					//remove self from que. NOTE - we can do this, because only the end of the stack will remain in the que. 
 					Queue2[NextSprite->OrderCreation] = NULL;
+					printf("22\n");
 					MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, CurrentStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
+					printf("23\n");
+
+					//NOTE the undo and remap after the stack, so when we resolve backwards we have a chance at finishing entire stacks if one part fails.
 					ReMapSprite(Queue2[NextSprite->OrderCreation]);
+					printf("24\n");
 					//May want to add one to the spritestack here, use spritestack^
 //then assign old at the start to use V
 
 					NextSprite->UndoBehavior();
 					//Remap it, because it was unable to move right away
+					printf("25\n");
 
 				}
 			}
@@ -1457,12 +1477,14 @@ public:
 				//NOTE - NEXT SPRITE WAS NULL IN QUE2 EITHER IT IS IN THE MIDDLE OF A QUE, OR CLAIMED BY THE QUE2 REGULAR 
 				//eventually will need to check either the stack or the que to double check
 				printf("NextSprite has already been claimed by EITHER by a different stack, or the regualr Que. For now, Assume Que\n");  
+				printf("26\n");
 				//NOTE - Don't leave the loop, since you may have other tiles to compare too later in the vector.
 			}
 
 		}
 		else {
 			printf("NextSprite was NULL (Not sure exactly what this is telling me besides the vectorss were all empty...?)\n");
+			printf("27\n");
 		}
 		//think about this thing
 		//  4   5 
@@ -1477,7 +1499,9 @@ public:
 		
 		//This is called to keep grinding away the current
 		while (itter1 < size1 || itter2 < size2 || itter3 < size3 || itter4 < size4) {
-			printf("An Itter is still less than the size of a vector\n");
+			printf("28\n");
+			printf("An Itter is still less than the size of a vector, %d, %d, %d, %d\n", itter1, itter2, itter3, itter4); //I know I've got to itterate it if it's the same sprite that I just looked at. Thus I'll need an expensive compare :/
+			SDL_Delay(5000);
 			MoveCurrentSprite(OldCollidedSprite1, OldCollidedSprite2, OldCollidedSprite3, OldCollidedSprite4, itter1, itter2, itter3, itter4, CurrentStackCounter);
 		
 		}
