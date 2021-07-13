@@ -1055,12 +1055,7 @@ public:
 
 			}
 		}
-		//<-2->
-		//^
-		//1
-
-		//<-2->  <-1
- 		//
+		
 
 
 		//CHECK/CHANGE - PRETTY SURE THIS DOES NOT RETUR ALL THE COLLISION VECTORS, SIMPLY BASED ON THAT if y is perfect, X MIGHT NOT BE.
@@ -1123,8 +1118,25 @@ public:
 				FutureCode[6] = -1;
 				FutureCode[7] = -1;
 			}
-
-
+			printf("You moving to: ");
+			if (faily1) {
+				if (failx1) {
+					printf("UL [%d, %d], ", y1, x1);
+				}
+				if (failx2) {
+					printf("UR [%d, %d], ", y1, x2);
+				}
+			}
+			if (faily2) {
+				if (failx1) {
+					printf("LL [%d, %d], ", y2, x1);
+				}
+				if (failx2) {
+					printf("LR [%d, %d], ", y2, x2);
+				}
+			}
+			printf("Corners\n"); //so if you collide form beneth, your gaurenteeed to collide with LL, even if your just clipping LR...
+			SDL_Delay(5000);
 		}
 		else {
 			printf("nothing hit\n"); //nothing ran into
