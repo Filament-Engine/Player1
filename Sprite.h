@@ -1007,6 +1007,9 @@ public:
 				y2 = y2 / TILE_HEIGHT;
 				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
 				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
+				x2 = x2 / TILE_WIDTH; //NEW - noticed every time obj2 moved almost to new tile, it's x1+16=x2 would not be deminished, although y2 was active. Thus I must assume thisis the ase, even if 
+				//it shouldn't be necessary with the x1%TILE_WIDTH. :/
+
 
 				if (LM[y1][x1].size() > 0) {
 					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
@@ -1143,6 +1146,13 @@ public:
 			for (int i = 0; i < 8; i++) {
 				FutureCode[i] = -1;
 			}
+			printf("You moving to [if makes sense]: ");
+			printf("UL [%d, %d], ", y1, x1);
+			printf("UR [%d, %d], ", y1, x2);
+			printf("LL [%d, %d], ", y2, x1);
+			printf("LR [%d, %d], ", y2, x2);
+			printf("Corners\n"); //so if you collide form beneth, your gaurenteeed to collide with LL, even if your just clipping LR...
+			SDL_Delay(1000);
 		}
 
 	}
@@ -1193,6 +1203,7 @@ public:
 					printf("6\n");
 
 					printf("Object%d x = %d, y = %d\n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos, Queue2[i]->yPos);
+					//DisplayTileBasedArray();
 					//Remove from map (So it doesn't collide with self)
 					RemoveSpriteFromMap(Queue2[i]);
 					//Adjust future position
