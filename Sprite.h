@@ -168,6 +168,9 @@ public:
 			DoAutoY = true;
 		}
 
+
+
+
 		xVec = 0;
 		yVec = 0;
 
@@ -388,6 +391,8 @@ public:
 
 	}
 	void UndoBehavior() {
+		printf("UndoBehavior\n");
+		SDL_Delay(1000);
 		if (DoAutoX) {
 			UndoAutoX();
 		}
@@ -431,25 +436,26 @@ public:
 
 	}
 	int UndoMoveX(int x) {
-		xPos -= x;
+		
 		//This uno may be unncessary, since the original moveX and Y handle this. There is an edge case where the user wants them to be 'bounced' back 
 		//a certain distance, so I'll keep it for now.
 		if (xPos < 0 || xPos + TILE_WIDTH - 1 >= LEVEL_WIDTH * TILE_WIDTH) {
-			xPos += x;
+			
 			return 0;
 		}
 		else {
+			xPos -= x;
 			//TargetTile->x += x;
 			return 1;
 		}
 	}
 	int UndoMoveY(int y) {
-		yPos -= y;
+		
 		if (yPos < 0 || yPos + TILE_HEIGHT - 1 >= LEVEL_HEIGHT * TILE_HEIGHT) {
-			yPos += y;
 			return 0;
 		}
 		else {
+			yPos -= y;
 			//TargetTile->y += y;
 			return 1;
 		}
