@@ -1219,7 +1219,7 @@ public:
 					if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
 						printf("9\n");
 						printf("sizes of vectors(1,2,3,4)= %d, %d, %d, %d.\n", CollidedSprite1.size(), CollidedSprite2.size(), CollidedSprite3.size(), CollidedSprite4.size());
-						DisplayTileBasedArray();
+						//DisplayTileBasedArray();
 						//Move it
 						Queue2[i]->MoveTargetTileX();
 						Queue2[i]->MoveTargetTileY();
@@ -1337,17 +1337,23 @@ public:
 			ArrHolder[i] = NULL;
 		}
 
+		printf("ArrHolder Init\n");
+
 		//Fill Array with appropriate sprites
 		if (itter1 < size1) {
+			printf("Itter1<size1\n");
 			ArrHolder[0] = OldCollidedSprite1[itter1];
 		}
 		if (itter2 < size2) {
+			printf("Itter2<size2\n");
 			ArrHolder[1] = OldCollidedSprite2[itter2];
 		}
 		if (itter3 < size3) {
+			printf("Itter3<size3\n");
 			ArrHolder[2] = OldCollidedSprite3[itter3];
 		}
-		if (itter3 < size3) {
+		if (itter4 < size4) {
+			printf("Itter4<size4\n");
 			ArrHolder[3] = OldCollidedSprite4[itter4];
 		}
 
@@ -1389,62 +1395,74 @@ public:
 			else if (ItteratorToItter == 3) {
 				itter4++;
 			}
-		
+
 			printf("Itterated itters\n");
 
 
 			//remove from Que IF THIS IS NOT THE END OF STACK (Queue2[NextSprite->OrderCreation] = NULL;)
 			printf("Object%d x = %d, y = %d \n", NextSprite->OrderCreation + 1, NextSprite->xPos, NextSprite->yPos);
-			//Remove from map (So it doesn't collide with self)
-			RemoveSpriteFromMap(NextSprite);
-			//Adjust future position
-			NextSprite->Behavior();
-			//Will it Collide?
-			CheckFutureSpritePosition(NextSprite, FutureCode);
-			if (FutureCode[0] != -1) {
-				CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
+
+			//CHECK CHECK - CHECK - I THINK THIS WILL BE FINE HERE
+			if (Queue2[NextSprite->OrderCreation] != NULL) { //If the NextSprite is not in a stack, AND still in hte Que
+
+				//Remove from map (So it doesn't collide with self)
+				RemoveSpriteFromMap(NextSprite);
+				//Adjust future position
+				NextSprite->Behavior();
+				//Will it Collide?
+				CheckFutureSpritePosition(NextSprite, FutureCode);
+				if (FutureCode[0] != -1) {
+					CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
+				}
+				if (FutureCode[2] != -1) {
+					CollidedSprite2 = LM[FutureCode[2]][FutureCode[3]];
+				}
+				if (FutureCode[4] != -1) {
+					CollidedSprite3 = LM[FutureCode[4]][FutureCode[5]];
+				}
+				if (FutureCode[6] != -1) {
+					CollidedSprite4 = LM[FutureCode[6]][FutureCode[7]];
+				}
+
+				//If does not:
+				if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
+					//Success, wait for main loop to move it. Then if it was done in the main loop, check if the next in this stack was less than what it was waiting for
+					//Queue2[NextSprite->OrderCreation] = NULL; //we DONT want to set it to null, otherwise we'd have to check every number against the stack, instead of just the ends.
+					SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
+					printf("Stack ended with the sprite Sprite%d\n", NextSprite->OrderCreation + 1);
+				}
+				//If it does:
+				else { //if occupied tile
+					printf("Stack can still grow\n");
+					DisplayTileBasedArray();
+
+
+					//IDEALLY, you check the pixels, then call the first one that failed, but contniue for all those in the vector that actually stopped it
+					//NOTE - NEEDS WORK, WHAT IF THERE ARE TWO TILES, (ORDER THE COLLIDED SPRITE TO PRIROTIZE THE LEFT UPEPER CORNER, SO YOU CAN ASSUME OR SOMETHING, THEN CHECK THE OTHER IF APPLICABLE?)
+					//add self to stack
+					SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
+					//remove self from que. NOTE - we can do this, because only the end of the stack will remain in the que. 
+					Queue2[NextSprite->OrderCreation] = NULL;
+					MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, CurrentStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
+					ReMapSprite(Queue2[NextSprite->OrderCreation]);
+					//May want to add one to the spritestack here, use spritestack^
+//then assign old at the start to use V
+
+					NextSprite->UndoBehavior();
+					//Remap it, because it was unable to move right away
+
+				}
 			}
-			if (FutureCode[2] != -1) {
-				CollidedSprite2 = LM[FutureCode[2]][FutureCode[3]];
-			}
-			if (FutureCode[4] != -1) {
-				CollidedSprite3 = LM[FutureCode[4]][FutureCode[5]];
-			}
-			if (FutureCode[6] != -1) {
-				CollidedSprite4 = LM[FutureCode[6]][FutureCode[7]];
+			else {  //if EITHER NextSprite is in a Stack (Add it to the stack we're trying to go to, we'll have some way to mark if it's already been moved by a stack), OR in the QUE still. ASSUME QUE
+				//NOTE - NEXT SPRITE WAS NULL IN QUE2 EITHER IT IS IN THE MIDDLE OF A QUE, OR CLAIMED BY THE QUE2 REGULAR 
+				//eventually will need to check either the stack or the que to double check
+				printf("NextSprite has already been claimed by EITHER by a different stack, or the regualr Que. For now, Assume Que\n");  
+				//NOTE - Don't leave the loop, since you may have other tiles to compare too later in the vector.
 			}
 
-			//If does not:
-			if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
-				//Success, wait for main loop to move it. Then if it was done in the main loop, check if the next in this stack was less than what it was waiting for
-				//Queue2[NextSprite->OrderCreation] = NULL; //we DONT want to set it to null, otherwise we'd have to check every number against the stack, instead of just the ends.
-				SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
-				printf("Stack ended with the sprite Sprite%d\n", NextSprite->OrderCreation + 1);
-			}
-			//If it does:
-			else { //if occupied tile
-				printf("Stack can still grow\n");
-				DisplayTileBasedArray();
-			
-
-				//IDEALLY, you check the pixels, then call the first one that failed, but contniue for all those in the vector that actually stopped it
-				//NOTE - NEEDS WORK, WHAT IF THERE ARE TWO TILES, (ORDER THE COLLIDED SPRITE TO PRIROTIZE THE LEFT UPEPER CORNER, SO YOU CAN ASSUME OR SOMETHING, THEN CHECK THE OTHER IF APPLICABLE?)
-				//add self to stack
-				SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
-				//remove self from que. NOTE - we can do this, because only the end of the stack will remain in the que. 
-				Queue2[NextSprite->OrderCreation] = NULL;
-				MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, CurrentStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
-				ReMapSprite(Queue2[NextSprite->OrderCreation]);
-																																		//May want to add one to the spritestack here, use spritestack^
-				//then assign old at the start to use V
-
-				NextSprite->UndoBehavior();
-				//Remap it, because it was unable to move right away
-			
-			}
 		}
 		else {
-			printf("NextSprite was NULL\n");
+			printf("NextSprite was NULL (Not sure exactly what this is telling me besides the vectorss were all empty...?)\n");
 		}
 		//think about this thing
 		//  4   5 
