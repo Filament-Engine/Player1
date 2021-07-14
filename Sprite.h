@@ -793,6 +793,27 @@ public:
 			x2 = x2 / TILE_WIDTH;
 			y1 = y1 / TILE_HEIGHT;
 			y2 = y2 / TILE_HEIGHT;
+
+			//gaurds from map/matrix overflow
+			if (y2 > LEVEL_HEIGHT - 1) {
+				y2 = LEVEL_HEIGHT - 1;
+				y1 = LEVEL_HEIGHT - 2;
+			}
+			if (y1 < 0) {
+				y1 = 0;
+				y2 = TILE_HEIGHT;
+			}
+			if (x2 > LEVEL_WIDTH - 1) {
+				x2 = LEVEL_WIDTH - 1;
+				x1 = LEVEL_WIDTH - 2;
+			}
+			if (x1 < 0) {
+				x1 = 0;
+				x2 = TILE_WIDTH - 1;
+			}
+
+
+
 			printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
 
 			if (LM[y1][x1].size() == 0) {
@@ -855,18 +876,42 @@ public:
 		printf("CheckFutureSpritePosition\n");
 		int x1, x2, y1, y2;
 		bool failx1 = false, failx2 = false, faily1 = false, faily2 = false;
+		
 		x1 = ObjectSprite->xPos;
 		x2 = ObjectSprite->xPos + TILE_WIDTH;
 		y1 = ObjectSprite->yPos;
 		y2 = ObjectSprite->yPos + TILE_HEIGHT;
 
+
+
+
 		y1 = y1 / TILE_HEIGHT;
 		y2 = y2 / TILE_HEIGHT;
 		x1 = x1 / TILE_WIDTH;
-		x2 = x2 / TILE_WIDTH; //NEW - noticed every time obj2 moved almost to new tile, it's x1+16=x2 would not be deminished, although y2 was active. Thus I must assume thisis the ase, even if 
-		//it shouldn't be necessary with the x1%TILE_WIDTH. :/
+		x2 = x2 / TILE_WIDTH; 
 
 
+		//gaurds from map/matrix overflow
+			if (y2 > LEVEL_HEIGHT-1) {
+				y2 = LEVEL_HEIGHT-1;
+				y1 = LEVEL_HEIGHT -2;
+			}
+			if (y1 < 0) {
+				y1 = 0;
+				y2 = TILE_HEIGHT;
+			}
+			if (x2 > LEVEL_WIDTH-1) {
+				x2 = LEVEL_WIDTH - 1;
+				x1 = LEVEL_WIDTH -2;
+			}
+			if (x1 < 0) {
+				x1 = 0;
+				x2 = TILE_WIDTH-1;
+			}
+
+
+
+		printf("x1:%d x2:%d y1:%d y2:%d\n", x1, x2, y1, y2);
 
 
 		//NOTE only one fail should happen, if multiple happen let it just undo the movement once, NO NEED FOR MORE THAN ONE UNDO
@@ -1053,23 +1098,27 @@ public:
 
 					printf("7\n");
 
-
+					
 					CheckFutureSpritePosition(Queue2[i], FutureCode);
 					if (FutureCode[0] != -1) {
 						printf("(0,1) y=%d, c=%d\n", FutureCode[0], FutureCode[1]);
 						CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
+						printf("7.1\n");
 					}
 					if (FutureCode[2] != -1) {
 						printf("(2, 3) y=%d, c=%d\n", FutureCode[2], FutureCode[3]);
 						CollidedSprite2 = LM[FutureCode[2]][FutureCode[3]];
+						printf("7.2\n");
 					}
 					if (FutureCode[4] != -1) {
 						printf("(4, 5) y=%d, c=%d\n", FutureCode[4], FutureCode[5]);
 						CollidedSprite3 = LM[FutureCode[4]][FutureCode[5]];
+						printf("7.3\n");
 					}
 					if (FutureCode[6] != -1) {
 						printf("(6, 7) y=%d, c=%d\n", FutureCode[6], FutureCode[7]);
 						CollidedSprite4 = LM[FutureCode[6]][FutureCode[7]];
+						printf("7.4\n");
 					}
 					printf("8\n");
 					
@@ -1463,6 +1512,23 @@ public:
 		x2 = x2 / TILE_WIDTH;
 		y1 = y1 / TILE_HEIGHT;
 		y2 = y2 / TILE_HEIGHT;
+		//gaurds from map/matrix overflow
+		if (y2 > LEVEL_HEIGHT - 1) {
+			y2 = LEVEL_HEIGHT - 1;
+			y1 = LEVEL_HEIGHT - 2;
+		}
+		if (y1 < 0) {
+			y1 = 0;
+			y2 = TILE_HEIGHT;
+		}
+		if (x2 > LEVEL_WIDTH - 1) {
+			x2 = LEVEL_WIDTH - 1;
+			x1 = LEVEL_WIDTH - 2;
+		}
+		if (x1 < 0) {
+			x1 = 0;
+			x2 = TILE_WIDTH - 1;
+		}
 		if (LM[y1][x1].size() > 0) {
 			LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end() - 1, ObjectSprite));
 			printf("1.41\n");
