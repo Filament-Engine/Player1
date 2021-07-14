@@ -785,124 +785,31 @@ public:
 
 		printf("Remap Object%d\n", ObjectSprite->OrderCreation + 1);
 		//NOTE - replace pushbacks with inserts - unless empty vector
+ 
+			//map x1 and x2
+			//("and x1, x2 = ");
+			printf("Four vector\n");
+			x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+			x2 = x2 / TILE_WIDTH;
+			y1 = y1 / TILE_HEIGHT;
+			y2 = y2 / TILE_HEIGHT;
+			printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
 
-		if (y1 % TILE_HEIGHT == 0) {
-			//printf("Just map y1, ");
-			//just map y1 - perfectly placed in tilemap
-			if (x1 % TILE_WIDTH == 0) {
-				//printf("and x1 = ");
-				//just map x1 - perfectly placed in tilemap
-				//printf(" %d, %d, \n", x1 / TILE_WIDTH, y1 / TILE_HEIGHT);
-				printf("Only one vector (perfect)\n");
-				y1 = y1 / TILE_HEIGHT;
-				x1 = x1 / TILE_WIDTH;
-
-				if (LM[y1][x1].size() == 0) {
-					LM[y1][x1].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
-				}
-
-
+			if (LM[y1][x1].size() == 0) {
+				printf("UL size\n");
+				LM[y1][x1].push_back(ObjectSprite);
+				printf("UL pushback\n");
 			}
 			else {
-				//printf("and x1, x2 = ");
-				//map x1 and x2
-				printf("Only two vector (UL -> UR)\n");
-				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
-				//printf(" %d, %d, %d\n", x1 / TILE_WIDTH, x2 / TILE_WIDTH, y1);
-				x1 = x1 / TILE_WIDTH;
-				x2 = x2 / TILE_WIDTH;
-
-				if (LM[y1][x1].size() == 0) {
-					LM[y1][x1].push_back(ObjectSprite);
+				while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+					OrderedPosition++;
 				}
-				else {
-					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
-					OrderedPosition = 0;
-				}
-
-
-				if (LM[y1][x2].size() == 0) {
-					LM[y1][x2].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y1][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y1][x2].insert(LM[y1][x2].begin() + OrderedPosition, ObjectSprite);
-
-				}
-
-
+				printf("UL while\n");
+				LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
+				printf("Insert\n");
+				OrderedPosition = 0;
 			}
-		}
-
-		else {
-			//map y1 and y2
-			//printf("Just map y1, y2, ");
-			if (x1 % TILE_WIDTH == 0) {
-				//just map x1 - perfectly placed in tilemap
-				//printf("and x1 = ");
-				printf("Only two vector (UL -> LL)\n");
-				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
-				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
-				y1 = y1 / TILE_HEIGHT;
-				y2 = y2 / TILE_HEIGHT;
-
-
-				if (LM[y1][x1].size() == 0) {
-					LM[y1][x1].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
-					OrderedPosition = 0;
-				}
-
-				if (LM[y2][x1].size() == 0) {
-					LM[y2][x1].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y2][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y2][x1].insert(LM[y2][x1].begin() + OrderedPosition, ObjectSprite);
-				}
-
-			}
-
-
-			else {
-				//map x1 and x2
-				//("and x1, x2 = ");
-				printf("Four vector\n");
-				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
-				x2 = x2 / TILE_WIDTH;
-				y1 = y1 / TILE_HEIGHT;
-				y2 = y2 / TILE_HEIGHT;
-				///printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
-
-				if (LM[y1][x1].size() == 0) {
-					LM[y1][x1].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
-					OrderedPosition = 0;
-				}
-
+			if (x1 != x2) {
 				if (LM[y1][x2].size() == 0) {
 					LM[y1][x2].push_back(ObjectSprite);
 				}
@@ -913,7 +820,8 @@ public:
 					LM[y1][x2].insert(LM[y1][x2].begin() + OrderedPosition, ObjectSprite);
 					OrderedPosition = 0;
 				}
-
+			}
+			if (y1 != y2) {
 				if (LM[y2][x1].size() == 0) {
 					LM[y2][x1].push_back(ObjectSprite);
 				}
@@ -925,20 +833,19 @@ public:
 					OrderedPosition = 0;
 				}
 
-				if (LM[y2][x2].size() == 0) {
-					LM[y2][x2].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y2][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
+				if (x1 != x2) {
+					if (LM[y2][x2].size() == 0) {
+						LM[y2][x2].push_back(ObjectSprite);
 					}
-					LM[y2][x2].insert(LM[y2][x2].begin() + OrderedPosition, ObjectSprite);
+					else {
+						while (LM[y2][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+							OrderedPosition++;
+						}
+						LM[y2][x2].insert(LM[y2][x2].begin() + OrderedPosition, ObjectSprite);
+					}
 				}
-
-
-
 			}
-		}
+		
 
 		printf("Done reMapping\n");
 
@@ -953,114 +860,39 @@ public:
 		y1 = ObjectSprite->yPos;
 		y2 = ObjectSprite->yPos + TILE_HEIGHT;
 
-
+		y1 = y1 / TILE_HEIGHT;
+		y2 = y2 / TILE_HEIGHT;
+		x1 = x1 / TILE_WIDTH;
+		x2 = x2 / TILE_WIDTH; //NEW - noticed every time obj2 moved almost to new tile, it's x1+16=x2 would not be deminished, although y2 was active. Thus I must assume thisis the ase, even if 
+		//it shouldn't be necessary with the x1%TILE_WIDTH. :/
 
 
 
 
 		//NOTE only one fail should happen, if multiple happen let it just undo the movement once, NO NEED FOR MORE THAN ONE UNDO
-		if (y1 % TILE_HEIGHT == 0) {
-			//printf("Just remove y1, ");
-			//just map y1 - perfectly placed in tilemap
-			if (x1 % TILE_WIDTH == 0) {
-				//printf("and x1 = ");
-				//just map x1 - perfectly placed in tilemap
-				//printf(" %d, %d, \n", x1 / TILE_WIDTH, y1 / TILE_HEIGHT);
-				y1 = y1 / TILE_HEIGHT;
-				x1 = x1 / TILE_WIDTH;
-
-				if (LM[y1][x1].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx1 = true;
-					faily1 = true;
-				}
-
-
-
-
-			}
-			else {
-				//printf("and x1, x2 = ");
-				//map x1 and x2
-				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
-				x1 = x1 / TILE_WIDTH;
-				x2 = x2 / TILE_WIDTH;
-				//printf(" %d, %d, %d\n", x1 / TILE_WIDTH, x2 / TILE_WIDTH, y1);
-
-				if (LM[y1][x1].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx1 = true;
-					faily1 = true;
-				}
-				if (LM[y1][x2].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					faily1 = true;
-					failx2 = true;
-				}
-
-
-
+		
+		if (true) { //UL
+			if (LM[y1][x1].size() > 0) {
+				failx1 = true;
+				faily1 = true;
 			}
 		}
-		else {
-			//map y1 and y2
-			//printf("Just remove y1, y2, ");
-			if (x1 % TILE_WIDTH == 0) {
-				//just map x1 - perfectly placed in tilemap
-				//printf("and x1 = ");
-				y1 = y1 / TILE_HEIGHT;
-				y2 = y2 / TILE_HEIGHT;
-				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
-				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
-				x2 = x2 / TILE_WIDTH; //NEW - noticed every time obj2 moved almost to new tile, it's x1+16=x2 would not be deminished, although y2 was active. Thus I must assume thisis the ase, even if 
-				//it shouldn't be necessary with the x1%TILE_WIDTH. :/
-
-
-				if (LM[y1][x1].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx1 = true;
-					faily1 = true;
-				}
-				if (LM[y2][x1].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx1 = true;
-					faily2 = true;
-				}
-
-
+		if (x1 != x2) { //UR
+			if (LM[y1][x2].size() > 0) {
+				faily1 = true;
+				failx2 = true;
 			}
-			else {
-				//map x1 and x2
-				//printf("and x1, x2 = ");
-				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
-				x2 = x2 / TILE_WIDTH;
-				y1 = y1 / TILE_HEIGHT;
-				y2 = y2 / TILE_HEIGHT;
-				//printf(" %d, %d, %d, %d\n", x1, x2, y1, y2);
-				if (LM[y1][x1].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx1 = true;
-					faily1 = true;
-				}
-				if (LM[y1][x2].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx2 = true;
-					faily1 = true;
-				}
-				if (LM[y2][x1].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
-					failx1 = true;
-					faily2 = true;
-				}
-				if (LM[y2][x2].size() > 0) {
-					//printf("TILE THAT Object%d is trying to go is occupied!\n", ObjectSprite->OrderCreation + 1);
+		}	
+		if (y1 != y2) {
+			if (LM[y2][x1].size() > 0) {//LL
+				failx1 = true;
+				faily2 = true;
+			}
+			if (x1 != x2) {
+				if (LM[y2][x2].size() > 0) { //LR
 					failx2 = true;
 					faily2 = true;
 				}
-
-
-
-
 			}
 		}
 		
@@ -1497,15 +1329,18 @@ public:
 					MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, CurrentStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
 					printf("23\n");
 
+
+					NextSprite->UndoBehavior();
+					//Remap it, because it was unable to move right away
+					printf("25\n");
+
 					//NOTE the undo and remap after the stack, so when we resolve backwards we have a chance at finishing entire stacks if one part fails.
 					ReMapSprite(Queue2[NextSprite->OrderCreation]);
 					printf("24\n");
 					//May want to add one to the spritestack here, use spritestack^
 //then assign old at the start to use V
 
-					NextSprite->UndoBehavior();
-					//Remap it, because it was unable to move right away
-					printf("25\n");
+					
 
 				}
 			}
