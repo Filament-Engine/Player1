@@ -783,7 +783,7 @@ public:
 		y1 = ObjectSprite->yPos;
 		y2 = ObjectSprite->yPos + TILE_HEIGHT;
 
-
+		printf("Remap Object%d\n", ObjectSprite->OrderCreation + 1);
 		//NOTE - replace pushbacks with inserts - unless empty vector
 
 		if (y1 % TILE_HEIGHT == 0) {
@@ -793,6 +793,7 @@ public:
 				//printf("and x1 = ");
 				//just map x1 - perfectly placed in tilemap
 				//printf(" %d, %d, \n", x1 / TILE_WIDTH, y1 / TILE_HEIGHT);
+				printf("Only one vector (perfect)\n");
 				y1 = y1 / TILE_HEIGHT;
 				x1 = x1 / TILE_WIDTH;
 
@@ -811,6 +812,7 @@ public:
 			else {
 				//printf("and x1, x2 = ");
 				//map x1 and x2
+				printf("Only two vector (UL -> UR)\n");
 				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
 				//printf(" %d, %d, %d\n", x1 / TILE_WIDTH, x2 / TILE_WIDTH, y1);
 				x1 = x1 / TILE_WIDTH;
@@ -849,6 +851,7 @@ public:
 			if (x1 % TILE_WIDTH == 0) {
 				//just map x1 - perfectly placed in tilemap
 				//printf("and x1 = ");
+				printf("Only two vector (UL -> LL)\n");
 				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
 				//printf(" %d, %d, %d\n", x1, y1 / TILE_HEIGHT, y2 / TILE_HEIGHT);
 				y1 = y1 / TILE_HEIGHT;
@@ -882,6 +885,7 @@ public:
 			else {
 				//map x1 and x2
 				//("and x1, x2 = ");
+				printf("Four vector\n");
 				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
 				x2 = x2 / TILE_WIDTH;
 				y1 = y1 / TILE_HEIGHT;
@@ -936,6 +940,7 @@ public:
 			}
 		}
 
+		printf("Done reMapping\n");
 
 	}
 
@@ -1152,7 +1157,7 @@ public:
 			printf("LL [%d, %d], ", y2, x1);
 			printf("LR [%d, %d], ", y2, x2);
 			printf("Corners\n"); //so if you collide form beneth, your gaurenteeed to collide with LL, even if your just clipping LR...
-			SDL_Delay(1000);
+			//SDL_Delay(1000);
 		}
 
 	}
@@ -1384,6 +1389,8 @@ public:
 
 		//NOTE only move itters if we actually use the found tile in that vector, 
 
+
+		//INSERT CHECK - there is a chance that an vecto rlooks like {1, 2, 3}, {2, 3}, and you hit 1 and 2, need a method to control IF you've seen it already. 
 		//determine which Sprite is Created First
 		for (int i = 0; i < 4; i++) {
 			if (ArrHolder[i]!=NULL) { //while NextSprite is a Sprite, try finding the lowest possible
@@ -1393,10 +1400,16 @@ public:
 					NextSprite = ArrHolder[i];
 					ItteratorToItter.push_back(i);
 				}
-				else if (NextSprite->OrderCreation >= ArrHolder[i]->OrderCreation) {
+				else if (NextSprite->OrderCreation == ArrHolder[i]->OrderCreation) {
 					NextSprite = ArrHolder[i]; 
 					ItteratorToItter.push_back(i);
-				}
+				} //Sus out if a an item is the SAME as another in a vector collision
+				else if (NextSprite->OrderCreation < ArrHolder[i]->OrderCreation) { 
+					NextSprite = ArrHolder[i];
+					ItteratorToItter.clear();
+					ItteratorToItter.push_back(i);
+
+				} //Sus out if a sprite has priority over the previous ones we've been looking at.
 			}
 
 		}
