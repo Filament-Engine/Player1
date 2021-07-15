@@ -136,14 +136,14 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 				
-				Object1 = new Sprite(70, 73, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
 
 
 				//lets just see if it works again
-				Sprite* Object2 = new Sprite(52, 34, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 38, 120, "AxisX"); // TEMP
+				Sprite* Object2 = new Sprite(32, 64, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 38, 120, "AxisX"); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
@@ -302,7 +302,7 @@ void handleLoop() {
 		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
 			gLevel1->SpriteLayer->MoveAllSprites();	
 		//}
-
+			SDL_Delay(250);
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
 
@@ -326,7 +326,7 @@ void handleLoop() {
 		if (frameTicks < SCREEN_TICKS_PER_FRAME)
 		{
 			//Wait remaining time
-			SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
+			//SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
 		}
 
 	}

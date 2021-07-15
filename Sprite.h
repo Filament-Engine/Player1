@@ -584,10 +584,10 @@ public:
 
 
 
-		if (y1 % TILE_HEIGHT == 0) {
+		if (y1 / TILE_HEIGHT == y2 /TILE_HEIGHT) {
 
 			//just map y1 - perfectly placed in tilemap
-			if (x1 % TILE_WIDTH == 0) {
+			if (x1 / TILE_WIDTH == x2 /TILE_WIDTH) {
 
 
 
@@ -606,7 +606,7 @@ public:
 		else {
 			//map y1 and y2
 
-			if (x1 % TILE_WIDTH == 0) {
+			if (x1 / TILE_WIDTH == x2 / TILE_WIDTH) {
 				//just map x1 - perfectly placed in tilemap
 
 				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
@@ -633,6 +633,118 @@ public:
 
 
 	}
+	void ReMapSprite(Sprite* ObjectSprite) {
+		printf("ReMapSprite\n");
+		//Put into matrix -ONLY DO ONCE PER SPRITE. 
+		int x1 = NULL;
+		int x2 = NULL;
+		int y1 = NULL;
+		int y2 = NULL;
+		int OrderedPosition = 0;
+		//The null will allow us to skip it if there is no info there.
+		x1 = ObjectSprite->xPos;
+		x2 = ObjectSprite->xPos + TILE_WIDTH;
+		y1 = ObjectSprite->yPos;
+		y2 = ObjectSprite->yPos + TILE_HEIGHT;
+
+		printf("Remap Object%d, x1=%d, y1=%d\n", ObjectSprite->OrderCreation + 1, x1, y1);
+		//NOTE - replace pushbacks with inserts - unless empty vector
+
+		if (x1 % TILE_WIDTH == 0) {
+			x2 = x1;
+		}
+		if (y1 % TILE_HEIGHT == 0) {
+			y2 = y1;
+		}
+
+
+
+		y1 = y1 / TILE_HEIGHT;
+		y2 = y2 / TILE_HEIGHT;
+		x1 = x1 / TILE_WIDTH;
+		x2 = x2 / TILE_WIDTH;
+
+
+		//gaurds from map/matrix overflow
+		if (y1 > LEVEL_HEIGHT - 1) {
+			y1 = LEVEL_HEIGHT - 1;
+			y2 = y1;
+		}
+		if (y1 < 0) {
+			y1 = 0;
+			y2 = y1;
+		}
+		if (x1 > LEVEL_WIDTH - 1) {
+			x1 = LEVEL_WIDTH - 1;
+			x2 = x1;
+		}
+		if (x1 < 0) {
+			x1 = 0;
+			x2 = x1;
+		}
+
+
+		if (LM[y1][x1].size() == 0) {
+
+			LM[y1][x1].push_back(ObjectSprite);
+
+		}
+		else {
+			while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+				OrderedPosition++;
+			}
+
+			LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
+
+			OrderedPosition = 0;
+		}
+		if (x1 != x2) {
+			if (LM[y1][x2].size() == 0) {
+				LM[y1][x2].push_back(ObjectSprite);
+			}
+			else {
+				while (LM[y1][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+					OrderedPosition++;
+				}
+				LM[y1][x2].insert(LM[y1][x2].begin() + OrderedPosition, ObjectSprite);
+				OrderedPosition = 0;
+			}
+		}
+		if (y1 != y2) {
+			if (LM[y2][x1].size() == 0) {
+				LM[y2][x1].push_back(ObjectSprite);
+			}
+			else {
+				while (LM[y2][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+					OrderedPosition++;
+				}
+				LM[y2][x1].insert(LM[y2][x1].begin() + OrderedPosition, ObjectSprite);
+				OrderedPosition = 0;
+			}
+
+			if (x1 != x2) {
+				if (LM[y2][x2].size() == 0) {
+					LM[y2][x2].push_back(ObjectSprite);
+				}
+				else {
+					while (LM[y2][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
+						OrderedPosition++;
+					}
+					LM[y2][x2].insert(LM[y2][x2].begin() + OrderedPosition, ObjectSprite);
+				}
+			}
+		}
+
+
+		printf("Done reMapping\n");
+
+	}
+
+
+
+
+
+
 	void DisplayTileBasedArray() {
 
 		for (int i = 0; i < LEVEL_HEIGHT; i++) {
@@ -654,105 +766,7 @@ public:
 		printf("\n");
 
 	}
-	void ReMapSprite(Sprite* ObjectSprite) {
-		printf("ReMapSprite\n");
-		//Put into matrix -ONLY DO ONCE PER SPRITE. 
-		int x1 = NULL;
-		int x2 = NULL;
-		int y1 = NULL;
-		int y2 = NULL;
-		int OrderedPosition = 0;
-		//The null will allow us to skip it if there is no info there.
-		x1 = ObjectSprite->xPos;
-		x2 = ObjectSprite->xPos + TILE_WIDTH;
-		y1 = ObjectSprite->yPos;
-		y2 = ObjectSprite->yPos + TILE_HEIGHT;
-
-		printf("Remap Object%d\n", ObjectSprite->OrderCreation + 1);
-		//NOTE - replace pushbacks with inserts - unless empty vector
- 
-
-			x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
-			x2 = x2 / TILE_WIDTH;
-			y1 = y1 / TILE_HEIGHT;
-			y2 = y2 / TILE_HEIGHT;
-
-			//gaurds from map/matrix overflow
-			if (y2 > LEVEL_HEIGHT - 1) {
-				y2 = LEVEL_HEIGHT - 1;
-				y1 = LEVEL_HEIGHT - 2;
-			}
-			if (y1 < 0) {
-				y1 = 0;
-				y2 = TILE_HEIGHT;
-			}
-			if (x2 > LEVEL_WIDTH - 1) {
-				x2 = LEVEL_WIDTH - 1;
-				x1 = LEVEL_WIDTH - 2;
-			}
-			if (x1 < 0) {
-				x1 = 0;
-				x2 = TILE_WIDTH - 1;
-			}
-
-
-
-			if (LM[y1][x1].size() == 0) {
-
-				LM[y1][x1].push_back(ObjectSprite);
-
-			}
-			else {
-				while (LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-					OrderedPosition++;
-				}
-
-				LM[y1][x1].insert(LM[y1][x1].begin() + OrderedPosition, ObjectSprite);
-
-				OrderedPosition = 0;
-			}
-			if (x1 != x2) {
-				if (LM[y1][x2].size() == 0) {
-					LM[y1][x2].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y1][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y1][x2].insert(LM[y1][x2].begin() + OrderedPosition, ObjectSprite);
-					OrderedPosition = 0;
-				}
-			}
-			if (y1 != y2) {
-				if (LM[y2][x1].size() == 0) {
-					LM[y2][x1].push_back(ObjectSprite);
-				}
-				else {
-					while (LM[y2][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-						OrderedPosition++;
-					}
-					LM[y2][x1].insert(LM[y2][x1].begin() + OrderedPosition, ObjectSprite);
-					OrderedPosition = 0;
-				}
-
-				if (x1 != x2) {
-					if (LM[y2][x2].size() == 0) {
-						LM[y2][x2].push_back(ObjectSprite);
-					}
-					else {
-						while (LM[y2][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
-							OrderedPosition++;
-						}
-						LM[y2][x2].insert(LM[y2][x2].begin() + OrderedPosition, ObjectSprite);
-					}
-				}
-			}
-		
-
-		printf("Done reMapping\n");
-
-	}
-
+	
 	void CheckFutureSpritePosition(Sprite* ObjectSprite, int FutureCode[8]) {
 		printf("CheckFutureSpritePosition\n");
 		int x1, x2, y1, y2;
@@ -763,6 +777,12 @@ public:
 		y1 = ObjectSprite->yPos;
 		y2 = ObjectSprite->yPos + TILE_HEIGHT;
 
+		if (x1 % TILE_WIDTH == 0) {
+			x2 = x1;
+		}
+		if (y1 % TILE_HEIGHT == 0) {
+			y2 = y1;
+		}
 
 
 
@@ -773,22 +793,26 @@ public:
 
 
 		//gaurds from map/matrix overflow
-			if (y2 > LEVEL_HEIGHT-1) {
-				y2 = LEVEL_HEIGHT-1;
-				y1 = LEVEL_HEIGHT -2;
+			if (y1 > LEVEL_HEIGHT-1) {
+				y1 = LEVEL_HEIGHT-1;
+				y2 = y1;
 			}
 			if (y1 < 0) {
 				y1 = 0;
-				y2 = TILE_HEIGHT;
+				y2 = y1;
 			}
-			if (x2 > LEVEL_WIDTH-1) {
-				x2 = LEVEL_WIDTH - 1;
-				x1 = LEVEL_WIDTH -2;
+			if (x1 > LEVEL_WIDTH-1) {
+				x1 = LEVEL_WIDTH-1;
+				x2 = x1;
 			}
 			if (x1 < 0) {
 				x1 = 0;
-				x2 = TILE_WIDTH-1;
+				x2 = x1;
 			}
+
+
+
+
 			printf("Found approrpiate positions\n");
 
 
@@ -1450,6 +1474,7 @@ public:
 				printf("Stacked Sprite trying to move into another object. Fails to move\n");
 				InterestedStack[InternalStackIndex]->UndoBehavior();
 				ReMapSprite(InterestedStack[InternalStackIndex]); //get around the null. May change later
+				printf("Yo\n");
 				return 1;
 
 			}
@@ -1467,7 +1492,7 @@ public:
 		//no, pop back after move or fail.
 
 
-
+			
 			std::vector<Sprite*> CollidedSprite1; //Upper Left Corner
 			std::vector<Sprite*> CollidedSprite2; //Upper Right corner
 			std::vector<Sprite*> CollidedSprite3; //Lower Left Corner
