@@ -1411,7 +1411,7 @@ public:
 			}
 			
 
-
+			//
 
 			//If does not:
 			if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
