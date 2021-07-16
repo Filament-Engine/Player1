@@ -13,8 +13,12 @@ bool init()// SDL_Window* Window, SDL_Surface* ScreenSurface, SDL_Renderer* Rend
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 		success = false;
 	}
-	else
-	{
+	else {
+		if (TTF_Init() == -1)
+		{
+			printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+			success = false;
+		}
 		//Create window
 		gWindow = SDL_CreateWindow("Filament Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH*TILE_WIDTH, SCREEN_HEIGHT*TILE_HEIGHT, SDL_WINDOW_SHOWN);
 		//Get window surface -I BELIEVE THAT ONCE THIS IS ATTACHED TO GWINDOW, THAT IT'S DEALLOCATED WITH IT. BE SURE TO CHECK LATER. MENTION IT EXPLICITLY ON TOP OF FILE IF CHECKED.

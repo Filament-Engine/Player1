@@ -39,6 +39,8 @@ void close(Level* level, Player* player, std::map<std::string, SurfaceProperty*>
 	player->~Player();
 
 	//Quit SDL subsystems
+	// Quits SDL_ttf
+	TTF_Quit();
 	//Quit SDL_Image
 	IMG_Quit();
 	//Quit SDL

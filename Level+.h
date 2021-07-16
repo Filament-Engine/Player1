@@ -125,7 +125,6 @@ void Level::CombineTextures() { //trigger each time a layer is 'hidden' later as
 
 	SDL_SetRenderTarget(gRenderer, NULL); //This resets the render target to the Render window (see the wiki)
 
-
 	//set it as render target
 	//grab pointers to textures
 	//render copy each poitner the netire thing to the entire thing
@@ -150,6 +149,12 @@ void Level::RenderThis(Player* PlayerName) {
 	SpriteLayer->BlitObjects(); // this is so we can rerender the objects -- allows them to be movable!
 	// SpriteLayer->MakeSelfTexture();
 	SDL_RenderCopy(gRenderer, SpriteLayer->CombinedObjects, gCamera->Cam, gFullWindowRect); // this renders the texture of the objectLayer
+
+	// rendering text
+	text->Display();
+	if (displayFPS && fpsText != NULL) {
+		fpsText->Display((SCREEN_WIDTH * TILE_WIDTH) - fpsText->text_rect->w, 0);
+	}
 
 	// for layers above the player, we will want to do another for loop here
 	SDL_RenderPresent(gRenderer);
@@ -177,7 +182,6 @@ void Level::MapAllCollision() { // NEW
 			}
 		}
 	}
-
 
 	printf("testing with collision override...\n");
 	for (int i = 0; i < LEVEL_HEIGHT; i++) {

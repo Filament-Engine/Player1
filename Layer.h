@@ -22,9 +22,8 @@ public:
 		AddTiles(DrawnTilesRead);
 		CollisionData = new int[LEVEL_HEIGHT * LEVEL_WIDTH]; //Every layer should have data for every position 
 		AddCollision(GlobalTileHash);
-		SelfHiddenSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0, 0, 0, 0);
+		SelfHiddenSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff); // creates a transparent background for the layer
 		SelfHiddenTexture = NULL;
-		CreateTransparency("0x000000"); // takes the black background and makes it transparent 
 		BlitMatrixLayer(GlobalTileHash, SurfacePropertyMap);
 		MakeSelfTexture();
 	}

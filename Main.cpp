@@ -1,6 +1,7 @@
 //Using SDL and all include statements
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include <fstream> //https://www.cplusplus.com/reference/fstream/fstream/
 #include <string> //http://www.cplusplus.com/reference/string/string/
@@ -25,6 +26,9 @@ std::map<std::string, SurfaceProperty*> SurfacePropertyMap;
 #include "Layer.h"
 #include "Sprite.h"
 #include "Player.h"
+#include "Text.h"
+Text* text;
+Text* fpsText;
 Sprite* Object1; // we can create this sprite now so that it can be used in level/player/objectlayer
 #include "Level+.h"
 #include "CreatePlayer.h"
@@ -170,7 +174,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				//okay we got both objects in to R2, c3, c4.
 
-				gLevel1->SpriteLayer->DisplayTileBasedArray();
+				// gLevel1->SpriteLayer->DisplayTileBasedArray();
 
 
 
@@ -181,7 +185,6 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				AllSprites.clear(); // this is removing the AllSprites data because we have this data transfered into gLevel1->SpriteLayer instead
 
 				gLevel1->CombineTextures();
-				gLevel1->RenderThis(Player1);
 
 
 			}
@@ -223,6 +226,10 @@ void handleLoop() {
 	bool quit = false; // handles the loop; whether we want to quit, or continue
 	SDL_Event e; // event handler
 
+	printf("error 1\n");
+	text = new Text("Fonts/arial.ttf", "Hello!", 50, { 255, 255, 255 }, 25, 70, true); // TEMP creates a text
+	printf("error 2\n");
+
 	// begin loop
 	while (!quit) {
 		capTimer.start(); // starts the max fps timer 
@@ -258,6 +265,20 @@ void handleLoop() {
 					break;
 				case SDLK_UP: // if the user presses up arrow key
 					Object1->yVec += -yVec;
+					break;
+				case SDLK_u: // if the user presses 'u' -- this will be utility for now, and will change if fps is displayed or not
+					if (displayFPS) {
+						displayFPS = false;
+						text->ChangeColor({ 255, 255, 255 });
+						text->UpdateMessage("hello!");
+						text->MoveY(5);
+					}
+					else {
+						displayFPS = true;
+						text->ChangeColor({ 0, 0, 0 });
+						text->UpdateMessage("hi");
+						text->MoveX(5);
+					}
 					break;
 
 				}
@@ -297,6 +318,10 @@ void handleLoop() {
 			}
 		}
 
+		if (displayFPS && fpsText == NULL) { // this creates the fps text -- we want it to only be made once, so we make sure it only does this if fpsText == NULL
+			fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
+		}
+
 		// these two things below me are purely for testing / demonstration purposes
 		// gCamera->MoveX(xVel);
 		// gCamera->MoveY(yVel);
@@ -308,7 +333,7 @@ void handleLoop() {
 		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
 			gLevel1->SpriteLayer->MoveAllSprites();	
 		//}
-			gLevel1->SpriteLayer->DisplayTileBasedArray();
+			// gLevel1->SpriteLayer->DisplayTileBasedArray();
 			//SDL_Delay(250);
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
@@ -325,15 +350,17 @@ void handleLoop() {
 			avgFPS = 0;
 		}
 		++countedFrames; // adds 1 to the countedFrames
-		//If frame finished early
-		if (displayFPS) {
-			printf("Average FPS: %f\n", avgFPS); // printf the fps text to the terminal -- CAN BE COMMENTED OUT IF NOT WANTING TO BE DISPLAYED
+		// used to display FPS on screen
+		if (displayFPS && fpsText != NULL) {
+			std::string fpsMessage = "FPS: " + std::to_string(int(avgFPS));
+			fpsText->UpdateMessage(fpsMessage.c_str());
 		}
+		//If frame finished early
 		int frameTicks = capTimer.getTicks();
 		if (frameTicks < SCREEN_TICKS_PER_FRAME)
 		{
 			//Wait remaining time
-			//SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
+			SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
 		}
 
 	}

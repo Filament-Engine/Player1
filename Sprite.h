@@ -648,7 +648,7 @@ public:
 
 	}
 	void ReMapSprite(Sprite* ObjectSprite) {
-		printf("ReMapSprite\n");
+		// printf("ReMapSprite\n");
 		//Put into matrix -ONLY DO ONCE PER SPRITE. 
 		int x1 = NULL;
 		int x2 = NULL;
@@ -661,7 +661,7 @@ public:
 		y1 = ObjectSprite->yPos;
 		y2 = ObjectSprite->yPos + TILE_HEIGHT;
 
-		printf("Remap Object%d, x1=%d, y1=%d\n", ObjectSprite->OrderCreation + 1, x1, y1);
+		// printf("Remap Object%d, x1=%d, y1=%d\n", ObjectSprite->OrderCreation + 1, x1, y1);
 		//NOTE - replace pushbacks with inserts - unless empty vector
 
 
@@ -753,7 +753,7 @@ public:
 		}
 
 
-		printf("Done reMapping\n");
+		// printf("Done reMapping\n");
 
 	}
 
@@ -784,11 +784,11 @@ public:
 			}
 		}
 		printf("\n");
-
+		
 	}
 	
 	void CheckFutureSpritePosition(Sprite* ObjectSprite, int FutureCode[8]) {
-		printf("CheckFutureSpritePosition\n");
+		// printf("CheckFutureSpritePosition\n");
 		int x1, x2, y1, y2;
 		bool failx1 = false, failx2 = false, faily1 = false, faily2 = false;
 
@@ -802,15 +802,15 @@ public:
 		TempX2 = x2 % TILE_WIDTH;
 		TempY2 = y1 % TILE_HEIGHT;
 		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
-		printf("TempY2Math = y2 -16*(y2/16) = %d, from %d, %d\n", TempY2Math, TILE_HEIGHT, y2);
+		// printf("TempY2Math = y2 -16*(y2/16) = %d, from %d, %d\n", TempY2Math, TILE_HEIGHT, y2);
 		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
-		printf("Tempx2Math = x2 -16*(x2/16) = %d, from %d, %d\n", TempX2Math, TILE_WIDTH, x2);
-		printf("(x2 modulo TILE_WIDTH) != 0, %d\n", TempX2);
+		// printf("Tempx2Math = x2 -16*(x2/16) = %d, from %d, %d\n", TempX2Math, TILE_WIDTH, x2);
+		// printf("(x2 modulo TILE_WIDTH) != 0, %d\n", TempX2);
 
 
-		printf("Check, x1:%d, y1:%d\n", x1, y1);
+		// printf("Check, x1:%d, y1:%d\n", x1, y1);
 
-		printf("Check, x2:%d, y2:%d\n", x2, y2);
+		// printf("Check, x2:%d, y2:%d\n", x2, y2);
 
 
 
@@ -821,7 +821,7 @@ public:
 		x1 = x1 / TILE_WIDTH;
 		x2 = x2 / TILE_WIDTH;
 
-		printf("Check, x1:%d, x2:%d, y1:%d, y2:%d \n", x1, x2, y1, y2);
+		// printf("Check, x1:%d, x2:%d, y1:%d, y2:%d \n", x1, x2, y1, y2);
 
 		//gaurds from map/matrix overflow
 		if (y1 > LEVEL_HEIGHT - 1) {
@@ -840,7 +840,7 @@ public:
 			x1 = 0;
 			x2 = x1;
 		}
-		printf("Found approrpiate positions\n");
+		// printf("Found approrpiate positions\n");
 		//NOTE only one fail should happen, if multiple happen let it just undo the movement once, NO NEED FOR MORE THAN ONE UNDO		
 	
 		if (true) { //UL -always 'fail' for now. It will always be mapped primarily, as this is the only one we are guarenteed to check no matter it's position (whether it be %16=0, or not.
@@ -868,12 +868,12 @@ public:
 				//}
 			}
 		}
-		printf("Failsafes set\n");
+		// printf("Failsafes set\n");
 
 
 		//CHECK/CHANGE - PRETTY SURE THIS DOES NOT RETUR ALL THE COLLISION VECTORS, SIMPLY BASED ON THAT if y is perfect, X MIGHT NOT BE.
 		if (failx1 || failx2 || faily1 || faily2) { //Vector occupied!
-			printf("Object%d is trying to go to somewhere occupied\n", ObjectSprite->OrderCreation + 1); 
+			// printf("Object%d is trying to go to somewhere occupied\n", ObjectSprite->OrderCreation + 1); 
 
 			if (faily1) {
 				if (failx1) {
@@ -938,44 +938,44 @@ public:
 
 
 
-			printf("You moving to: ");
+			// printf("You moving to: ");
 			if (faily1) {
 				if (failx1) {
-					printf("UL [%d, %d], ", y1, x1);
+					// printf("UL [%d, %d], ", y1, x1);
 					if (LM[y1][x1].size() > 0) {
-						printf("Occupied, ");
-						SDL_Delay(1000);
+						// printf("Occupied, ");
+						// SDL_Delay(1000);
 					}
 				}
 				if (failx2) {
-					printf("UR [%d, %d], ", y1, x2);
+					// printf("UR [%d, %d], ", y1, x2);
 					if (LM[y1][x2].size() > 0) {
-						printf("Occupied, ");
-						SDL_Delay(1000);
+						// printf("Occupied, ");
+						// SDL_Delay(1000);
 					}
 				}
 			}
 			if (faily2) {
 				if (failx1) {
-					printf("LL [%d, %d], ", y2, x1);
+					// printf("LL [%d, %d], ", y2, x1);
 					if (LM[y2][x1].size() > 0) {
-						printf("Occupied, ");
-						SDL_Delay(1000);
+						// printf("Occupied, ");
+						// SDL_Delay(1000);
 					}
 				}
 				if (failx2) {
-					printf("LR [%d, %d], ", y2, x2);
+					// printf("LR [%d, %d], ", y2, x2);
 					if (LM[y2][x2].size() > 0) {
-						printf("Occupied, ");
-						SDL_Delay(1000);
+						// printf("Occupied, ");
+						// SDL_Delay(1000);
 					}
 				}
 			}
-			printf("Corners\n"); //so if you collide form beneth, your gaurenteeed to collide with LL, even if your just clipping LR...
+			// printf("Corners\n"); //so if you collide form beneth, your gaurenteeed to collide with LL, even if your just clipping LR...
 		 
 		}
 		else {
-			printf("nothing hit\n"); //nothing ran into
+			// printf("nothing hit\n"); //nothing ran into
 			for (int i = 0; i < 8; i++) {
 				FutureCode[i] = -1;
 			}
@@ -983,7 +983,7 @@ public:
 		}
 
 		if (ObjectSprite->OrderCreation == 0) {
-			DisplayTileBasedArray();
+			// DisplayTileBasedArray();
 		//	SDL_Delay(500);
 		}
 
@@ -1003,7 +1003,7 @@ public:
 		std::vector<Sprite*> InterestedStack;
 		int InterestedStackIndex;
 		
-		printf("1\n");
+		// printf("1\n");
 		
 
 		//Reset
@@ -1014,13 +1014,13 @@ public:
 		
 		//Collision Loop
 		for (int i = 0; i < std::distance(AllSprites.begin(), AllSprites.end()); i++) {
-			printf("3\n" );
+			//printf("3\n" );
 			
 
 
 
 			if (Queue2[i] != NULL) { //because the stack replaces with null, unless its the end of stack
-				printf("4\n");
+				// printf("4\n");
 
 				//Find the Que item, if it's in a stack, and resolve it.
 				
@@ -1031,14 +1031,14 @@ public:
 
 					}
 				}
-				printf("5\n");
+				// printf("5\n");
 
 				//Was not an end of stack
 				if (InterestedStack.size() < 1) {
 
-					printf("6\n");
+					// printf("6\n");
 
-					printf("Object%d x = %d, y = %d\n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos, Queue2[i]->yPos);
+					// printf("Object%d x = %d, y = %d\n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos, Queue2[i]->yPos);
 					//DisplayTileBasedArray();
 					//Remove from map (So it doesn't collide with self)
 					RemoveSpriteFromMap(Queue2[i]);
@@ -1050,38 +1050,38 @@ public:
 					 
 
 
-					printf("7\n");
+					// printf("7\n");
 
 					
 					CheckFutureSpritePosition(Queue2[i], FutureCode);
 					if (FutureCode[0] != -1) {
-						printf("(0,1) y=%d, c=%d\n", FutureCode[0], FutureCode[1]);
+						// printf("(0,1) y=%d, c=%d\n", FutureCode[0], FutureCode[1]);
 						CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
-						printf("7.1\n");
+						// printf("7.1\n");
 					}
 					if (FutureCode[2] != -1) {
-						printf("(2, 3) y=%d, c=%d\n", FutureCode[2], FutureCode[3]);
+						// printf("(2, 3) y=%d, c=%d\n", FutureCode[2], FutureCode[3]);
 						CollidedSprite2 = LM[FutureCode[2]][FutureCode[3]];
-						printf("7.2\n");
+						// printf("7.2\n");
 					}
 					if (FutureCode[4] != -1) {
-						printf("(4, 5) y=%d, c=%d\n", FutureCode[4], FutureCode[5]);
+						// printf("(4, 5) y=%d, c=%d\n", FutureCode[4], FutureCode[5]);
 						CollidedSprite3 = LM[FutureCode[4]][FutureCode[5]];
-						printf("7.3\n");
+						// printf("7.3\n");
 					}
 					if (FutureCode[6] != -1) {
-						printf("(6, 7) y=%d, c=%d\n", FutureCode[6], FutureCode[7]);
+						// printf("(6, 7) y=%d, c=%d\n", FutureCode[6], FutureCode[7]);
 						CollidedSprite4 = LM[FutureCode[6]][FutureCode[7]];
-						printf("7.4\n");
+						// printf("7.4\n");
 					}
-					printf("8\n");
+					// printf("8\n");
 					
 					
 					
 					//If does not:
 					if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
-						printf("9\n");
-						printf("sizes of vectors(1,2,3,4)= %d, %d, %d, %d.\n", CollidedSprite1.size(), CollidedSprite2.size(), CollidedSprite3.size(), CollidedSprite4.size());
+						// printf("9\n");
+						// printf("sizes of vectors(1,2,3,4)= %d, %d, %d, %d.\n", CollidedSprite1.size(), CollidedSprite2.size(), CollidedSprite3.size(), CollidedSprite4.size());
 						//DisplayTileBasedArray();
 						//Move it
 						Queue2[i]->MoveTargetTileX();
@@ -1089,11 +1089,11 @@ public:
 						//Removeit from the Que
 						//
 						//Remap it - so that if a later tile tries moving there, it can't.
-						printf("9.5\n");
+						// printf("9.5\n");
 						ReMapSprite(Queue2[i]); //update position on the vector
-						printf("10\n");
+						// printf("10\n");
 						//printf("(if) Remapped Object%d\n", Queue2[i]->OrderCreation + 1);
-						printf("(if) Object%d x = %d \n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos);
+						// printf("(if) Object%d x = %d \n", Queue2[i]->OrderCreation + 1, Queue2[i]->xPos);
 
 
 						 
@@ -1106,17 +1106,17 @@ public:
 					
 					//If it does:
 					else { //if occupied tile
-						printf("11\n");
+						// printf("11\n");
 						
 						//ASSUME TILE=PIXEL collision. 
 						//undo the move stuff, until we confirm we can move later.
-						DisplayTileBasedArray();
+						// DisplayTileBasedArray();
 						Queue2[i]->UndoBehavior();
 						//Remap it, because it was unable to move right away
 						
 						
 
-						printf("12\n");
+						// printf("12\n");
 						
 
 						//This starts the recurssion, so it will take itself out of the Que, 
@@ -1133,10 +1133,10 @@ public:
 
 						//remove self from que. NOTE - we can do this, because only the end of the stack will remain in the que. 
 						Queue2[i] = NULL;
-						printf("13\n");
+						// printf("13\n");
 					
 						MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, SpriteStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
-						printf("14\n");
+						// printf("14\n");
 						//remap after so it doesn't run into itself when moving.
 						ReMapSprite(SpriteStack[SpriteStackCounter][0]); //get around the null. May change later
 						
@@ -1145,7 +1145,7 @@ public:
 						}
 
 						SpriteStackCounter += 1; //After recursion is done, we wait. If another stack is started it should happen in a new whole stack.
-						printf("15\n");
+						// printf("15\n");
 						
 					}
 
@@ -1153,7 +1153,7 @@ public:
 
 				//Was the end of stack
 				else {
-					printf("Stack Found\n");
+				// printf("Stack Found\n");
 					//Try to move it now
 					//It can - resolve next in stack, if it's a older item than the other stacks. (It's like solitare?) AND not past the rest of the que.
 					// IF the stack has a younger item, reque it. It'll discover it at the end of this stack.
@@ -1182,35 +1182,35 @@ public:
 		
 		//Tries to handle end of que stacks. 
 		while (SpriteStack.size() != 0) {
-			printf("!\n");
+			// printf("!\n");
 			InterestedStack = {};
 			InterestedStackIndex = -1;
 			for (int j = 0; j < SpriteStack.size(); j++) {
-				printf("? New J is %d\n", j);
+				// printf("? New J is %d\n", j);
 				//eliminate empty stacks, restarts the for loop
 				if (SpriteStack[j].size() < 1) {
-					printf("Attempt to erase SpriteStack[%d]\n", j);
+					// printf("Attempt to erase SpriteStack[%d]\n", j);
 					SpriteStack.erase(SpriteStack.begin()+j);
 					j--;
-					printf("! Change J to %d", j); //so we should see it 'snap' back to it's proper position.
+					// printf("! Change J to %d", j); //so we should see it 'snap' back to it's proper position.
 					continue;
 				}
 				//find the first viable stack
 				if (InterestedStackIndex < 0) {
-					printf("Set itinital StackIndex\n");
+					// printf("Set itinital StackIndex\n");
 					InterestedStackIndex = j;
 				}
 				//find the smallest end of stack possible
 				if (SpriteStack[j][SpriteStack[j].size() - 1]->OrderCreation < SpriteStack[InterestedStackIndex][SpriteStack[InterestedStackIndex].size() - 1]->OrderCreation) {
-					printf("Found new smaller sprite for index\n");
+					// printf("Found new smaller sprite for index\n");
 					InterestedStackIndex = j;
 				}
 			}
 			//NOW IF there still exists any stack
 			if (SpriteStack.size() != 0) {
-				printf("SpriteStack not yet 0, attempt to handle the final stack here\n");
+				// printf("SpriteStack not yet 0, attempt to handle the final stack here\n");
 				if (HandleFinalStack(SpriteStack[InterestedStackIndex], SpriteStack[InterestedStackIndex].size()-1) == 0) { //if succeeded in moving that item good, else if 0, then erase the whole stack. Perhaps mark if the item couldn't move so other stacks don't get any ideas.
-					printf("An item has failed, delete that stack\n");
+					// printf("An item has failed, delete that stack\n");
 					SpriteStack.erase(SpriteStack.begin() + InterestedStackIndex);
 				}
 			}
@@ -1224,7 +1224,7 @@ public:
 
 		for (int j = 0; j < SpriteStack.size(); j++) {
 			SpriteStack[j].clear();
-			printf("P");
+			// printf("P");
 		}
 		SpriteStack.clear();
 		SpriteStackCounter = 0;
@@ -1237,7 +1237,7 @@ public:
 	//On success, DON'T MOVE IT, until everything before the last item in the stack has been moved. Thus in AllSprites we must look each time
 	//for when a stack can be completed... :/
 	void MoveCurrentSprite(std::vector<Sprite*>& OldCollidedSprite1, std::vector<Sprite*>& OldCollidedSprite2, std::vector<Sprite*>& OldCollidedSprite3, std::vector<Sprite*>& OldCollidedSprite4, int Itter1, int Itter2, int Itter3, int Itter4, int InheritedSpriteStackCounter) {
-		printf("alrighty\n");
+		// printf("alrighty\n");
 
 		//STUFF for NEW sprite, going outside  the current location
 		std::vector<Sprite*> CollidedSprite1; //Upper Left Corner
@@ -1286,7 +1286,7 @@ public:
 			ArrHolder[3] = OldCollidedSprite4[itter4];
 		}
 
-		printf("ArrHolder's Set to either a Sprite or Null\n");
+		// printf("ArrHolder's Set to either a Sprite or Null\n");
 
 		//NOTE only move itters if we actually use the found tile in that vector, 
 
@@ -1295,7 +1295,7 @@ public:
 		//determine which Sprite is Created First
 		for (int i = 0; i < 4; i++) {
 			if (ArrHolder[i]!=NULL) { //while NextSprite is a Sprite, try finding the lowest possible
-				printf("Arr%d = Object%d found\n", i, ArrHolder[i]->OrderCreation + 1);
+				// printf("Arr%d = Object%d found\n", i, ArrHolder[i]->OrderCreation + 1);
 
 				if (NextSprite == NULL) { //while we have nothing for smallest sprite
 					NextSprite = ArrHolder[i];
@@ -1314,7 +1314,7 @@ public:
 			}
 
 		}
-		printf("NextSprite Set\n");
+		// printf("NextSprite Set\n");
 
 		//itterate itterator
 		if (NextSprite != NULL) { //may be unnecessary
@@ -1337,23 +1337,23 @@ public:
 
 
 
-			printf("Itterated itters\n");
+			// printf("Itterated itters\n");
 
 
 			//remove from Que IF THIS IS NOT THE END OF STACK (Queue2[NextSprite->OrderCreation] = NULL;)
-			printf("Object%d x = %d, y = %d \n", NextSprite->OrderCreation + 1, NextSprite->xPos, NextSprite->yPos);
+			// printf("Object%d x = %d, y = %d \n", NextSprite->OrderCreation + 1, NextSprite->xPos, NextSprite->yPos);
 
 			//CHECK CHECK - CHECK - I THINK THIS WILL BE FINE HERE
 			if (Queue2[NextSprite->OrderCreation] != NULL) { //If the NextSprite is not in a stack, AND still in hte Que
-				printf("16\n");
+				// printf("16\n");
 				//Remove from map (So it doesn't collide with self)
 				RemoveSpriteFromMap(NextSprite);
 				//Adjust future position
 				NextSprite->Behavior();
-				printf("17\n");
+				// printf("17\n");
 				//Will it Collide?
 				CheckFutureSpritePosition(NextSprite, FutureCode);
-				printf("18\n");
+				// printf("18\n");
 				if (FutureCode[0] != -1) {
 					CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
 				}
@@ -1366,46 +1366,46 @@ public:
 				if (FutureCode[6] != -1) {
 					CollidedSprite4 = LM[FutureCode[6]][FutureCode[7]];
 				}
-				printf("19\n");
+				// printf("19\n");
 
 
 				//If does not:
 				if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
 					//Success, wait for main loop to move it. Then if it was done in the main loop, check if the next in this stack was less than what it was waiting for
 					//Queue2[NextSprite->OrderCreation] = NULL; //we DONT want to set it to null, otherwise we'd have to check every number against the stack, instead of just the ends.
-					printf("20\n");
+					// printf("20\n");
 					SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
-					printf("Stack ended with the sprite Sprite%d\n", NextSprite->OrderCreation + 1);
+					// printf("Stack ended with the sprite Sprite%d\n", NextSprite->OrderCreation + 1);
 					//NOTE - So it doesn't double up on hte movement in the Que loop. should find a better way of doing this.
 					NextSprite->UndoBehavior(); //NEW
 					ReMapSprite(NextSprite); //NEW
-					printf("20.5\n");
+					// printf("20.5\n");
 				}
 				//If it does:
 				else { //if occupied tile
-					printf("Stack can still grow\n");
-					DisplayTileBasedArray();
-					printf("21\n");
+					// printf("Stack can still grow\n");
+					// DisplayTileBasedArray();
+					// printf("21\n");
 
 					//IDEALLY, you check the pixels, then call the first one that failed, but contniue for all those in the vector that actually stopped it
 					//NOTE - NEEDS WORK, WHAT IF THERE ARE TWO TILES, (ORDER THE COLLIDED SPRITE TO PRIROTIZE THE LEFT UPEPER CORNER, SO YOU CAN ASSUME OR SOMETHING, THEN CHECK THE OTHER IF APPLICABLE?)
 					//add self to stack
 					SpriteStack[SpriteStackCounter].push_back(Queue2[NextSprite->OrderCreation]);
-					printf("21\n");
+					// printf("21\n");
 					//remove self from que. NOTE - we can do this, because only the end of the stack will remain in the que. 
 					Queue2[NextSprite->OrderCreation] = NULL;
-					printf("22\n");
+					// printf("22\n");
 					MoveCurrentSprite(CollidedSprite1, CollidedSprite2, CollidedSprite3, CollidedSprite4, CurrentStackCounter, 0, 0, 0, 0); //there is up to two vectors, that we must order :/.
-					printf("23\n");
+					// printf("23\n");
 
 
 					NextSprite->UndoBehavior();
 					//Remap it, because it was unable to move right away
-					printf("25\n");
+					// printf("25\n");
 
 					//NOTE the undo and remap after the stack, so when we resolve backwards we have a chance at finishing entire stacks if one part fails.
 					ReMapSprite(Queue2[NextSprite->OrderCreation]);
-					printf("24\n");
+					// printf("24\n");
 					//May want to add one to the spritestack here, use spritestack^
 //then assign old at the start to use V
 
@@ -1416,15 +1416,15 @@ public:
 			else {  //if EITHER NextSprite is in a Stack (Add it to the stack we're trying to go to, we'll have some way to mark if it's already been moved by a stack), OR in the QUE still. ASSUME QUE
 				//NOTE - NEXT SPRITE WAS NULL IN QUE2 EITHER IT IS IN THE MIDDLE OF A QUE, OR CLAIMED BY THE QUE2 REGULAR 
 				//eventually will need to check either the stack or the que to double check
-				printf("NextSprite has already been claimed by EITHER by a different stack, or the regualr Que. For now, Assume Que\n");  
-				printf("26\n");
+				// printf("NextSprite has already been claimed by EITHER by a different stack, or the regualr Que. For now, Assume Que\n");  
+				// printf("26\n");
 				//NOTE - Don't leave the loop, since you may have other tiles to compare too later in the vector.
 			}
 
 		}
 		else {
-			printf("NextSprite was NULL (Not sure exactly what this is telling me besides the vectorss were all empty...?)\n");
-			printf("27\n");
+			// printf("NextSprite was NULL (Not sure exactly what this is telling me besides the vectorss were all empty...?)\n");
+			// printf("27\n");
 		}
 		//think about this thing
 		//  4   5 
@@ -1439,8 +1439,8 @@ public:
 		
 		//This is called to keep grinding away the current
 		while (itter1 < size1 || itter2 < size2 || itter3 < size3 || itter4 < size4) {
-			printf("28\n");
-			printf("An Itter is still less than the size of a vector, %d, %d, %d, %d\n", itter1, itter2, itter3, itter4); //I know I've got to itterate it if it's the same sprite that I just looked at. Thus I'll need an expensive compare :/
+			// printf("28\n");
+			// printf("An Itter is still less than the size of a vector, %d, %d, %d, %d\n", itter1, itter2, itter3, itter4); //I know I've got to itterate it if it's the same sprite that I just looked at. Thus I'll need an expensive compare :/
 			MoveCurrentSprite(OldCollidedSprite1, OldCollidedSprite2, OldCollidedSprite3, OldCollidedSprite4, itter1, itter2, itter3, itter4, CurrentStackCounter);
 		
 		}
@@ -1450,7 +1450,7 @@ public:
 	int HandleStack(Sprite*& ObjectSprite, std::vector<Sprite*>& InterestedStack, int InternalStackIndex) {
 		//InternalStack = the last index, as this recursive, subtract one so long as it's not negative.
 		if (InternalStackIndex >-1) {
-			printf("Handle Stack Appropriately\n");
+			// printf("Handle Stack Appropriately\n");
 
 
 			std::vector<Sprite*> CollidedSprite1; //Upper Left Corner
@@ -1461,7 +1461,7 @@ public:
 			//NOTE - If you get an error (when going between tiles) it is likely your moving xPos before removing it from the Matrix!!!!!
 			//NOTE - Especially if it says something about the vector itterators in removespritefrommap()
 
-			printf("Object%d in stack to be moved\n", ObjectSprite->OrderCreation+1);
+			// printf("Object%d in stack to be moved\n", ObjectSprite->OrderCreation+1);
 			//SDL_Delay(10000);
 
 			RemoveSpriteFromMap(InterestedStack[InternalStackIndex]);
@@ -1495,7 +1495,7 @@ public:
 			//If does not:
 			if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
 				//something wrong here. the number is a poitner :/
-				printf("Move Object%d, from the stack.\n", InterestedStack[InternalStackIndex]->OrderCreation + 1);
+				// printf("Move Object%d, from the stack.\n", InterestedStack[InternalStackIndex]->OrderCreation + 1);
 				InterestedStack[InternalStackIndex]->MoveTargetTileX();
 				InterestedStack[InternalStackIndex]->MoveTargetTileY();
 				ReMapSprite(InterestedStack[InternalStackIndex]); //update position on the vector
@@ -1514,7 +1514,7 @@ public:
 				InternalStackIndex -= 1;
 				if (InternalStackIndex > -1) {
 					if (HandleStack(InterestedStack[InternalStackIndex], InterestedStack, InternalStackIndex) == 1) {
-						printf("Stack Handled stacklayer = %d\n", InternalStackIndex);  //previous one finished fine
+						// printf("Stack Handled stacklayer = %d\n", InternalStackIndex);  //previous one finished fine
 
 					}
 				}
@@ -1526,17 +1526,17 @@ public:
 
 			//If it does:
 			else { //if occupied tile
-				printf("Stacked Sprite trying to move into another object. Fails to move\n");
+				// printf("Stacked Sprite trying to move into another object. Fails to move\n");
 				InterestedStack[InternalStackIndex]->UndoBehavior();
 				ReMapSprite(InterestedStack[InternalStackIndex]); //get around the null. May change later
-				printf("Yo\n");
+				// printf("Yo\n");
 				return 1;
 
 			}
 
 		}
 		else {
-			printf("Itterator went passed the allowed 'end' of 0 - whole stack resolved nicely.\n");
+			// printf("Itterator went passed the allowed 'end' of 0 - whole stack resolved nicely.\n");
 			return 1;
 		}
 	};
@@ -1555,7 +1555,7 @@ public:
 			int FutureCode[8]; //CHECK that the size is 8! including 0;
 			
 
-			printf("Object%d in stack (end) to be moved\n", InterestedStack[EndOfStack]->OrderCreation + 1);
+			// printf("Object%d in stack (end) to be moved\n", InterestedStack[EndOfStack]->OrderCreation + 1);
 			//SDL_Delay(10000);
 
 			//move
@@ -1590,7 +1590,7 @@ public:
 			//If does not:
 			if (CollidedSprite1.size() < 1 && CollidedSprite2.size() < 1 && CollidedSprite3.size() < 1 && CollidedSprite4.size() < 1) { //if there's nothing occupying the vector it's moving to.
 				//something wrong here. the number is a poitner :/
-				printf("Move Object%d, from the stack.\n", InterestedStack[EndOfStack]->OrderCreation + 1);
+				// printf("Move Object%d, from the stack.\n", InterestedStack[EndOfStack]->OrderCreation + 1);
 				InterestedStack[EndOfStack]->MoveTargetTileX();
 				InterestedStack[EndOfStack]->MoveTargetTileY();
 				ReMapSprite(InterestedStack[EndOfStack]); //update position on the vector
@@ -1614,7 +1614,7 @@ public:
 
 			//If it does:
 			else { //if occupied tile = Erase whole stack - if I can't move, then things above me also can't.
-				printf("Stacked Sprite trying to move into another object. Fails to move\n");
+				// printf("Stacked Sprite trying to move into another object. Fails to move\n");
 				InterestedStack[EndOfStack]->UndoBehavior();
 				ReMapSprite(InterestedStack[EndOfStack]); //get around the null. May change later
 				//erase the whole stack, either that or pop back then erase in the other loop. 
@@ -1640,7 +1640,7 @@ public:
 	
 
 	void RemoveSpriteFromMap(Sprite* ObjectSprite) {
-		printf("RemoveSpriteFromMap\n");
+		// printf("RemoveSpriteFromMap\n");
 		int x1 = NULL;
 		int x2 = NULL;
 		int y1 = NULL;
@@ -1687,7 +1687,7 @@ public:
 
 		//find, if it doesn't find the item,  returns the LAST element of the vector. CAREFUL - this was a major error thattook us a while to find. you'd think find would return null or end() when it fails.
 		if (true) {
-			printf("Erasing Object%d, from UL", ObjectSprite->OrderCreation + 1);
+			// printf("Erasing Object%d, from UL", ObjectSprite->OrderCreation + 1);
 			LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end() - 1, ObjectSprite));
 		}
 		if (x1 != x2) {
@@ -1702,7 +1702,7 @@ public:
 		}
 		
 
-		printf("Erased all\n");
+		// printf("Erased all\n");
 	}
 	
 
