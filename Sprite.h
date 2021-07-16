@@ -765,12 +765,13 @@ public:
 	void DisplayTileBasedArray() {
 
 		for (int i = 0; i < LEVEL_HEIGHT; i++) {
-			printf("\n R:%d", i);
-
+			if (i < 7) {
+				printf("\n R:%d", i);
+			}
 
 			for (int j = 0; j < LEVEL_WIDTH; j++) {
 
-				if (i < 7 && i>3) {
+				if (j < 8 && i < 7) {
 					printf(" C%d = [", j);
 
 					for (int d = 0; d < std::distance(LM[i][j].begin(), LM[i][j].end()); d++) {
@@ -901,6 +902,8 @@ public:
 				FutureCode[2] = -1;
 				FutureCode[3] = -1;
 			}
+
+
 			if (faily2) {
 				if (failx1) {
 
@@ -922,6 +925,7 @@ public:
 				}
 
 			}
+
 			else {
 			 
 				FutureCode[4] = -1;
@@ -929,6 +933,11 @@ public:
 				FutureCode[6] = -1;
 				FutureCode[7] = -1;
 			}
+
+
+
+
+
 			printf("You moving to: ");
 			if (faily1) {
 				if (failx1) {
@@ -975,7 +984,7 @@ public:
 
 		if (ObjectSprite->OrderCreation == 0) {
 			DisplayTileBasedArray();
-			SDL_Delay(10000);
+		//	SDL_Delay(500);
 		}
 
 	}
@@ -1131,6 +1140,9 @@ public:
 						//remap after so it doesn't run into itself when moving.
 						ReMapSprite(SpriteStack[SpriteStackCounter][0]); //get around the null. May change later
 						
+						if (SpriteStack[SpriteStackCounter].size() == 0) {
+							SpriteStack.erase(SpriteStack.begin()+SpriteStackCounter);
+						}
 
 						SpriteStackCounter += 1; //After recursion is done, we wait. If another stack is started it should happen in a new whole stack.
 						printf("15\n");
@@ -1629,7 +1641,10 @@ public:
 
 	void RemoveSpriteFromMap(Sprite* ObjectSprite) {
 		printf("RemoveSpriteFromMap\n");
-		int x1, x2, y1, y2;
+		int x1 = NULL;
+		int x2 = NULL;
+		int y1 = NULL;
+		int y2 = NULL;
 		x1 = ObjectSprite->xPos;
 		x2 = ObjectSprite->xPos + TILE_WIDTH;
 		y1 = ObjectSprite->yPos;
@@ -1637,7 +1652,14 @@ public:
 		
 
 		//NOTE - YOU CANT RELY on the first in order going first, this is because A may be blocked by G, so G resolves first, but if they are on the same 'tile' then A is the begiing of hte vector, which gets stupid after a while, because you move without knowing if G got out of the way.
-	
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH); //A = C - B * (C/B)
+		if (TempX2Math == 0) {
+			x2 = x1;
+		}
+		if (TempY2Math == 0) {
+			y2 = y1;
+		}
 
 
 		x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
@@ -1645,38 +1667,40 @@ public:
 		y1 = y1 / TILE_HEIGHT;
 		y2 = y2 / TILE_HEIGHT;
 		//gaurds from map/matrix overflow
-		if (y2 > LEVEL_HEIGHT - 1) {
-			y2 = LEVEL_HEIGHT - 1;
-			y1 = LEVEL_HEIGHT - 2;
+		if (y1 > LEVEL_HEIGHT - 1) {
+			y1 = LEVEL_HEIGHT - 1;
+			y2 = y1;
 		}
 		if (y1 < 0) {
 			y1 = 0;
-			y2 = TILE_HEIGHT;
+			y2 = y1;
 		}
-		if (x2 > LEVEL_WIDTH - 1) {
-			x2 = LEVEL_WIDTH - 1;
-			x1 = LEVEL_WIDTH - 2;
+		if (x1 > LEVEL_WIDTH - 1) {
+			x1 = LEVEL_WIDTH - 1;
+			x2 = x1;
 		}
 		if (x1 < 0) {
 			x1 = 0;
-			x2 = TILE_WIDTH - 1;
+			x2 = x1;
 		}
-		if (LM[y1][x1].size() > 0) {
+		
+
+		//find, if it doesn't find the item,  returns the LAST element of the vector. CAREFUL - this was a major error thattook us a while to find. you'd think find would return null or end() when it fails.
+		if (true) {
+			printf("Erasing Object%d, from UL", ObjectSprite->OrderCreation + 1);
 			LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end() - 1, ObjectSprite));
-			
 		}
-		if (LM[y1][x2].size() > 0) {
+		if (x1 != x2) {
 			LM[y1][x2].erase(find(LM[y1][x2].begin(), LM[y1][x2].end() - 1, ObjectSprite));
-			
 		}
-		if (LM[y2][x1].size() > 0) {
+		if (y1 != y2) {
 			LM[y2][x1].erase(find(LM[y2][x1].begin(), LM[y2][x1].end() - 1, ObjectSprite));
+			if (x1 != x2) {
+				LM[y2][x2].erase(find(LM[y2][x2].begin(), LM[y2][x2].end() - 1, ObjectSprite));
+			}
 			
 		}
-		if (LM[y2][x2].size() > 0) {
-			LM[y2][x2].erase(find(LM[y2][x2].begin(), LM[y2][x2].end() - 1, ObjectSprite));
-			
-		}
+		
 
 		printf("Erased all\n");
 	}
