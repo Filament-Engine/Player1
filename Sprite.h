@@ -771,78 +771,81 @@ public:
 		printf("CheckFutureSpritePosition\n");
 		int x1, x2, y1, y2;
 		bool failx1 = false, failx2 = false, faily1 = false, faily2 = false;
-		
+
+		int TempX2, TempY2;
+
 		x1 = ObjectSprite->xPos;
 		x2 = ObjectSprite->xPos + TILE_WIDTH;
 		y1 = ObjectSprite->yPos;
 		y2 = ObjectSprite->yPos + TILE_HEIGHT;
 
-		if (x1 % TILE_WIDTH == 0) {
-			x2 = x1;
-		}
-		if (y1 % TILE_HEIGHT == 0) {
-			y2 = y1;
-		}
+		TempX2 = x2 % TILE_WIDTH;
+		TempY2 = y1 % TILE_HEIGHT;
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		printf("TempY2Math = y2 -16*(y2/16) = %d, from %d, %d\n", TempY2Math, TILE_HEIGHT, y2);
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
+		printf("Tempx2Math = x2 -16*(x2/16) = %d, from %d, %d\n", TempX2Math, TILE_WIDTH, x2);
+		printf("(x2 modulo TILE_WIDTH) != 0, %d\n", TempX2);
 
 
+		printf("Check, x1:%d, y1:%d\n", x1, y1);
+
+		printf("Check, x2:%d, y2:%d\n", x2, y2);
+
+
+
+		//this does need ot check two positions, no matter what, because we don't know if it would be slightly out of it's alignment.
 
 		y1 = y1 / TILE_HEIGHT;
 		y2 = y2 / TILE_HEIGHT;
 		x1 = x1 / TILE_WIDTH;
-		x2 = x2 / TILE_WIDTH; 
+		x2 = x2 / TILE_WIDTH;
 
+		printf("Check, x1:%d, x2:%d, y1:%d, y2:%d \n", x1, x2, y1, y2);
 
 		//gaurds from map/matrix overflow
-			if (y1 > LEVEL_HEIGHT-1) {
-				y1 = LEVEL_HEIGHT-1;
-				y2 = y1;
-			}
-			if (y1 < 0) {
-				y1 = 0;
-				y2 = y1;
-			}
-			if (x1 > LEVEL_WIDTH-1) {
-				x1 = LEVEL_WIDTH-1;
-				x2 = x1;
-			}
-			if (x1 < 0) {
-				x1 = 0;
-				x2 = x1;
-			}
-
-
-
-
-			printf("Found approrpiate positions\n");
-
-
-
-
-
-		//NOTE only one fail should happen, if multiple happen let it just undo the movement once, NO NEED FOR MORE THAN ONE UNDO
-		
-		if (true) { //UL
-			if (LM[y1][x1].size() > 0) {
-				failx1 = true;
-				faily1 = true;
-			}
+		if (y1 > LEVEL_HEIGHT - 1) {
+			y1 = LEVEL_HEIGHT - 1;
+			y2 = y1;
 		}
-		if (x1 != x2) { //UR
-			if (LM[y1][x2].size() > 0) {
+		if (y1 < 0) {
+			y1 = 0;
+			y2 = y1;
+		}
+		if (x1 > LEVEL_WIDTH - 1) {
+			x1 = LEVEL_WIDTH - 1;
+			x2 = x1;
+		}
+		if (x1 < 0) {
+			x1 = 0;
+			x2 = x1;
+		}
+		printf("Found approrpiate positions\n");
+		//NOTE only one fail should happen, if multiple happen let it just undo the movement once, NO NEED FOR MORE THAN ONE UNDO		
+	
+		if (true) { //UL -always 'fail' for now. It will always be mapped primarily, as this is the only one we are guarenteed to check no matter it's position (whether it be %16=0, or not.
+			//if (LM[y1][x1].size() > 0) {
+			failx1 = true;
+			faily1 = true;
+			//}
+		}
+		if (x1 != x2 && TempX2Math != 0) { //UR 
+			//this one isn't always supposed to fail, if %16 !=0, then fail and check, otherwise skip it.
+			//if (LM[y1][x2].size() > 0) {
 				faily1 = true;
 				failx2 = true;
-			}
-		}	
-		if (y1 != y2) {
-			if (LM[y2][x1].size() > 0) {//LL
+			//}
+		}
+		if (y1 != y2 && TempY2Math != 0) { //LL always should 'fail', unless y2%16=0, because then we need to check it's off center movement. 
+			//if (LM[y2][x1].size() > 0) {//LL
 				failx1 = true;
 				faily2 = true;
-			}
-			if (x1 != x2) {
-				if (LM[y2][x2].size() > 0) { //LR
+			//}
+			if (x1 != x2 && TempX2Math != 0) {
+				//if (LM[y2][x2].size() > 0) { //LR
 					failx2 = true;
 					faily2 = true;
-				}
+				//}
 			}
 		}
 		printf("Failsafes set\n");
@@ -911,17 +914,33 @@ public:
 			if (faily1) {
 				if (failx1) {
 					printf("UL [%d, %d], ", y1, x1);
+					if (LM[y1][x1].size() > 0) {
+						printf("Occupied, ");
+						SDL_Delay(1000);
+					}
 				}
 				if (failx2) {
 					printf("UR [%d, %d], ", y1, x2);
+					if (LM[y1][x2].size() > 0) {
+						printf("Occupied, ");
+						SDL_Delay(1000);
+					}
 				}
 			}
 			if (faily2) {
 				if (failx1) {
 					printf("LL [%d, %d], ", y2, x1);
+					if (LM[y2][x1].size() > 0) {
+						printf("Occupied, ");
+						SDL_Delay(1000);
+					}
 				}
 				if (failx2) {
 					printf("LR [%d, %d], ", y2, x2);
+					if (LM[y2][x2].size() > 0) {
+						printf("Occupied, ");
+						SDL_Delay(1000);
+					}
 				}
 			}
 			printf("Corners\n"); //so if you collide form beneth, your gaurenteeed to collide with LL, even if your just clipping LR...

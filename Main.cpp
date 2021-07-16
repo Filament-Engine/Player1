@@ -143,11 +143,17 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 
 				//lets just see if it works again
-				Sprite* Object2 = new Sprite(32, 64, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 38, 120, "AxisX"); // TEMP
+				Sprite* Object2 = new Sprite(16, 16, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 16, 80, "AxisX"); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
 				
+
+				Sprite* Object3 = new Sprite(80, 80, "AA249", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 0, 80, 80, "AxisX"); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 3, Object3->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object3); //NEW 
+
 
 
 				//After pushing back all the objects -DONE ONCE
@@ -302,7 +308,8 @@ void handleLoop() {
 		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
 			gLevel1->SpriteLayer->MoveAllSprites();	
 		//}
-			SDL_Delay(250);
+			gLevel1->SpriteLayer->DisplayTileBasedArray();
+			//SDL_Delay(250);
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
 
