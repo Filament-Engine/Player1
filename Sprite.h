@@ -584,49 +584,63 @@ public:
 
 
 
-		if (y1 / TILE_HEIGHT == y2 /TILE_HEIGHT) {
-
-			//just map y1 - perfectly placed in tilemap
-			if (x1 / TILE_WIDTH == x2 /TILE_WIDTH) {
-
-
-
-				LM[y1 / TILE_HEIGHT][x1 / TILE_WIDTH].push_back(ObjectSprite);
-			}
-			else {
-
-				//map x1 and x2
-				y1 = y1 / TILE_HEIGHT; //saves small amount of computation
-
-
-				LM[y1][x1 / TILE_WIDTH].push_back(ObjectSprite);
-				LM[y1][x2 / TILE_WIDTH].push_back(ObjectSprite);
-			}
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH); //A = C - B * (C/B)
+		if (TempX2Math == 0) {
+			x2 = x1;
 		}
-		else {
-			//map y1 and y2
-
-			if (x1 / TILE_WIDTH == x2 / TILE_WIDTH) {
-				//just map x1 - perfectly placed in tilemap
-
-				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
+		if (TempY2Math == 0) {
+			y2 = y1;
+		}
 
 
-				LM[y1 / TILE_HEIGHT][x1].push_back(ObjectSprite);
-				LM[y2 / TILE_HEIGHT][x1].push_back(ObjectSprite);
-			}
-			else {
-				//map x1 and x2
 
-				x1 = x1 / TILE_WIDTH; //saves an small amount of comuptation
-				x2 = x2 / TILE_WIDTH;
-				y1 = y1 / TILE_HEIGHT;
-				y2 = y2 / TILE_HEIGHT;
+		y1 = y1 / TILE_HEIGHT;
+		y2 = y2 / TILE_HEIGHT;
+		x1 = x1 / TILE_WIDTH;
+		x2 = x2 / TILE_WIDTH;
 
-				LM[y1][x1].push_back(ObjectSprite);
-				LM[y1][x2].push_back(ObjectSprite);
-				LM[y2][x1].push_back(ObjectSprite);
+
+		//gaurds from map/matrix overflow
+		if (y1 > LEVEL_HEIGHT - 1) {
+			y1 = LEVEL_HEIGHT - 1;
+			y2 = y1;
+		}
+		if (y1 < 0) {
+			y1 = 0;
+			y2 = y1;
+		}
+		if (x1 > LEVEL_WIDTH - 1) {
+			x1 = LEVEL_WIDTH - 1;
+			x2 = x1;
+		}
+		if (x1 < 0) {
+			x1 = 0;
+			x2 = x1;
+		}
+
+
+		if (true) {
+
+			LM[y1][x1].push_back(ObjectSprite);
+
+		}
+		
+		if (x1 != x2) {
+			
+			LM[y1][x2].push_back(ObjectSprite);
+			
+		}
+		if (y1 != y2) {
+			
+			LM[y2][x1].push_back(ObjectSprite);
+			
+
+			if (x1 != x2) {
+				
 				LM[y2][x2].push_back(ObjectSprite);
+				
+				
 			}
 		}
 
@@ -650,10 +664,13 @@ public:
 		printf("Remap Object%d, x1=%d, y1=%d\n", ObjectSprite->OrderCreation + 1, x1, y1);
 		//NOTE - replace pushbacks with inserts - unless empty vector
 
-		if (x1 % TILE_WIDTH == 0) {
+
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH); //A = C - B * (C/B)
+		if (TempX2Math== 0) {
 			x2 = x1;
 		}
-		if (y1 % TILE_HEIGHT == 0) {
+		if (TempY2Math == 0) {
 			y2 = y1;
 		}
 
@@ -752,15 +769,17 @@ public:
 
 
 			for (int j = 0; j < LEVEL_WIDTH; j++) {
-				printf(" C%d = [", j);
 
-				for (int d = 0; d < std::distance(LM[i][j].begin(), LM[i][j].end()); d++) {
-					printf("%d, ", LM[i][j][d]->OrderCreation);
+				if (i < 7 && i>3) {
+					printf(" C%d = [", j);
+
+					for (int d = 0; d < std::distance(LM[i][j].begin(), LM[i][j].end()); d++) {
+						printf("%d, ", LM[i][j][d]->OrderCreation);
 
 
+					}
+					printf("]");
 				}
-				printf("]");
-
 			}
 		}
 		printf("\n");
@@ -952,6 +971,11 @@ public:
 				FutureCode[i] = -1;
 			}
 
+		}
+
+		if (ObjectSprite->OrderCreation == 0) {
+			DisplayTileBasedArray();
+			SDL_Delay(10000);
 		}
 
 	}
