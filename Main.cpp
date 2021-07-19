@@ -226,9 +226,7 @@ void handleLoop() {
 	bool quit = false; // handles the loop; whether we want to quit, or continue
 	SDL_Event e; // event handler
 
-	printf("error 1\n");
 	text = new Text("Fonts/arial.ttf", "Hello!", 50, { 255, 255, 255 }, 25, 70, true); // TEMP creates a text
-	printf("error 2\n");
 
 	// begin loop
 	while (!quit) {

@@ -380,7 +380,6 @@ public:
 			RandomMove();
 		}
 
-
 	}
 	void UndoBehavior() {
 		printf("UndoBehavior\n"); 
@@ -1112,6 +1111,7 @@ public:
 						//undo the move stuff, until we confirm we can move later.
 						// DisplayTileBasedArray();
 						Queue2[i]->UndoBehavior();
+						printf("1\n");
 						//Remap it, because it was unable to move right away
 						
 						
@@ -1162,6 +1162,7 @@ public:
 					if (HandleStack(Queue2[i], InterestedStack, InterestedStack.size() - 1) == 0) {
 						SpriteStack.erase(SpriteStack.begin() + InterestedStackIndex); //if it failed, then the stack should end immediately and never be checked again
 						Queue2[i]->UndoBehavior(); 
+						printf("2\n");
 						SpriteStackCounter -= 1;
 					}
 		
@@ -1378,6 +1379,7 @@ public:
 					// printf("Stack ended with the sprite Sprite%d\n", NextSprite->OrderCreation + 1);
 					//NOTE - So it doesn't double up on hte movement in the Que loop. should find a better way of doing this.
 					NextSprite->UndoBehavior(); //NEW
+					printf("3\n");
 					ReMapSprite(NextSprite); //NEW
 					// printf("20.5\n");
 				}
@@ -1400,6 +1402,7 @@ public:
 
 
 					NextSprite->UndoBehavior();
+					printf("4\n");
 					//Remap it, because it was unable to move right away
 					// printf("25\n");
 
@@ -1528,6 +1531,7 @@ public:
 			else { //if occupied tile
 				// printf("Stacked Sprite trying to move into another object. Fails to move\n");
 				InterestedStack[InternalStackIndex]->UndoBehavior();
+				printf("5\n");
 				ReMapSprite(InterestedStack[InternalStackIndex]); //get around the null. May change later
 				// printf("Yo\n");
 				return 1;
@@ -1616,6 +1620,7 @@ public:
 			else { //if occupied tile = Erase whole stack - if I can't move, then things above me also can't.
 				// printf("Stacked Sprite trying to move into another object. Fails to move\n");
 				InterestedStack[EndOfStack]->UndoBehavior();
+				printf("6\n");
 				ReMapSprite(InterestedStack[EndOfStack]); //get around the null. May change later
 				//erase the whole stack, either that or pop back then erase in the other loop. 
 				return 0;
