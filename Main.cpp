@@ -226,7 +226,7 @@ void handleLoop() {
 	bool quit = false; // handles the loop; whether we want to quit, or continue
 	SDL_Event e; // event handler
 
-	text = new Text("Fonts/arial.ttf", "Hello!", 50, { 255, 255, 255 }, 25, 70, true); // TEMP creates a text
+	//text = new Text("Fonts/arial.ttf", "Hello!", 50, { 255, 255, 255 }, 25, 70, true); // TEMP creates a text
 
 	// begin loop
 	while (!quit) {
@@ -317,7 +317,7 @@ void handleLoop() {
 		}
 
 		if (displayFPS && fpsText == NULL) { // this creates the fps text -- we want it to only be made once, so we make sure it only does this if fpsText == NULL
-			fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
+			//fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
 		}
 
 		// these two things below me are purely for testing / demonstration purposes
