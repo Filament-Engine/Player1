@@ -129,4 +129,17 @@ public:
 			SDL_RenderCopy(gRenderer, textTexture, NULL, text_rect);
 		}
 	}
+
+	void Display(int x, int y, int w, int h) {
+		text_rect->x = x;
+		text_rect->y = y;
+		text_rect->w = w;
+		text_rect->h = h;
+		if (StayInPlace) {
+			SDL_RenderCopy(gRenderer, textTexture, gCamera->Cam, gFullWindowRect);
+		}
+		else {
+			SDL_RenderCopy(gRenderer, textTexture, NULL, text_rect);
+		}
+	}
 };
