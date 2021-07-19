@@ -23,9 +23,6 @@ public:
         else
         {
             text_rect = new SDL_Rect;
-            text_rect->w = LEVEL_WIDTH*TILE_WIDTH;
-            text_rect->h = LEVEL_HEIGHT*TILE_HEIGHT;
-           // printf("%d, %d", text_rect->w, text_rect->h);
             text_rect->x = xPos;
             text_rect->y = yPos;
 
@@ -47,6 +44,7 @@ public:
             }
 
             SDL_FreeSurface(textSurface); // releasing the surface
+            SDL_QueryTexture(textTexture, 0, 0, &text_rect->w, &text_rect->h);
         }
     }
 
@@ -70,6 +68,7 @@ public:
         }
 
         SDL_FreeSurface(textSurface);
+        SDL_QueryTexture(textTexture, 0, 0, &text_rect->w, &text_rect->h);
     }
 
     // this function changes the color of the text
