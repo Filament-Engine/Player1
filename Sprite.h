@@ -1026,7 +1026,7 @@ public:
 						printf("Interested Stack found\n");
 
 					}
-				}
+				} 
 				// printf("5\n");
 
 				//Was not an end of stack
