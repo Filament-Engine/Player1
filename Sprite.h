@@ -1,6 +1,10 @@
 #pragma once
 #include <stdlib.h> // this is for the random function
 
+
+
+
+
 class Sprite {
 public:
 	int xPos; // here the xPos is where the sprite is placed on the y position
@@ -11,7 +15,7 @@ public:
 	SDL_Rect* TargetTile;
 	std::string IMGName;
 	int OrderCreation; //NEW holds onto the order of creation, so if this was the first object it is either 1 or 0.
-	int directionV; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
+	//int directionV; //NEW, holds onto the starting dierction, and how quickly it will move when it's 'pacing'. It must be stored or returned from the function, otherwise it will cling to the edge of hte pace distance.
 	int leftVlimit; //NEW don't know how I want to handle it for now, but will store in sprite for now.
 	int rightVlimit;
 	
@@ -37,7 +41,6 @@ public:
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
-		directionV = 0; // NEW, this is like the velocity and starti ndirection of the sprite;
 		OrderCreation = Order;//NEW
 		leftVlimit = 0; //edited by user potentially idk what default we want.
 		rightVlimit = 0;
@@ -103,7 +106,6 @@ public:
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
-		directionV = 0; // NEW, this is like the velocity and starti ndirection of the sprite;
 		OrderCreation = Order;//NEW
 		leftVlimit = 0; //edited by user potentially idk what default we want.
 		rightVlimit = 0;
@@ -152,16 +154,16 @@ public:
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
 		if (Axis == "AxisX") {
-
-			directionV = Vel; // NEW, this is like the velocity and starting direction of the sprite;
+			yVec = 0;
+			xVec = Vel; // NEW, this is like the velocity and starting direction of the sprite;
 			leftVlimit = LeftVLimit;
 			rightVlimit = RightVLimit;
 			OrderCreation = Order; // NEW
 			DoAutoX = true;
 		}
 		else if (Axis == "AxisY") {
-
-			directionV = Vel;
+			xVec = 0;
+			yVec = Vel;
 			leftVlimit = LeftVLimit;
 			rightVlimit = RightVLimit;
 			OrderCreation = Order;//NEW
@@ -170,9 +172,7 @@ public:
 
 
 
-
-		xVec = 0;
-		yVec = 0;
+ 
 
 		std::string temp; // this temp is used to get the position of the source tile
 		int i = 0;
@@ -264,32 +264,32 @@ public:
 		}
 	}
 	void AutoY() {
-		if (directionV > 0) { //going right
+		if (yVec > 0) { //going right
 
-			if (yPos + directionV < rightVlimit) {
+			if (yPos + yVec < rightVlimit) {
 
-				yPos += directionV;
+				yPos += yVec;
 			}
 			else {
 				//turn around
 
-				directionV = -directionV;
+				yVec = -yVec;
 
-				yPos += directionV;
+				yPos += yVec;
 			}
 		}
-		else if (directionV < 0) { //going left
+		else if (yVec < 0) { //going left
 
-			if (yPos + directionV > leftVlimit) {
+			if (yPos + yVec > leftVlimit) {
 
-				yPos += directionV;
+				yPos += yVec;
 			}
 			else {
 				//turn around
 
-				directionV = -directionV;
+				yVec = -yVec;
 
-				yPos += directionV;
+				yPos += yVec;
 			}
 		}
 	}
@@ -319,32 +319,32 @@ public:
 			
 
 
-			if (directionV > 0) { //going right
+			if (xVec > 0) { //going right
 
-				if (xPos + directionV < rightVlimit) {
+				if (xPos + xVec < rightVlimit) {
 
-					xPos += directionV;
+					xPos += xVec;
 				}
 				else {
 					//turn around
 
-					directionV = -directionV;
+					xVec = -xVec;
 
-					xPos += directionV;
+					xPos += xVec;
 				}
 			}
-			else if (directionV < 0) { //going left
+			else if (xVec < 0) { //going left
 
-				if (xPos + directionV > leftVlimit) {
+				if (xPos + xVec > leftVlimit) {
 
-					xPos += directionV;
+					xPos += xVec;
 				}
 				else {
 					//turn around
 
-					directionV = -directionV;
+					xVec = -xVec;
 
-					xPos += directionV;
+					xPos += xVec;
 				}
 			} 
 
@@ -416,11 +416,11 @@ public:
 
 	}
 	void UndoAutoX() {
-		xPos -= directionV; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
+		xPos -= xVec; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
 
 	}
 	void UndoAutoY() {
-		yPos -= directionV; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
+		yPos -= yVec; //no matter what direction it's heading, this will undo it. - this also assumes your moving when your turning around. 
 
 	}
 	int UndoMoveX(int x) {
@@ -989,6 +989,300 @@ public:
 	}
 
 
+
+	std::vector<Sprite*> CheckFutureSpritePosition2(Sprite* ObjectSprite) {
+		// printf("CheckFutureSpritePosition\n");
+		int x1, x2, y1, y2;
+		bool failx1 = false, failx2 = false, faily1 = false, faily2 = false;
+
+		int TempX2, TempY2;
+
+		x1 = ObjectSprite->xPos;
+		x2 = ObjectSprite->xPos + TILE_WIDTH;
+		y1 = ObjectSprite->yPos;
+		y2 = ObjectSprite->yPos + TILE_HEIGHT;
+
+		TempX2 = x2 % TILE_WIDTH;
+		TempY2 = y1 % TILE_HEIGHT;
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		// printf("TempY2Math = y2 -16*(y2/16) = %d, from %d, %d\n", TempY2Math, TILE_HEIGHT, y2);
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
+		y1 = y1 / TILE_HEIGHT;
+		y2 = y2 / TILE_HEIGHT;
+		x1 = x1 / TILE_WIDTH;
+		x2 = x2 / TILE_WIDTH;
+		//gaurds from map/matrix overflow
+		if (y1 > LEVEL_HEIGHT - 1) {
+			y1 = LEVEL_HEIGHT - 1;
+			y2 = y1;
+		}
+		if (y1 < 0) {
+			y1 = 0;
+			y2 = y1;
+		}
+		if (x1 > LEVEL_WIDTH - 1) {
+			x1 = LEVEL_WIDTH - 1;
+			x2 = x1;
+		}
+		if (x1 < 0) {
+			x1 = 0;
+			x2 = x1;
+		}
+		
+
+		//Vector that holds the 'area' of overlap - this is to be compared with, and then swapped if one with larger area shows up
+		//if tie, look at order creation
+		std::vector<int> SpriteArea = {};
+		//vector that holds the pointer itself. to be returned as a stack
+		std::vector<Sprite*> SpriteOverlap = {};
+		int TempOverlapX;
+		int TempOverlapY;
+
+
+		if (true) { //UL -always 'fail' for now. It will always be mapped primarily, as this is the only one we are guarenteed to check no matter it's position (whether it be %16=0, or not.
+			//if (LM[y1][x1].size() > 0) {
+
+			for (int d = 0; d < LM[y1][x1].size(); d++) {
+
+				//You are for certain in the UL or completely inline, thus if anything is overlapping your UL point,your colliding
+				if (LM[y1][x1][d]->xPos+TILE_WIDTH >= ObjectSprite->xPos) { //ok
+					TempOverlapX = LM[y1][x1][d]->xPos + TILE_WIDTH - ObjectSprite->xPos; //okay
+					if (LM[y1][x1][d]->yPos + TILE_HEIGHT >= ObjectSprite->yPos) { //ok
+						TempOverlapY = LM[y1][x1][d]->yPos + TILE_HEIGHT - ObjectSprite->yPos; //okay
+						SpriteArea.push_back(TempOverlapX * TempOverlapY);
+						SpriteOverlap.push_back(LM[y1][x1][d]);
+					}
+					else { //you must be approaching in line, from the right, to the left, which is occupied
+						SpriteArea.push_back(TempOverlapX*TILE_HEIGHT);
+						SpriteOverlap.push_back(LM[y1][x1][d]);
+					}
+				}
+				else if (LM[y1][x1][d]->yPos+TILE_HEIGHT >= ObjectSprite->yPos) { //you must be approaching in line, from below, to above, which is occupied
+					TempOverlapY = LM[y1][x1][d]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+					SpriteArea.push_back(TempOverlapY * TILE_WIDTH);
+					SpriteOverlap.push_back(LM[y1][x1][d]);
+				}
+				else { //doesn't have any overlap
+					continue; 
+				}
+			}
+			failx1 = true;
+			faily1 = true; 
+		}
+		if (x1 != x2 && TempX2Math != 0) { //UR
+			//if (LM[y1][x2].size() > 0) {
+			for (int d = 0; d < LM[y1][x2].size(); d++) {
+				//You are for certain in the UL or completely inline, thus if anything is overlapping your UL point,your colliding
+				if (LM[y1][x2][d]->xPos <= ObjectSprite->xPos + TILE_WIDTH) { //ok
+					TempOverlapX = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][d]->xPos; //ok
+					if (LM[y1][x2][d]->yPos + TILE_HEIGHT >= ObjectSprite->yPos) { //ok
+						TempOverlapY = LM[y1][x2][d]->yPos + TILE_HEIGHT - ObjectSprite->yPos; //ok
+						SpriteArea.push_back(TempOverlapX * TempOverlapY);
+						SpriteOverlap.push_back(LM[y1][x2][d]);
+					}
+					else { //you must be approaching in line, from the right, to the left, which is occupied
+						SpriteArea.push_back(TempOverlapX * TILE_HEIGHT);
+						SpriteOverlap.push_back(LM[y1][x2][d]);
+					}
+				}
+				else if (LM[y1][x2][d]->yPos + TILE_HEIGHT >= ObjectSprite->yPos) { //you must be approaching in line, from below, to above, which is occupied
+					TempOverlapY = LM[y1][x2][d]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+					SpriteArea.push_back(TempOverlapY * TILE_WIDTH);
+					SpriteOverlap.push_back(LM[y1][x2][d]);
+				}
+				else { //doesn't have any overlap
+					continue;
+				}
+
+			}
+			faily1 = true;
+			failx2 = true; 
+		}
+		if (y1 != y2 && TempY2Math != 0) { //LL always should 'fail', unless y2%16=0, because then we need to check it's off center movement. 
+			//if (LM[y2][x1].size() > 0) {//LL
+			for (int d = 0; d < LM[y2][x1].size(); d++) {
+				//You are for certain in the LL corner,   
+				if (LM[y2][x1][d]->xPos + TILE_WIDTH >= ObjectSprite->xPos) { //ok
+					TempOverlapX = LM[y2][x1][d]->xPos + TILE_WIDTH - ObjectSprite->xPos; //ok
+					if (LM[y2][x1][d]->yPos <= ObjectSprite->yPos + TILE_HEIGHT) { //ok
+						TempOverlapY =ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][d]->yPos; //ok 
+						SpriteArea.push_back(TempOverlapX * TempOverlapY);
+						SpriteOverlap.push_back(LM[y2][x1][d]);
+					}
+					else { //you must be approaching in line, from the right, to the left, which is occupied
+						SpriteArea.push_back(TempOverlapX * TILE_HEIGHT);
+						SpriteOverlap.push_back(LM[y2][x1][d]);
+					}
+				}
+				else if (LM[y2][x1][d]->yPos <= ObjectSprite->yPos + TILE_HEIGHT) { //you must be approaching in line, from below, to above, which is occupied
+					TempOverlapY = LM[y2][x1][d]->yPos - ObjectSprite->yPos + TILE_HEIGHT; //NOT QUITE RIGHT. THINK FOR A BIT
+					SpriteArea.push_back(TempOverlapY * TILE_WIDTH);
+					SpriteOverlap.push_back(LM[y2][x1][d]);
+				}
+				else { //doesn't have any overlap
+					continue;
+				}
+			}
+			failx1 = true;
+			faily2 = true; 
+			if (x1 != x2 && TempX2Math != 0) {
+				//if (LM[y2][x2].size() > 0) { //LR
+				for (int d = 0; d < LM[y2][x2].size(); d++) {
+					//You are for certain in the UL or completely inline, thus if anything is overlapping your UL point,your colliding
+					if (LM[y2][x2][d]->xPos  <= ObjectSprite->xPos + TILE_WIDTH) { //ok
+						TempOverlapX = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][d]->xPos; //ok
+						if (LM[y2][x2][d]->yPos  <= ObjectSprite->yPos + TILE_HEIGHT) { //ok
+							TempOverlapY = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x2][d]->yPos; //ok
+							SpriteArea.push_back(TempOverlapX * TempOverlapY);
+							SpriteOverlap.push_back(LM[y2][x2][d]);
+						}
+						else { //you must be approaching in line, from the right, to the left, which is occupied
+							SpriteArea.push_back(TempOverlapX * TILE_HEIGHT);
+							SpriteOverlap.push_back(LM[y2][x2][d]);
+						}
+					}
+					else if (LM[y2][x2][d]->yPos + TILE_HEIGHT >= ObjectSprite->yPos) { //you must be approaching in line, from below, to above, which is occupied
+						TempOverlapY = LM[y2][x2][d]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+						SpriteArea.push_back(TempOverlapY * TILE_WIDTH);
+						SpriteOverlap.push_back(LM[y2][x2][d]);
+					}
+					else { //doesn't have any overlap
+						continue;
+					}
+				}
+
+				failx2 = true;
+				faily2 = true; 
+			}
+		} 
+
+		//now that all are pushed back, sort
+		//std::vector<int> SpriteArea  
+		//vector that holds the pointer itself. to be returned as a stack
+		//std::vector<Sprite*> SpriteOverlap 
+
+
+		//using swap since it's constant as opposed to insert.
+		//also if we get one that is the exact same creation order, we want to erase it rather than swap it.
+		std::vector<int> HaveSeen = {};
+		bool found = false;
+
+		//eliminate all doubles
+		for (int i = 0; i < SpriteOverlap.size(); i++) {
+			for (int j = 0; j < HaveSeen.size(); j++) { //would like a better version of this that stops when found
+				if (SpriteOverlap[i]->OrderCreation == HaveSeen[j]) {
+					found = true;
+				}
+			}
+			if (found = true) {
+				SpriteOverlap.erase(SpriteOverlap.begin() + i);
+				SpriteArea.erase(SpriteArea.begin()+i);
+				i--; //to balance out the erasure and the itteration of hte loop
+			}
+			else {
+				HaveSeen.push_back(SpriteOverlap[i]->OrderCreation);
+			}
+			found = false;
+		}
+
+
+
+		//sort the stack by priority of colliding first. So it should go {this, ..., collides third, collides second, collides first}
+		//This will differ from the previous tile collision because NOW we have every single tile possibly creating a localized stack. it is easier to find deadlocks probably. this also brings more value to a holder for items we have successfully moved.
+
+		//for now we'll do a merge sort, but in the future we want to weigh how many things an object collided with/overlapped, and then sort it based on the size. If you say, collide with 100 objects, it is wort hdoing a merge sort or binary.
+		MergeSortSpriteCollision(SpriteOverlap, SpriteArea, 0, SpriteOverlap.size());
+
+		//return the vector
+
+
+
+
+
+
+	}
+	void MergeSpriteCollision(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea, int L, int M, int R) {
+		
+		int LeftItter = L;
+		int RightItter = M + 1;
+		if (LeftItter > M || RightItter > R) {
+			printf("Left or Right finished\n");
+		}
+		
+		/*
+		auto const subArrayOne = M - L + 1;
+		auto const subArrayTwo = R - M;
+ 
+		if (SpriteArea[
+
+		*/
+
+		/*
+			auto const subArrayOne = M - L + 1;
+			auto const subArrayTwo = R - M;
+ 
+			// Create temp arrays
+			auto *leftOverlapArray = new int[subArrayOne], *rightOverlapArray = new int[subArrayTwo];
+			auto *leftAreaArray = new int[subArrayOne], *rightAreaArray = new int[subArrayTwo];
+
+
+			// Copy data to temp arrays leftArray[] and rightArray[]
+			for (auto i = 0; i < subArrayOne; i++)
+				leftOverlapArray[i] = SpriteOverlap[L + i];
+				leftAreaArray[i] = SpriteArea[L + i];
+			for (auto j = 0; j < subArrayTwo; j++)
+				rightOverlapArray[j] = SpriteOverlap[M + 1 + j];
+				rightAreaArray[j] = SpriteArea[M + 1 + j];
+
+			auto indexOfSubArrayOne = 0, // Initial index of first sub vec
+				indexOfSubArrayTwo = 0; // Initial index of second sub vec
+			int indexOfMergedArray = left; // Initial index of merged array
+ 
+			// Merge the temp arrays back into array[left..right]
+			while (indexOfSubArrayOne < subArrayOne && indexOfSubArrayTwo < subArrayTwo) {
+				if (leftArray[indexOfSubArrayOne] <= rightArray[indexOfSubArrayTwo]) {
+					array[indexOfMergedArray] = leftArray[indexOfSubArrayOne];
+					indexOfSubArrayOne++;
+				}
+				else {
+					array[indexOfMergedArray] = rightArray[indexOfSubArrayTwo];
+					indexOfSubArrayTwo++;
+				}
+				indexOfMergedArray++;
+			}
+			// Copy the remaining elements of
+			// left[], if there are any
+			while (indexOfSubArrayOne < subArrayOne) {
+				array[indexOfMergedArray] = leftArray[indexOfSubArrayOne];
+				indexOfSubArrayOne++;
+				indexOfMergedArray++;
+			}
+			// Copy the remaining elements of
+			// right[], if there are any
+			while (indexOfSubArrayTwo < subArrayTwo) {
+				array[indexOfMergedArray] = rightArray[indexOfSubArrayTwo];
+				indexOfSubArrayTwo++;
+				indexOfMergedArray++;
+			}
+		}
+		*/
+	}
+
+	void MergeSortSpriteCollision(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea, int L, int R) { //we will be editing directly onto it
+		if (L >= R) {
+			return; //returns recursively
+		}
+		
+		int M = L + (R - L) / 2;
+		MergeSortSpriteCollision(SpriteOverlap, SpriteArea, L, M);
+		MergeSortSpriteCollision(SpriteOverlap, SpriteArea, M+1, R);
+		MergeSpriteCollision(SpriteOverlap, SpriteArea, L, M, R);
+
+
+
+	};
+
+
 	//Object 2= R2, 3, C3, 4
 	//Object 1 =R4, 5, C4, 5
 	void MoveAllSprites() {
@@ -1037,9 +1331,18 @@ public:
 			
 					CheckFutureSpritePosition(Queue2[i], FutureCode); //Will it Collide?
 					if (FutureCode[0] != -1) {
-						// printf("(0,1) y=%d, c=%d\n", FutureCode[0], FutureCode[1]);
-						CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
-						// printf("7.1\n");
+						printf("7.1\n");
+						//CollidedSprite1 = LM[FutureCode[0]][FutureCode[1]];
+						CollidedSprite1 = {};
+						for (int d = 0; d < LM[FutureCode[0]][FutureCode[1]].size(); d++) {
+							if (LM[FutureCode[0]][FutureCode[1]][d]->xPos + TILE_WIDTH > Queue2[i]->xPos) {
+
+							}
+
+
+						}
+
+
 					}
 					if (FutureCode[2] != -1) {
 						// printf("(2, 3) y=%d, c=%d\n", FutureCode[2], FutureCode[3]);

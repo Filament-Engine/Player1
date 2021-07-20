@@ -9,45 +9,48 @@ public:
 	std::string Message;
 	bool StayInPlace;
 
-    // this is our constructor for the text
-    Text(const char* font_path, std::string message, int font_size, SDL_Color Color, int xPos, int yPos, bool Stay) { // this is the constructor for placing it on a level instead of camera position
-        Font = TTF_OpenFont(font_path, font_size);
-        TextColor = Color;
-        Message = message;
-        StayInPlace = Stay; // this determines if the text follows the player or stays in place
+	// this is our constructor for the text
+	Text(const char* font_path, std::string message, int font_size, SDL_Color Color, int xPos, int yPos, bool Stay) { // this is the constructor for placing it on a level instead of camera position
+		Font = TTF_OpenFont(font_path, font_size);
+		TextColor = Color;
+		Message = message;
+		StayInPlace = Stay; // this determines if the text follows the player or stays in place
 
-        if (Font == NULL)
-        {
-            printf("Failed to load font: %s\n", TTF_GetError());
-        }
-        else
-        {
-            text_rect = new SDL_Rect;
-            text_rect->w = LEVEL_WIDTH*TILE_WIDTH;
-            text_rect->h = LEVEL_HEIGHT*TILE_HEIGHT;
-           // printf("%d, %d", text_rect->w, text_rect->h);
-            // here we create the text surface
-            SDL_Surface* textSurface = TTF_RenderText_Blended(Font, Message.c_str(), TextColor);
-           // printf("%d, %d", text_rect->w, text_rect->h);
-            if (StayInPlace) {
-            text_rect->y = yPos;
-                SDL_Surface* levelSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-
-                SDL_BlitSurface(textSurface, NULL, levelSurface, text_rect); // blits the text onto our level surface
-
-                textTexture = SDL_CreateTextureFromSurface(gRenderer, levelSurface); // converts the surface to a texture
+		if (Font == NULL)
+		{
+			printf("Failed to load font: %s\n", TTF_GetError());
+		}
+		else
+		{
+			text_rect = new SDL_Rect;
+			text_rect->w = LEVEL_WIDTH * TILE_WIDTH;
+			text_rect->h = LEVEL_HEIGHT * TILE_HEIGHT;
+			// printf("%d, %d", text_rect->w, text_rect->h);
+			 // here we create the text surface
 			SDL_Surface* textSurface = TTF_RenderText_Blended(Font, Message.c_str(), TextColor);
-                SDL_FreeSurface(levelSurface); // releasing the surface
-            }
-            else {
-                textTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface); // converts the surface to a texture
-            }
+			// printf("%d, %d", text_rect->w, text_rect->h);
+			if (StayInPlace) {
+				text_rect->y = yPos;
+				SDL_Surface* levelSurface = SDL_CreateRGBSurface(0, LEVEL_WIDTH * TILE_WIDTH, LEVEL_HEIGHT * TILE_HEIGHT, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+
 				SDL_BlitSurface(textSurface, NULL, levelSurface, text_rect); // blits the text onto our level surface
-            SDL_FreeSurface(textSurface); // releasing the surface
-        }
-    }
+
+				textTexture = SDL_CreateTextureFromSurface(gRenderer, levelSurface); // converts the surface to a texture
+				SDL_Surface* textSurface = TTF_RenderText_Blended(Font, Message.c_str(), TextColor);
 				SDL_FreeSurface(levelSurface); // releasing the surface
-    // this changes the message
+			}
+			else {
+				textTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface); // converts the surface to a texture
+			}
+			//SDL_BlitSurface(textSurface, NULL, levelSurface, text_rect); // blits the text onto our level surface
+			SDL_FreeSurface(textSurface); // releasing the surface
+		}
+	}
+	//SDL_FreeSurface(levelSurface); // releasing the surface
+
+
+
+	// this changes the message
     void UpdateMessage(std::string new_message) {
         Message = new_message;
 			}
@@ -55,6 +58,7 @@ public:
             SDL_FreeSurface(textSurface); // releasing the surface
         }
     }
+
 
 	// this changes the message
 	void UpdateMessage(std::string new_message) {
