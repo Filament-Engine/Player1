@@ -1038,7 +1038,31 @@ public:
 		int TempOverlapX;
 		int TempOverlapY;
 
+		int xAxis = 0;
+		int yAxis = 0;
 
+		//Get direction (diagnonal, or 
+		if (ObjectSprite->xVec > 0) {
+			//going right
+			xAxis = 1;
+		}
+		else if (ObjectSprite->xVec < 0) {
+			//going left
+			xAxis = -1;
+		}
+		if (ObjectSprite->yVec > 0) {
+			//going down
+			yAxis = 1;
+		}
+		else if (ObjectSprite->yVec < 0) {
+			//going up
+			yAxis = -1;
+		}
+
+
+
+
+		
 		if (true) { //UL -always 'fail' for now. It will always be mapped primarily, as this is the only one we are guarenteed to check no matter it's position (whether it be %16=0, or not.
 			//if (LM[y1][x1].size() > 0) {
 
@@ -1155,6 +1179,9 @@ public:
 				faily2 = true; 
 			}
 		} 
+		
+
+
 
 		//now that all are pushed back, sort
 		//std::vector<int> SpriteArea  
