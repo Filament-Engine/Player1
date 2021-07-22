@@ -2327,8 +2327,14 @@ public:
 		//If it does collide, then flag for overlap (all four corners)
 
 
-	//Sort by overlap most, figure out the order of collision. 
+
+
+	//PRUNE -Eliminate any dobules, and anything that doesn't collide. For now assume everything you overlap with collides -Sort by overlap most, figure out the order of collision. 
+		//mergesort then merge
+		//then prune doubles
+		//then prune those without collision
 		if (true) {
+			/* 
 			//using swap since it's constant as opposed to insert.
 			//also if we get one that is the exact same creation order, we want to erase it rather than swap it.
 			std::vector<int> HaveSeen = {};
@@ -2361,6 +2367,13 @@ public:
 			//for now we'll do a merge sort, but in the future we want to weigh how many things an object collided with/overlapped, and then sort it based on the size. If you say, collide with 100 objects, it is wort hdoing a merge sort or binary.
 			MergeSortSpriteCollision(SpriteOverlap, SpriteArea, 0, SpriteOverlap.size());
 			*/
+			
+			//merge sort each side individually
+			SpriteOverlapX; //holds pointers to those overlapping x
+			SpriteOverlapY; //hlds poitners to those overlapping y
+			SpriteX; //holds x overlap values
+			SpriteY; //holds y overlap values
+
 		}
 
 
