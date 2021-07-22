@@ -2816,6 +2816,8 @@ public:
 				else {
 					SpriteStacks.push_back(TempStackable); //do not delete until it is handled. Just overwrite Tempstackable poitner with new XYArr
 					//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
+					Queue2[i]->UndoBehavior();
+					ReMapSprite(Queue2[i]);
 					Queue2[i] = NULL;
 				
 				}
@@ -2829,14 +2831,6 @@ public:
 					// if it has a creationorder greater than current que digit, you cannot move it. wait.
 					
 
-
-				//success
-				printf("4\n");
-				Queue2[i]->MoveTargetTileX();
-				printf("5\n");
-				Queue2[i]->MoveTargetTileY();
-				printf("6\n");
-				ReMapSprite(Queue2[i]);
 
 				//fail
 				// undobehavior
