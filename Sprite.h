@@ -1125,9 +1125,7 @@ public:
 		}//Find Measure's value
 		int TempXOverlap;
 		int TempYOverlap;
-
 		printf("3.2\n"); //Measure found
-
 		//figure out what your hitting, and how far overlapped.
 		if (true) {
 			//2) NOTE IF THERE IS A BUG, WHERE ITS COLLIDIG OT ITS RIGHT OR BELOW EXTRA, MAKE A CHECK THAT IF x2%16=0 IT IS NOW EQUAL TO x1, THUS IT DOESNT MATTER IF WE DO x2 OR x1 IN THE X CHECK, so long as they are the same, TAHT IS ALL. - a bug from previous, but the naming convention should be based on hte edge that is 'leading'
@@ -2324,17 +2322,10 @@ public:
 			//NOTHING :D
 		}
 		printf("3.3\n"); //Matrixes checked has been decided
-
-
 		//We've got what we could be colliding with
 		//Merge sort for most at the last of hte vector
-
 		//If collide, don't flag for overlaps
 		//If it does collide, then flag for overlap (all four corners)
-
-
-
-
 	//PRUNE -Eliminate any dobules, and anything that doesn't collide. For now assume everything you overlap with collides -Sort by overlap most, figure out the order of collision. 
 		//mergesort then merge
 		//then prune doubles
@@ -2380,13 +2371,44 @@ public:
 			SpriteX; //holds x overlap values
 			SpriteY; //holds y overlap values
 			if (SpriteOverlapX.size() > 0) {
-				MergeSortSpriteCollision(SpriteOverlapX, SpriteX);
+				MergeSortSpriteCollision(SpriteOverlapX, SpriteX); 
 			}
 			if (SpriteOverlapY.size() > 0) {
 				MergeSortSpriteCollision(SpriteOverlapY, SpriteY);
 			}
 
 		}
+
+
+		//jack (inserted here hope its right) - here is fine, we will improve the merge eventually so this bit would be faster.
+		int xloop = 0;
+		int yloop = 0;
+		if (SpriteOverlapX.size() > 1) {
+			while (xloop < SpriteOverlapX.size() - 1) {
+				for (int i = xloop + 1; i < SpriteOverlapX.size(); i++) {
+					if (SpriteOverlapX[xloop] == SpriteOverlapX[i]) {
+						SpriteOverlapX.erase(SpriteOverlapX.begin() + i);
+						SpriteX.erase(SpriteX.begin() + i);
+						i--;
+					}
+				}
+				xloop++;
+			}
+		}
+		if (SpriteOverlapY.size() > 1) {
+			while (yloop < SpriteOverlapY.size() - 1) {
+				for (int i = yloop + 1; i < SpriteOverlapY.size(); i++) {
+					if (SpriteOverlapY[yloop] == SpriteOverlapY[i]) {
+						SpriteOverlapY.erase(SpriteOverlapY.begin() + i);
+						SpriteY.erase(SpriteY.begin() + i);
+						i--;
+					}
+				}
+				yloop++;
+			}
+		}
+
+		//end of Jacks insertion. I should check this later.
 
 
 		if (Measure != 10) {
@@ -2414,13 +2436,14 @@ public:
 			}
 			printf("\n");
 		}
-
-
-
 		if (BugTest && (SpriteOverlapY.size()> 0 || SpriteOverlapX.size()>0) ) {
 			printf("Take Time to ensure the above looks correct for Object%d.\n", ObjectSprite->OrderCreation + 1);
 		//	SDL_Delay(5000);
 		}
+	
+		
+		
+		
 		
 		//return the vector
 		if (SpriteOverlapX.size() < 1) {
@@ -2435,7 +2458,6 @@ public:
 				TempStackable->SpriteXCollision.push_back(SpriteOverlapX[i]);
 			}
 		}
-
 		if (SpriteOverlapY.size() < 1) {
 			printf("no Y collisions. empty vector pushed\n");
 			TempStackable->SpriteYCollision = {};
@@ -2448,7 +2470,6 @@ public:
 				TempStackable->SpriteYCollision.push_back(SpriteOverlapY[i]);
 			}
 		}
-
 		//Trying to figure out how to store then 'return' these values as readable.
 		if (TempStackable->SpriteXCollision.size() > 0) {
 			printf("I've got an X collision with Object%d\n", TempStackable->SpriteXCollision[0]->OrderCreation + 1);
@@ -2458,18 +2479,14 @@ public:
 			printf("I've got an Y collision with Object%d\n", TempStackable->SpriteYCollision[0]->OrderCreation + 1);
 			SDL_Delay(5000);
 		}
-
 		if (TempStackable->SpriteYCollision.size() > 0 || TempStackable->SpriteXCollision.size() > 0) {
 			TempStackable->Victim = ObjectSprite; //Our sprite is a 'victim', it can't move.
 		}
 		else {
 			TempStackable->Victim = NULL; //it moved, so there is no 'victim'.
 		}
-
-			//= [{SpriteOverlapX}, {SpriteOverlapY}];
+		//= [{SpriteOverlapX}, {SpriteOverlapY}];
 		printf("3.4\n"); //arrray to return is created
-		 
-
 	}
 
 	
@@ -2782,68 +2799,98 @@ public:
 		for (int i = 0; i < CompletedSprites.size(); i++) {
 			CompletedSprites[i] = 0; //there are none that are initially 'completed'
 		}
-
+		bool endofstackX=false;
+		bool endofstackY=false;
 
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
-			if (Queue2[i] != NULL) {
-				printf("1\n");
-				RemoveSpriteFromMap(Queue2[i]);
-				printf("2\n");
-				Queue2[i]->Behavior();
-				printf("3\n");
-				 TempStackable = new XYArr; //will delete if emptied, otherwise we'll push the object to the stack.
-				//Question, if I make a new XYArr, without deleting this one, will it change pointers automatically without overwritting? Yes it does :D!
-				CheckFutureSpritePosition2(Queue2[i], TempStackable);
-				//printf("TempStackable poitner is %p, for object%d\n", TempStackable, Queue2[i]->OrderCreation+1);
-				//SDL_Delay(5000);
-				
-				//Check if we got anything
-				
-				//success
-				if (TempStackable->Victim==NULL || (TempStackable->SpriteXCollision.size() < 1 && TempStackable->SpriteYCollision.size() < 1)) { //victim reduces the checks
-					delete TempStackable;
-					 
-					printf("4\n");
-					Queue2[i]->MoveTargetTileX();
-					printf("5\n");
-					Queue2[i]->MoveTargetTileY();
-					printf("6\n");
-					ReMapSprite(Queue2[i]);
-					CompletedSprites[i] = 1; //the Sprite with creation order 'i' has successfully completed it's movement
-					Queue2[i] = NULL;
-
+			printf("Check for end of Stack\n");
+			for (int d = 0; d < SpriteStacks.size(); d++) { //improve how we're doing this later
+				if (SpriteStacks[d]->SpriteXCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size()]) {
+					endofstackX = true;
 				}
-				else {
-					SpriteStacks.push_back(TempStackable); //do not delete until it is handled. Just overwrite Tempstackable poitner with new XYArr
-					//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
-					Queue2[i]->UndoBehavior();
-					ReMapSprite(Queue2[i]);
-					Queue2[i] = NULL;
-				
+				printf("x");
+				if (SpriteStacks[d]->SpriteYCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size()]) {
+					endofstackY = true;
 				}
-
-				//if you find an item at the end of a stack (whether that be the X or Y overlap), and attempt to move it.
-				//either you fail, and it makes a new stack
-				//you've reached the end, and it still fails, thus it's 'completed' and the stack it blocked is erased
-				//you've succeeded, and thus move on to the one behind it. - marking on CompletedSprites the sprite.
-					//Regarding the one behind it. If it has a creationiorder less than your current Que digit, you can move it
-					// IF AND ONLY IF it is not 'true' in completed Sprites. Then mark it completed
-					// if it has a creationorder greater than current que digit, you cannot move it. wait.
-					
-
-
-				//fail
-				// undobehavior
-				//remap
-				// store the collision (could be collsion) prune the the no collision tiles.
-				//When stack, x = {1, 5, 10, 8} -> 8
-				//x = {1, 5, 8, 10} ->10, 8, 5, 1 (because they are less than 10).
-				//XYArr[0]->push_back({}); <-these may be done already within checkfuture!
-				//XYArr[1]->push_back({});
-
-
-				printf("7\n");
+				printf("y\n");
 			}
+			printf("End of stack found if any\n");
+			if (endofstackX || endofstackY) {
+				printf("The que found that object%d is in a stack!\n", Queue2[i]->OrderCreation + 1);
+			}
+
+			if (endofstackX && endofstackY) {
+				printf("BOTH on stack\n");
+			}
+			else if (endofstackX) {
+				printf("X on stack!\n");
+			}
+			else if (endofstackY) {
+				printf("Y on stack!\n");
+			}
+
+			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
+			if (Queue2[i] != NULL) { //redudant, archaic
+					printf("1\n");
+					RemoveSpriteFromMap(Queue2[i]);
+					printf("2\n");
+					Queue2[i]->Behavior();
+					printf("3\n");
+					TempStackable = new XYArr; //will delete if emptied, otherwise we'll push the object to the stack.
+				   //Question, if I make a new XYArr, without deleting this one, will it change pointers automatically without overwritting? Yes it does :D!
+					CheckFutureSpritePosition2(Queue2[i], TempStackable);
+					//printf("TempStackable poitner is %p, for object%d\n", TempStackable, Queue2[i]->OrderCreation+1);
+					//SDL_Delay(5000);
+
+					//Check if we got anything
+
+					//success
+					if (TempStackable->Victim == NULL || (TempStackable->SpriteXCollision.size() < 1 && TempStackable->SpriteYCollision.size() < 1)) { //victim reduces the checks
+						delete TempStackable;
+
+						printf("4\n");
+						Queue2[i]->MoveTargetTileX();
+						printf("5\n");
+						Queue2[i]->MoveTargetTileY();
+						printf("6\n");
+						ReMapSprite(Queue2[i]);
+						CompletedSprites[i] = 1; //the Sprite with creation order 'i' has successfully completed it's movement
+						Queue2[i] = NULL;
+
+					}
+					else {
+						SpriteStacks.push_back(TempStackable); //do not delete until it is handled. Just overwrite Tempstackable poitner with new XYArr
+
+						//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
+						Queue2[i]->UndoBehavior();
+						ReMapSprite(Queue2[i]);
+						Queue2[i] = NULL;
+
+					}
+
+					//if you find an item at the end of a stack (whether that be the X or Y overlap), and attempt to move it.
+					//either you fail, and it makes a new stack
+					//you've reached the end, and it still fails, thus it's 'completed' and the stack it blocked is erased
+					//you've succeeded, and thus move on to the one behind it. - marking on CompletedSprites the sprite.
+						//Regarding the one behind it. If it has a creationiorder less than your current Que digit, you can move it
+						// IF AND ONLY IF it is not 'true' in completed Sprites. Then mark it completed
+						// if it has a creationorder greater than current que digit, you cannot move it. wait.
+
+
+
+					//fail
+					// undobehavior
+					//remap
+					// store the collision (could be collsion) prune the the no collision tiles.
+					//When stack, x = {1, 5, 10, 8} -> 8
+					//x = {1, 5, 8, 10} ->10, 8, 5, 1 (because they are less than 10).
+					//XYArr[0]->push_back({}); <-these may be done already within checkfuture!
+					//XYArr[1]->push_back({});
+
+
+					printf("7\n");
+				}
+			
 		}
 		printf("8\n");
 	}
