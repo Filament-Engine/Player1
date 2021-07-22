@@ -1139,11 +1139,11 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						//2) now check for overlap, diagonal so check for x and y. These formulas change every time. For simplcity, attempt to make sure that if there is a gap between the two object, 
-						if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-							TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 						}
 						else {
-							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+							TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 						}
 						if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 							TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1170,11 +1170,11 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) {//UL
 
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1196,11 +1196,11 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) {//LL
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1224,11 +1224,11 @@ public:
 							printf("d\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { //UL
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1250,12 +1250,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { //UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1290,11 +1291,11 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { //UL
 
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1316,12 +1317,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { //UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1343,11 +1345,11 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { //LL
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1379,12 +1381,13 @@ public:
 						printf("i\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) { // first
-						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-							TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 						}
 						else {
-							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+							TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 						}
 						if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 							TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1409,12 +1412,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1436,7 +1440,7 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 							}
@@ -1466,11 +1470,11 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
 
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1492,12 +1496,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1522,11 +1527,11 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
 
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1548,7 +1553,7 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 							}
@@ -1576,12 +1581,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1614,11 +1620,11 @@ public:
 					}
 					for (int i = 0; i < LM[y2][x1].size(); i++) { // first
 
-						if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-							TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 						}
 						else {
-							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+							TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 						}
 						if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 							TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1644,11 +1650,11 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
 
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1670,11 +1676,11 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1695,11 +1701,11 @@ public:
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1721,7 +1727,7 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 							}
@@ -1751,11 +1757,11 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
 
-							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1778,7 +1784,7 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 							}
@@ -1805,11 +1811,11 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1843,7 +1849,7 @@ public:
 						printf("x\n");
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) { // LL
-						if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+						if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 						}
@@ -1873,12 +1879,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -1900,15 +1907,12 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR 
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
-								printf("HELLO\n");
 							}
 							else {
 								TempXOverlap = LM[y2][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
-
-								printf("HEY\n");
 							}
 							if (LM[y2][x2][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x2][i]->yPos;
@@ -1941,11 +1945,11 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LR
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -1968,7 +1972,7 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 							}
@@ -1998,11 +2002,11 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
 
-							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
@@ -2025,7 +2029,7 @@ public:
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
 
-							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 							}
@@ -2052,12 +2056,13 @@ public:
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
 
-							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
-								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							else {
-								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
 							}
 							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
 								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -2139,7 +2144,7 @@ public:
 						printf("ai\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
-						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
 							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 							
 						}
@@ -2158,7 +2163,7 @@ public:
 						printf("aj\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
-						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
 
 						}
@@ -2175,7 +2180,7 @@ public:
 						printf("ak\n");
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
-						if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+						if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
 							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
 
 						}
