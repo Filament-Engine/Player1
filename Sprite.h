@@ -2373,6 +2373,9 @@ public:
 			SpriteOverlapY; //hlds poitners to those overlapping y
 			SpriteX; //holds x overlap values
 			SpriteY; //holds y overlap values
+			if (SpriteOverlapX.size() > 0) {
+				MergeSortSpriteCollision(SpriteOverlapX, SpriteX, 0, SpriteOverlapX.size()-1);
+			}
 
 		}
 
@@ -2427,64 +2430,37 @@ public:
 		if (LeftItter > M || RightItter > R) {
 			printf("Left or Right finished\n");
 		}
-
-		/*
-		auto const subArrayOne = M - L + 1;
-		auto const subArrayTwo = R - M;
-
-		if (SpriteArea[
-
-		*/
-
-		/*
-			auto const subArrayOne = M - L + 1;
-			auto const subArrayTwo = R - M;
-
-			// Create temp arrays
-			auto *leftOverlapArray = new int[subArrayOne], *rightOverlapArray = new int[subArrayTwo];
-			auto *leftAreaArray = new int[subArrayOne], *rightAreaArray = new int[subArrayTwo];
-
-
-			// Copy data to temp arrays leftArray[] and rightArray[]
-			for (auto i = 0; i < subArrayOne; i++)
-				leftOverlapArray[i] = SpriteOverlap[L + i];
-				leftAreaArray[i] = SpriteArea[L + i];
-			for (auto j = 0; j < subArrayTwo; j++)
-				rightOverlapArray[j] = SpriteOverlap[M + 1 + j];
-				rightAreaArray[j] = SpriteArea[M + 1 + j];
-
-			auto indexOfSubArrayOne = 0, // Initial index of first sub vec
-				indexOfSubArrayTwo = 0; // Initial index of second sub vec
-			int indexOfMergedArray = left; // Initial index of merged array
-
-			// Merge the temp arrays back into array[left..right]
-			while (indexOfSubArrayOne < subArrayOne && indexOfSubArrayTwo < subArrayTwo) {
-				if (leftArray[indexOfSubArrayOne] <= rightArray[indexOfSubArrayTwo]) {
-					array[indexOfMergedArray] = leftArray[indexOfSubArrayOne];
-					indexOfSubArrayOne++;
-				}
-				else {
-					array[indexOfMergedArray] = rightArray[indexOfSubArrayTwo];
-					indexOfSubArrayTwo++;
-				}
-				indexOfMergedArray++;
+		std::vector<Sprite*> TempOverlap;
+		std::vector<int> TempArea;
+		while (LeftItter <= M || RightItter <= R) { //so we don't go over the vector space
+			if (SpriteArea[LeftItter] < SpriteArea[RightItter]) {
+				TempOverlap.push_back(SpriteOverlap[LeftItter]);
+				TempArea.push_back(SpriteArea[LeftItter]);
+				LeftItter++;
 			}
-			// Copy the remaining elements of
-			// left[], if there are any
-			while (indexOfSubArrayOne < subArrayOne) {
-				array[indexOfMergedArray] = leftArray[indexOfSubArrayOne];
-				indexOfSubArrayOne++;
-				indexOfMergedArray++;
-			}
-			// Copy the remaining elements of
-			// right[], if there are any
-			while (indexOfSubArrayTwo < subArrayTwo) {
-				array[indexOfMergedArray] = rightArray[indexOfSubArrayTwo];
-				indexOfSubArrayTwo++;
-				indexOfMergedArray++;
+			else {
+				TempOverlap.push_back(SpriteOverlap[RightItter]);
+				TempArea.push_back(SpriteArea[RightItter]);
+				RightItter++;
 			}
 		}
-		*/
+		//then individual itters
+		while (LeftItter <= M) {
+			TempOverlap.push_back(SpriteOverlap[LeftItter]);
+			TempArea.push_back(SpriteArea[LeftItter]);
+			LeftItter++;
+		}
+		while (RightItter <= R) {
+			TempOverlap.push_back(SpriteOverlap[RightItter]);
+			TempArea.push_back(SpriteArea[RightItter]);
+			RightItter++;
+		}
+		//now it should be fully sorted.
+		for (int i = 0; i < R+1; i++) {
+			SpriteOverlap[i] = TempOverlap[i];
+			SpriteArea[i] = TempArea[i];
+		}
+		
 	}
 
 	void MergeSortSpriteCollision(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea, int L, int R) { //we will be editing directly onto it
@@ -2493,10 +2469,15 @@ public:
 		}
 
 		int M = L + (R - L) / 2;
-		MergeSortSpriteCollision(SpriteOverlap, SpriteArea, L, M);
-		MergeSortSpriteCollision(SpriteOverlap, SpriteArea, M + 1, R);
-		MergeSpriteCollision(SpriteOverlap, SpriteArea, L, M, R);
-
+		if (M == L) { //I think this is important
+			//sort the two, but then return. Also double check the math that we won't just end up with '1'
+			return;
+		}
+		else {
+			MergeSortSpriteCollision(SpriteOverlap, SpriteArea, L, M);
+			MergeSortSpriteCollision(SpriteOverlap, SpriteArea, M + 1, R);
+			MergeSpriteCollision(SpriteOverlap, SpriteArea, L, M, R);
+		}
 
 
 	};
