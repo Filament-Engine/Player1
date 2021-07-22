@@ -329,7 +329,7 @@ void handleLoop() {
 
 		//test to see if auto movement works 
 		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
-			gLevel1->SpriteLayer->MoveAllSprites();	
+			gLevel1->SpriteLayer->MoveAllSprites2();	
 		//}
 			// gLevel1->SpriteLayer->DisplayTileBasedArray();
 			//SDL_Delay(250);
