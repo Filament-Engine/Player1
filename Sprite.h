@@ -2803,13 +2803,15 @@ public:
 		bool endofstackY=false;
 
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
+
+			/*
 			printf("Check for end of Stack\n");
 			for (int d = 0; d < SpriteStacks.size(); d++) { //improve how we're doing this later
-				if (SpriteStacks[d]->SpriteXCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size()]) {
+				if (SpriteStacks[d]->SpriteXCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size()-1]) {
 					endofstackX = true;
 				}
 				printf("x");
-				if (SpriteStacks[d]->SpriteYCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size()]) {
+				if (SpriteStacks[d]->SpriteYCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size()-1]) {
 					endofstackY = true;
 				}
 				printf("y\n");
@@ -2817,6 +2819,7 @@ public:
 			printf("End of stack found if any\n");
 			if (endofstackX || endofstackY) {
 				printf("The que found that object%d is in a stack!\n", Queue2[i]->OrderCreation + 1);
+				SDL_Delay(5000);
 			}
 
 			if (endofstackX && endofstackY) {
@@ -2828,6 +2831,9 @@ public:
 			else if (endofstackY) {
 				printf("Y on stack!\n");
 			}
+			*/
+
+
 
 			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
 			if (Queue2[i] != NULL) { //redudant, archaic
@@ -2855,6 +2861,31 @@ public:
 						printf("6\n");
 						ReMapSprite(Queue2[i]);
 						CompletedSprites[i] = 1; //the Sprite with creation order 'i' has successfully completed it's movement
+						
+
+						std::vector<int> InvestigateIndexsX = {};
+						std::vector<int> InvestigateIndexsY = {};
+						for (int d = 0; d < SpriteStacks.size(); d++) {
+							if (SpriteStacks[d]->SpriteXCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]) {
+								SpriteStacks[d]->SpriteXCollision.pop_back();
+								InvestigateIndexsX.push_back(d);
+								endofstackX = true;
+							} 
+							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]) {
+								SpriteStacks[d]->SpriteYCollision.pop_back();
+								InvestigateIndexsY.push_back(d);
+								endofstackY = true;
+							} 
+						}
+						
+						HandleCollision2(InvestigateIndexsX, SpriteStacks, CompletedSprites, 0, i);
+						HandleCollision2(InvestigateIndexsY, SpriteStacks, CompletedSprites, 1, i);
+
+						//should check for empty stacks, or pass them together to check as a pair.
+
+						
+						
+						
 						Queue2[i] = NULL;
 
 					}
@@ -2896,7 +2927,57 @@ public:
 	}
 
 
+	void HandleCollision2(std::vector<int>InvestigateV, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompeltedSprites, int V, int QueLocation) {
+		//already popped back the first we found. Now investigate those idnexes
+		//1) Are you already completed <-pop back, add to our list
+		//2) are you less than the current que location? And are you not a victim? pop back (this may be unlikely or mpossible)
+		//3) are you empty at this index location for both x and y? Then erase it and move the interested stack, restarting the handle collision2.
+		Sprite* TempSprite;
+		bool IsTempSpriteVictim;
+		//xs
+		if (V == 0) {
+			for (int i = 0; i < InvestigateV.size(); i++) {
+				//if it's already been moved completely
+				TempSprite = SpriteStacks[InvestigateV[i]]->SpriteXCollision[SpriteStacks[InvestigateV[i]]->SpriteXCollision.size() - 1]; //points to the end of the stack
+				if (CompeltedSprites[TempSprite->OrderCreation] == 1) {
+					SpriteStacks[InvestigateV[i]]->SpriteXCollision.pop_back(); //record for next itteration?
+				}
+				
+				
+				for (int d = 0; d < InvestigateV.size(); d++) {
+					if (TempSprite->OrderCreation == SpriteStacks[InvestigateV[d]]->Victim->OrderCreation) {
+						IsTempSpriteVictim = true; //insert a continue?
+					}
+				}
+				//Your less than the que, and you've likely already gone, and your not in a stack, just double check that it has gone.
+				if (TempSprite->OrderCreation < i && !IsTempSpriteVictim) {
+					
+				}
+			}
+		}
+		//ys
+		if (V == 1) {
+			for (int i = 0; i < InvestigateV.size(); i++) {
+				//if it's already been moved completely
+				TempSprite = SpriteStacks[InvestigateV[i]]->SpriteYCollision[SpriteStacks[InvestigateV[i]]->SpriteYCollision.size() - 1]; //points to the end of the stack
+				if (CompeltedSprites[TempSprite->OrderCreation] == 1) {
+					SpriteStacks[InvestigateV[i]]->SpriteYCollision.pop_back(); //record for next itteration?
+				}
 
+
+				for (int d = 0; d < InvestigateV.size(); d++) {
+					if (TempSprite->OrderCreation == SpriteStacks[InvestigateV[d]]->Victim->OrderCreation) {
+						IsTempSpriteVictim = true; //insert a continue?
+					}
+				}
+				//Your less than the que, and you've likely already gone, and your not in a stack, just double check that it has gone.
+				if (TempSprite->OrderCreation < i && !IsTempSpriteVictim) {
+
+				}
+			}
+		}
+
+	}
 
 
 	//Recursive
