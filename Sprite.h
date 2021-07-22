@@ -1140,7 +1140,7 @@ public:
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						//2) now check for overlap, diagonal so check for x and y. These formulas change every time. For simplcity, attempt to make sure that if there is a gap between the two object, 
 						TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
-						TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+						TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos; 
 						//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
 						if (TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x1][i]);
@@ -1748,18 +1748,18 @@ public:
 			}
 			else if (Measure == 6) {//L
 			//edges are [x1][y1] and [x1][y2]
-
-
-
-
 				if (TempY2Math == 0) {
 					if (BugTest) {
 						printf("af\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
-
-						TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
-						if (TempXOverlap > 0) {
+						if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
+							TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+						else {
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+						}
+						if (TempXOverlap < 17) {
 							SpriteOverlapX.push_back(LM[y1][x1][i]);
 							SpriteX.push_back(TempXOverlap);
 						}
@@ -1770,9 +1770,13 @@ public:
 						printf("ag\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
-
-						TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
-						if (TempXOverlap > 0) {
+						if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
+							TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+						else {
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+						}
+						if (TempXOverlap < 17) {
 							SpriteOverlapX.push_back(LM[y1][x1][i]);
 							SpriteX.push_back(TempXOverlap);
 						}
@@ -1781,31 +1785,34 @@ public:
 						printf("ah\n");
 					}
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
-
-						TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
-						if (TempXOverlap > 0) {
+						if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
+							TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+						else {
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+						}		
+						if (TempXOverlap < 17) {
 							SpriteOverlapX.push_back(LM[y2][x1][i]);
 							SpriteX.push_back(TempXOverlap);
 						}
 					}
 				}
-
-
-
-
 			}
 			else if (Measure == 14) {//R
 				//edges are [x2][y1] and [x2][y2]
-
-
 				if (TempY2Math == 0) {
 					if (BugTest) {
 						printf("ai\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
 
-						TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
-						if (TempXOverlap > 0) {
+							TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+						else { 
+							TempXOverlap=ObjectSprite->xPos+TILE_WIDTH - LM[y1][x2][i]->xPos;
+						}
+						if (TempXOverlap < 17) {
 							SpriteOverlapX.push_back(LM[y1][x2][i]);
 							SpriteX.push_back(TempXOverlap);
 						}
@@ -1816,9 +1823,14 @@ public:
 						printf("aj\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
 
-						TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
-						if (TempXOverlap > 0) {
+							TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+						else {
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+						}
+						if (TempXOverlap < 17) {
 							SpriteOverlapX.push_back(LM[y1][x2][i]);
 							SpriteX.push_back(TempXOverlap);
 						}
@@ -1827,18 +1839,19 @@ public:
 						printf("ak\n");
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
 
-						TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
-						if (TempXOverlap > 0) {
+							TempXOverlap = LM[y2][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+						else {
+							TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
+						}
+						if (TempXOverlap < 17) {
 							SpriteOverlapX.push_back(LM[y2][x2][i]);
 							SpriteX.push_back(TempXOverlap);
 						}
-
 					}
 				}
-
-
-
 			}
 			else if (Measure == 11) {//D
 				//edges are [x1][y2] and [x2][y2]
@@ -1993,6 +2006,9 @@ public:
 			for (int i = 0; i < SpriteOverlapX.size(); i++) {
 				printf("Sprite %s, ", SpriteOverlapX[i]->label.c_str());
 				printf("Overlap = %d, ", SpriteX[i]); //should always be +, should always be equal in number to the sprite overlap
+				if (SpriteX[i] > 15) {
+					SDL_Delay(5000);
+				}
 			}
 			printf("\n");
 		}
@@ -2001,6 +2017,9 @@ public:
 			for (int i = 0; i < SpriteOverlapY.size(); i++) {
 				printf("Sprite %s, ", SpriteOverlapY[i]->label.c_str());
 				printf("Overlap = %d, ", SpriteY[i]);
+				if (SpriteY[i] > 15) {
+					SDL_Delay(5000);
+				}
 			}
 			printf("\n");
 		}
@@ -2009,7 +2028,7 @@ public:
 
 		if (BugTest && (SpriteOverlapY.size()> 0 || SpriteOverlapX.size()>0) ) {
 			printf("Take Time to ensure the above looks correct for Object%d.\n", ObjectSprite->OrderCreation + 1);
-			SDL_Delay(5000);
+		//	SDL_Delay(5000);
 		}
 
 		//return the vector
