@@ -2418,21 +2418,35 @@ public:
 		
 		//return the vector
 		if (SpriteOverlapX.size() < 1) {
+			printf("no X collisions. empty vector pushed\n");
 			XYArr[0].push_back({});
 		}
 		else {
+			printf("Collidied on X, something's pushed!\n");
+			SDL_Delay(5000);
 			for (int i = 0; i < SpriteOverlapX.size(); i++) {
 				XYArr[0].push_back(SpriteOverlapX[i]);
 			}
 		}
 
 		if (SpriteOverlapY.size() < 1) {
+			printf("no Y collisions. empty vector pushed\n");
 			XYArr[1].push_back({});
 		}
 		else {
+			printf("Collidied on Y, something's pushed!\n");
+			SDL_Delay(5000);
 			for (int i = 0; i < SpriteOverlapY.size(); i++) {
 				XYArr[1].push_back(SpriteOverlapY[i]);
 			}
+		}
+
+		//Trying to figure out how to store then 'return' these values as readable.
+		if (XYArr[0].size() > 1) {
+			//printf("I've got an X collision with Object%d\n", XYArr[0][0]->OrderCreation + 1);
+		}
+		if (XYArr[1].size() > 1) {
+			//printf("I've got an Y collision with Object%d\n", XYArr[1][0]->OrderCreation + 1);
 		}
 
 			//= [{SpriteOverlapX}, {SpriteOverlapY}];
