@@ -2378,7 +2378,7 @@ public:
 			printf("Take Time to ensure the above looks correct for Object%d.\n", ObjectSprite->OrderCreation + 1);
 		//	SDL_Delay(5000);
 		}
-
+		
 		//return the vector
 		std::vector<Sprite*> XYArr[2] = { SpriteOverlapX, SpriteOverlapY };
 		printf("3.4\n"); //arrray to return is created
@@ -2386,7 +2386,7 @@ public:
 
 	}
 
-
+	
 
 
 	void MergeSpriteCollision(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea, int L, int M, int R) {
@@ -3226,5 +3226,5 @@ public:
 		// printf("Erased all\n");
 	}
 
-
+	
 };
