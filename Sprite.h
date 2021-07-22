@@ -997,7 +997,7 @@ public:
 
 
 
-	std::vector<Sprite*>* CheckFutureSpritePosition2(Sprite* ObjectSprite) {
+	void CheckFutureSpritePosition2(Sprite* ObjectSprite, std::vector<Sprite*> XYArr[2]) {
 		bool BugTest;
 		printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation);
 		if (ObjectSprite->OrderCreation == 0) {
@@ -2417,9 +2417,27 @@ public:
 		}
 		
 		//return the vector
-		std::vector<Sprite*> XYArr[2] = { SpriteOverlapX, SpriteOverlapY };
+		if (SpriteOverlapX.size() < 1) {
+			XYArr[0].push_back({});
+		}
+		else {
+			for (int i = 0; i < SpriteOverlapX.size(); i++) {
+				XYArr[0].push_back(SpriteOverlapX[i]);
+			}
+		}
+
+		if (SpriteOverlapY.size() < 1) {
+			XYArr[1].push_back({});
+		}
+		else {
+			for (int i = 0; i < SpriteOverlapY.size(); i++) {
+				XYArr[1].push_back(SpriteOverlapY[i]);
+			}
+		}
+
+			//= [{SpriteOverlapX}, {SpriteOverlapY}];
 		printf("3.4\n"); //arrray to return is created
-		return XYArr;
+		 
 
 	}
 
@@ -2723,7 +2741,10 @@ public:
 
 
 		ReCreateQue2();
-
+		/**/
+		std::vector<Sprite*> XYArr[2];
+		//XYArr[0]->push_back({});
+		//XYArr[1]->push_back({});
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
 			if (Queue2[i] != NULL) {
 				printf("1\n");
@@ -2731,7 +2752,15 @@ public:
 				printf("2\n");
 				Queue2[i]->Behavior();
 				printf("3\n");
-				CheckFutureSpritePosition2(Queue2[i]);
+				CheckFutureSpritePosition2(Queue2[i], XYArr);
+				
+				if (XYArr[0].size() > 0) {
+					//printf("I've got an X collision with Object%d\n", XYArr[0][0]->OrderCreation + 1);
+				}
+				if (XYArr[1].size() > 0) {
+					//printf("I've got an Y collision with Object%d\n", XYArr[1][0]->OrderCreation + 1);
+				}
+
 				//success
 				printf("4\n");
 				Queue2[i]->MoveTargetTileX();
@@ -2746,6 +2775,9 @@ public:
 				// store the collision (could be collsion) prune the the no collision tiles.
 				//When stack, x = {1, 5, 10, 8} -> 8
 				//x = {1, 5, 8, 10} ->10, 8, 5, 1 (because they are less than 10).
+				//XYArr[0]->push_back({}); <-these may be done already within checkfuture!
+				//XYArr[1]->push_back({});
+
 
 				printf("7\n");
 			}
