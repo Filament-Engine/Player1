@@ -2374,7 +2374,10 @@ public:
 			SpriteX; //holds x overlap values
 			SpriteY; //holds y overlap values
 			if (SpriteOverlapX.size() > 0) {
-				MergeSortSpriteCollision(SpriteOverlapX, SpriteX, 0, SpriteOverlapX.size()-1);
+				MergeSortSpriteCollision(SpriteOverlapX, SpriteX);
+			}
+			if (SpriteOverlapY.size() > 0) {
+				MergeSortSpriteCollision(SpriteOverlapY, SpriteY);
 			}
 
 		}
@@ -2421,66 +2424,65 @@ public:
 	}
 
 	
+	//You may test this by just testing integers in a seperate file.
+	void MergeSortSpriteCollision(std::vector<Sprite*> & SpriteOverlap, std::vector<int>& SpriteArea) { //we will be editing directly onto it
+		printf("MergeSort\n");
+
+		if (SpriteArea.size() > 1) {
+			int M = SpriteArea.size() / 2;
+			std::vector<int> LeftHalfArea(SpriteArea.begin(), SpriteArea.begin() + M);
+			std::vector<int> RightHalfArea(SpriteArea.begin() + M, SpriteArea.begin() + SpriteArea.size());
+
+			std::vector<Sprite*> LeftHalfOverlap(SpriteOverlap.begin(), SpriteOverlap.begin() + M);
+			std::vector<Sprite*> RightHalfOverlap(SpriteOverlap.begin() + M, SpriteOverlap.begin() + SpriteOverlap.size());
 
 
-	void MergeSpriteCollision(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea, int L, int M, int R) {
+			MergeSortSpriteCollision(LeftHalfOverlap, LeftHalfArea);
+			MergeSortSpriteCollision(RightHalfOverlap, RightHalfArea);
 
-		int LeftItter = L;
-		int RightItter = M + 1;
-		if (LeftItter > M || RightItter > R) {
-			printf("Left or Right finished\n");
-		}
-		std::vector<Sprite*> TempOverlap;
-		std::vector<int> TempArea;
-		while (LeftItter <= M || RightItter <= R) { //so we don't go over the vector space
-			if (SpriteArea[LeftItter] < SpriteArea[RightItter]) {
-				TempOverlap.push_back(SpriteOverlap[LeftItter]);
-				TempArea.push_back(SpriteArea[LeftItter]);
+
+
+
+			unsigned LeftItter = 0;
+			unsigned RightItter = 0;
+			unsigned SourceItter = 0;
+			while (LeftItter < LeftHalfArea.size() && RightItter < RightHalfArea.size()) {
+				if (LeftHalfArea[LeftItter] < RightHalfArea[RightItter]) {
+					SpriteArea[SourceItter] = LeftHalfArea[LeftItter];
+					SpriteOverlap[SourceItter] = LeftHalfOverlap[LeftItter];
+					LeftItter++;
+				}
+				else {
+					SpriteArea[SourceItter] = RightHalfArea[RightItter];
+					SpriteOverlap[SourceItter] = RightHalfOverlap[RightItter];
+					RightItter++;
+				}
+				SourceItter++;
+			}
+
+			while (LeftItter < LeftHalfArea.size()) {
+				SpriteArea[SourceItter] = LeftHalfArea[LeftItter];
+				SpriteOverlap[SourceItter] = LeftHalfOverlap[LeftItter];
 				LeftItter++;
+				SourceItter++;
 			}
-			else {
-				TempOverlap.push_back(SpriteOverlap[RightItter]);
-				TempArea.push_back(SpriteArea[RightItter]);
+
+			while (RightItter < RightHalfArea.size()) {
+				SpriteArea[SourceItter] = RightHalfArea[RightItter];
+				SpriteOverlap[SourceItter] = RightHalfOverlap[RightItter];
 				RightItter++;
+				SourceItter++;
 			}
+
 		}
-		//then individual itters
-		while (LeftItter <= M) {
-			TempOverlap.push_back(SpriteOverlap[LeftItter]);
-			TempArea.push_back(SpriteArea[LeftItter]);
-			LeftItter++;
-		}
-		while (RightItter <= R) {
-			TempOverlap.push_back(SpriteOverlap[RightItter]);
-			TempArea.push_back(SpriteArea[RightItter]);
-			RightItter++;
-		}
-		//now it should be fully sorted.
-		for (int i = 0; i < R+1; i++) {
-			SpriteOverlap[i] = TempOverlap[i];
-			SpriteArea[i] = TempArea[i];
-		}
-		
+
+
+
+
+		printf("Try Merging\n");
+
 	}
 
-	void MergeSortSpriteCollision(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea, int L, int R) { //we will be editing directly onto it
-		if (L >= R) {
-			return; //returns recursively
-		}
-
-		int M = L + (R - L) / 2;
-		if (M == L) { //I think this is important
-			//sort the two, but then return. Also double check the math that we won't just end up with '1'
-			return;
-		}
-		else {
-			MergeSortSpriteCollision(SpriteOverlap, SpriteArea, L, M);
-			MergeSortSpriteCollision(SpriteOverlap, SpriteArea, M + 1, R);
-			MergeSpriteCollision(SpriteOverlap, SpriteArea, L, M, R);
-		}
-
-
-	};
 
 
 	//Object 2= R2, 3, C3, 4
