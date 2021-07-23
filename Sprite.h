@@ -237,6 +237,17 @@ public:
 			return 1;
 		}
 	}
+	//this I think should be exclusive for handling collision from regular behavior - or maybe we make it so it can handle its own teleport to an occupied collision tile?
+	void TeleportSprite(int x, int y) {
+		xPos = x;
+		yPos = y;
+	}
+	void TeleportX(int x) {
+		xPos = x;
+	}
+	void TeleportY(int y) {
+		yPos = y;
+	}
 	void FindPlayer() {
 		printf("oh boy am i finding the player... we will get this set up once player is a subclass of sprite\n");
 	}
@@ -2426,7 +2437,7 @@ public:
 				printf("Sprite %s, ", SpriteOverlapX[i]->label.c_str());
 				printf("Overlap = %d, ", SpriteX[i]); //should always be +, should always be equal in number to the sprite overlap
 				if (SpriteX[i] > 0) {
-					SDL_Delay(250);
+					//SDL_Delay(250);
 				}
 			}
 			printf("\n");
@@ -2437,7 +2448,7 @@ public:
 				printf("Sprite %s, ", SpriteOverlapY[i]->label.c_str());
 				printf("Overlap = %d, ", SpriteY[i]);
 				if (SpriteY[i] > 0) {
-					SDL_Delay(250);
+					//SDL_Delay(250);
 				}
 			}
 			printf("\n");
@@ -2458,7 +2469,7 @@ public:
 		}
 		else {
 			printf("Collidied on X, something's pushed!\n");
-			SDL_Delay(5000);
+			//SDL_Delay(5000);
 			TempStackable->SpriteXCollision = {};
 			for (int i = 0; i < SpriteOverlapX.size(); i++) {
 				TempStackable->SpriteXCollision.push_back(SpriteOverlapX[i]);
@@ -2470,7 +2481,7 @@ public:
 		}
 		else {
 			printf("Collidied on Y, something's pushed!\n");
-			SDL_Delay(5000);
+			//SDL_Delay(5000);
 			TempStackable->SpriteYCollision = {};
 			for (int i = 0; i < SpriteOverlapY.size(); i++) {
 				TempStackable->SpriteYCollision.push_back(SpriteOverlapY[i]);
@@ -2479,11 +2490,11 @@ public:
 		//Trying to figure out how to store then 'return' these values as readable.
 		if (TempStackable->SpriteXCollision.size() > 0) {
 			printf("I've got an X collision with Object%d\n", TempStackable->SpriteXCollision[0]->OrderCreation + 1);
-			SDL_Delay(5000);
+			//SDL_Delay(5000);
 		}
 		if (TempStackable->SpriteYCollision.size() > 0) {
 			printf("I've got an Y collision with Object%d\n", TempStackable->SpriteYCollision[0]->OrderCreation + 1);
-			SDL_Delay(5000);
+			//SDL_Delay(5000);
 		}
 		if (TempStackable->SpriteYCollision.size() > 0 || TempStackable->SpriteXCollision.size() > 0) {
 			TempStackable->Victim = ObjectSprite; //Our sprite is a 'victim', it can't move.
@@ -2952,7 +2963,7 @@ public:
 		//xs
 
 		printf("Remove Sprite we found at the end of the stack (I believe already done in the main)\n");
-		SDL_Delay(250);
+		//SDL_Delay(250);
 		/* 
 		for (int i = 0; i < InvestigateX.size(); i++) {
 			//if it's already been moved completely
@@ -2980,7 +2991,7 @@ public:
 		//Okay, now we actually want to investigate those changed positions. 
 
 		printf("Now investigate those edited, see if we can get rid of any\n");
-		SDL_Delay(250);
+		//SDL_Delay(250);
 		if (Debug) {
 			printf("Displaying InvestigateX = {");
 			for (int i = 0; i < InvestigateX.size(); i++) {
@@ -3007,7 +3018,7 @@ public:
 			}
 		}
 		printf("Now that we've looked at them, EraseableV should have stacks whose victims are ready to be checked\n");
-		SDL_Delay(250);
+		//SDL_Delay(250);
 		if (Debug) {
 			if (EraseableX.size() > 0) {
 				printf("EraseableX={");
@@ -3029,7 +3040,7 @@ public:
 
 		//step 2, investigate those popped, see if any victims are left fully-alone
 		printf("Start Erasing\n");
-		SDL_Delay(250);
+		//SDL_Delay(250);
 		int Total = EraseableX.size() + EraseableY.size() -1;
 		for (int i = Total; i >-1; i--) {
 
@@ -3083,7 +3094,7 @@ public:
 			}
 			printf("}\n");
 		}
-		SDL_Delay(5000);
+		//SDL_Delay(5000);
 		//Step 3, of those looked at, any victims that are empty should now beb moved. If they still cannot move, just do the proper undo procedure. 
 			//This is because, from the get go we ahve everything it overlaps with, so everything it could've possibly ran into is known. Thus if we moved everything it could've run into, and it still hits something, it means it hit it for sure.
 
@@ -3102,7 +3113,8 @@ public:
 		//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
 
 	}
-	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*> & VictimsNoLonger) {
+	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*> & VictimsNoLongerOrigin) {
+		bool Debug = true;
 		//move victim,
 		printf("Try to move Object%d [handlevictim]\n", CurrentVictim->OrderCreation + 1);
 		RemoveSpriteFromMap(CurrentVictim);
@@ -3124,7 +3136,7 @@ public:
 			//no need ot pop from SpriteStacks
 			//no need to insert to spritestacks
 			CompletedSprites[CurrentVictim->OrderCreation] = 1; //it's completed, won't move anymore. This way when we try to move the victims at the end of que2 to appropriate spaces, if they would collide with obj1 then that's what they'll do
-			SDL_Delay(10000);
+			//SDL_Delay(10000);
 		}
 		else { //it moved!
 			printf("It moved! Now to recheck the stack!\n");
@@ -3136,7 +3148,7 @@ public:
 			ReMapSprite(CurrentVictim);
 			CompletedSprites[CurrentVictim->OrderCreation] = 1;
 			printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
-			SDL_Delay(10000);
+			//SDL_Delay(10000);
 
 			//Code below these comments are what was done in antoher function, so perhaps export it to a seperate function all together?
 			//search all stacks for this item, and pop it 
@@ -3165,97 +3177,143 @@ public:
 			//THEN SORT IT INTO VICTIMSPRITES
 
 
-		std::vector<int> EraseableX = {};
-		std::vector<int> EraseableY = {};
+			std::vector<int> EraseableX = {};
+			std::vector<int> EraseableY = {};
 		
-			//Then the victim finding from HAndleCollision2 V
-			//Step 1) Figure out which ones to pop next if any. MAINLY: take the edited vectors, if both X and that Y are empty at the end of popping, attempt to move the victim,
-		for (int i = 0; i < InvestigateIndexsX.size(); i++) {
-			if (SpriteStacks[InvestigateIndexsX[i]]->SpriteXCollision.size() < 1 && SpriteStacks[InvestigateIndexsX[i]]->SpriteYCollision.size() < 1) {
-				EraseableX.push_back(InvestigateIndexsX[i]); //we're going to erase backwards, so the larger index of x and Y
+				//Then the victim finding from HAndleCollision2 V
+				//Step 1) Figure out which ones to pop next if any. MAINLY: take the edited vectors, if both X and that Y are empty at the end of popping, attempt to move the victim,
+			for (int i = 0; i < InvestigateIndexsX.size(); i++) {
+				if (SpriteStacks[InvestigateIndexsX[i]]->SpriteXCollision.size() < 1 && SpriteStacks[InvestigateIndexsX[i]]->SpriteYCollision.size() < 1) {
+					EraseableX.push_back(InvestigateIndexsX[i]); //we're going to erase backwards, so the larger index of x and Y
+				}
 			}
-		}
-		for (int i = 0; i < InvestigateIndexsY.size(); i++) {
-			if (SpriteStacks[InvestigateIndexsY[i]]->SpriteYCollision.size() < 1 && SpriteStacks[InvestigateIndexsY[i]]->SpriteXCollision.size() < 1) {
-				EraseableY.push_back(InvestigateIndexsY[i]); //we're going to erase backwards, so the larger index of x and Y
+			for (int i = 0; i < InvestigateIndexsY.size(); i++) {
+				if (SpriteStacks[InvestigateIndexsY[i]]->SpriteYCollision.size() < 1 && SpriteStacks[InvestigateIndexsY[i]]->SpriteXCollision.size() < 1) {
+					EraseableY.push_back(InvestigateIndexsY[i]); //we're going to erase backwards, so the larger index of x and Y
+				}
 			}
-		}
-		//now we have all the erasables. Use binary search to insert into the VictimSprites
+			//now we have all the erasables. Use binary search to insert into the VictimSprites
 		 
-		/* 
-		//step 2, investigate those popped, see if any victims are left fully-alone
-		printf("Start Erasing\n");
-		SDL_Delay(250);
-		int Total = EraseableX.size() + EraseableY.size() -1;
-		for (int i = Total; i >-1; i--) {
+		
+			//step 2, investigate those popped, see if any victims are left fully-alone
+			printf("Start Erasing\n");
+			//SDL_Delay(250);
+			int Total = EraseableX.size() + EraseableY.size() -1;
+			std::vector<Sprite*> VictimsNoLonger = {};
+			for (int i = Total; i >-1; i--) {
 
-			//if one of the sizes is empty, but the other is full
-			if (EraseableX.size() > 0 && EraseableY.size() > 0) {
-				if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
+				//if one of the sizes is empty, but the other is full
+				if (EraseableX.size() > 0 && EraseableY.size() > 0) {
+					if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
 
+						VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+						SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+						EraseableX.pop_back();
+					}
+					else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
+						VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
+						SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
+						EraseableY.pop_back();
+					}
+					else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
+						VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+						SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+						EraseableX.pop_back();
+						EraseableY.pop_back();
+						i--;//popped twice, so go down an extra step in he loop.
+					}
+				}
+				else if (EraseableX.size() > 0) {
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
 				}
-				else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
+				else if (EraseableY.size() > 0) { //this should be a definite, but just for now
 					VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 					EraseableY.pop_back();
 				}
-				else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
-					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
-					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
-					EraseableX.pop_back();
-					EraseableY.pop_back();
-					i--;//popped twice, so go down an extra step in he loop.
+				//note on how this operation works.
+				//EraseableX = {0, 5, 9, 12}, where these numbers are the index's on SpriteStacks that we last popped from, organized from least to greatest, Y is same.
+				// Eraseable, also are those who's XYArr has empty X,Y collisions (as in those have been moved at some point).
+				//Then we don't want to accidently shift hte indexs, sowe approach from the back of the SpriteStacks while checking if we can erase. We ensure we don't erase any out of order through the first three if statements
+				//The next two last are just to get rid of remaining.
+				//Now we don't have doubles of indexs to erase. - we needed both of them, because it might've alerady had an empty X or Y by the time we popped the sprite.
+				//Finally we store these indexes into VictimsNoLonger. we will, one by one, from youngest to oldest (so starting at the end of VictimsNoLonger)
+					//see if we can move it. If checkfuture finds ANY collosion overlap, then do the proper undo's and flag it for collision.
+				//don't flag for overlap, since that happens after everythings been moved properly.
+
+			}
+
+
+		
+			if (Debug) {
+				printf("Now show off which new victims to test/insert\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
+				printf("New Victims to Insert= {");
+				for (int i = 0; i < VictimsNoLonger.size(); i++) {
+					printf("Object%d, ", VictimsNoLonger[i]->OrderCreation+1);
 				}
+				printf("}\n");
 			}
-			else if (EraseableX.size() > 0) {
-				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
-				SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
-				EraseableX.pop_back();
+		
+			if (Debug) {
+				printf("And here's the Original VictimList = {");
+				for (int i = 0; i < VictimsNoLonger.size(); i++) {
+					printf("Object%d, ", VictimsNoLonger[i]->OrderCreation + 1);
+				}
+				printf("}\n");
 			}
-			else if (EraseableY.size() > 0) { //this should be a definite, but just for now
-				VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
-				SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
-				EraseableY.pop_back();
-			}
-			//note on how this operation works.
-			//EraseableX = {0, 5, 9, 12}, where these numbers are the index's on SpriteStacks that we last popped from, organized from least to greatest, Y is same.
-			// Eraseable, also are those who's XYArr has empty X,Y collisions (as in those have been moved at some point).
-			//Then we don't want to accidently shift hte indexs, sowe approach from the back of the SpriteStacks while checking if we can erase. We ensure we don't erase any out of order through the first three if statements
-			//The next two last are just to get rid of remaining.
-			//Now we don't have doubles of indexs to erase. - we needed both of them, because it might've alerady had an empty X or Y by the time we popped the sprite.
-			//Finally we store these indexes into VictimsNoLonger. we will, one by one, from youngest to oldest (so starting at the end of VictimsNoLonger)
-				//see if we can move it. If checkfuture finds ANY collosion overlap, then do the proper undo's and flag it for collision.
-			//don't flag for overlap, since that happens after everythings been moved properly.
 
-		}
-		printf("Now handle the victims no longer\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
-		if (Debug) {
-			printf("VictimsNoLonger = {");
-			for (int i = 0; i < VictimsNoLonger.size(); i++) {
-				printf("Object%d, ", VictimsNoLonger[i]->OrderCreation+1);
-			}
-			printf("}\n");
-		}
-		SDL_Delay(5000);
+			//SDL_Delay(5000);
 			
-			*/
-
-
-			//add those new victims into the appropraite posiiton on the current victim que.  
+			while (VictimsNoLonger.size() > 0) {
+				BinSearchInsert(VictimsNoLongerOrigin, VictimsNoLonger, 0, VictimsNoLongerOrigin.size() - 1);
+				if (Debug) {
+					printf("Inserted VictimsNoLonger = {");
+					for (int i = 0; i < VictimsNoLongerOrigin.size(); i++) {
+						printf("Object%d, ", VictimsNoLongerOrigin[i]->OrderCreation + 1);
+					}
+					printf("}\n");
+				}
+				printf("This is rare, so give your self a minute to get some photos or look at it\n");
+				SDL_Delay(60000);
+			}
+		}
+		//add those new victims into the appropraite posiiton on the current victim que.  
 			//Mark CompletedSprites as successful
-
 		//so this will just run one at a time. So it is fine for just to insert because I'm not trying to do the items right as they are revealed, rather I just want to add any new eraseable items, 
 		//This SHOULD work if I'm doing what I think I am - which is anything amrked as compeltedsprites[x]==1 is removed from the stack, thus we should be able to remove everything up to the currentQue location
 		//thus we should be able to get through all of victimsnomore.
-
-		}
-
-
 	}
+	
+	//recursive
+	void BinSearchInsert(std::vector<Sprite*>& Origin, std::vector<Sprite*>& Insertable, int Left, int Right) {
+		 
+		int Middle;
+		Middle = (Left - (Right - Left) / 2);
+		if (Left == Middle || Right == Middle) {
+			printf("I thinK the position your looking for is %d\n", Middle);
+			Origin.insert(Origin.begin()+Middle, Insertable.back());
+			printf("Inserted the new Victim into the Original list\n");
+			Insertable.pop_back(); //this hsould keep it from being infinite.
+			printf("Pop backed from the new victims\n");
+		}
+		else {
+			//it is somewhere in the left half of the array (begining, if odd, round down the half)
+			if (Insertable.back()->OrderCreation < Origin[Middle]->OrderCreation) {
+				BinSearchInsert(Origin, Insertable, Left, Middle);
+			}
+			//it is somewhere in the rihg thalf of hte array (if odd, round up, to end)
+			else if (Insertable.back()->OrderCreation > Origin[Middle]->OrderCreation) {
+				BinSearchInsert(Origin, Insertable, Middle + 1, Right);
+			}
+			//you found an equivalent position (should be impossible!)
+			else {
+				printf("Impossible insertion?");
 
+			}
+		}
+	}
 
 
 
