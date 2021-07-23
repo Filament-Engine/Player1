@@ -205,6 +205,12 @@ public:
 		TargetTile->h = TILE_HEIGHT;
 
 	}
+	
+	Sprite() { // this is the default constructor: necessary for player to be a subclass of sprite
+	   // i don't think we'll need to pass in information in here
+	}
+
+	
 	~Sprite() {
 		printf("Deconstructor for sprite called!\n");
 	}
@@ -3117,7 +3123,7 @@ public:
 			//no need ot pop from SpriteStacks
 			//no need to insert to spritestacks
 			CompletedSprites[CurrentVictim->OrderCreation] = 1; //it's completed, won't move anymore. This way when we try to move the victims at the end of que2 to appropriate spaces, if they would collide with obj1 then that's what they'll do
-			SDL_Delay(5000);
+			SDL_Delay(10000);
 		}
 		else { //it moved!
 			printf("It moved! Now to recheck the stack!\n");
@@ -3128,14 +3134,14 @@ public:
 			CurrentVictim->MoveTargetTileY();
 			CompletedSprites[CurrentVictim->OrderCreation] = 1;
 			printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
-			SDL_Delay(5000);
+			SDL_Delay(10000);
 
 			//Code below these comments are what was done in antoher function, so perhaps export it to a seperate function all together?
 			//search all stacks for this item, and pop it 
 			//mark down which edited
 			//investigate
 			//get new victims
-			/*
+			
 			std::vector<int> InvestigateIndexsX = {};
 			std::vector<int> InvestigateIndexsY = {};
 			//search for the compelted sprite in the stack
@@ -3143,16 +3149,18 @@ public:
 				if (SpriteStacks[d]->SpriteXCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]) {
 					SpriteStacks[d]->SpriteXCollision.pop_back();
 					InvestigateIndexsX.push_back(d);
-					endofstackX = true;
+
 				} 
 				if (SpriteStacks[d]->SpriteYCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]) {
 					SpriteStacks[d]->SpriteYCollision.pop_back();
 					InvestigateIndexsY.push_back(d);
-					endofstackY = true;
+
 				} 
 			}
-			^From the main loop
-			Then the victim finding from HAndleCollision2 V
+			//^From the main loop
+
+		/*
+			//Then the victim finding from HAndleCollision2 V
 			//Step 1) Figure out which ones to pop next if any. MAINLY: take the edited vectors, if both X and that Y are empty at the end of popping, attempt to move the victim,
 		for (int i = 0; i < InvestigateX.size(); i++) {
 			if (SpriteStacks[InvestigateX[i]]->SpriteXCollision.size() < 1 && SpriteStacks[InvestigateX[i]]->SpriteYCollision.size() < 1) {
