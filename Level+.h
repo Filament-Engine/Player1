@@ -150,13 +150,12 @@ void Level::RenderThis(Player* PlayerName) {
 	// SpriteLayer->MakeSelfTexture();
 	SDL_RenderCopy(gRenderer, SpriteLayer->CombinedObjects, gCamera->Cam, gFullWindowRect); // this renders the texture of the objectLayer
 
-	/*
-	// rendering text
-	text->Display();
+
+	// rendering fpsText
 	if (displayFPS && fpsText != NULL) {
 		fpsText->Display((SCREEN_WIDTH * TILE_WIDTH) - fpsText->text_rect->w, 0);
 	}
-	*/
+	
 
 	// for layers above the player, we will want to do another for loop here
 	SDL_RenderPresent(gRenderer);

@@ -27,7 +27,6 @@ std::map<std::string, SurfaceProperty*> SurfacePropertyMap;
 #include "Sprite.h"
 #include "Player.h"
 #include "Text.h"
-Text* text;
 Text* fpsText;
 Sprite* Object1; // we can create this sprite now so that it can be used in level/player/objectlayer
 #include "Level+.h"
@@ -226,7 +225,6 @@ void handleLoop() {
 	bool quit = false; // handles the loop; whether we want to quit, or continue
 	SDL_Event e; // event handler
 
-	//text = new Text("Fonts/arial.ttf", "Hello!", 50, { 255, 255, 255 }, 25, 70, true); // TEMP creates a text
 
 	// begin loop
 	while (!quit) {
@@ -259,7 +257,7 @@ void handleLoop() {
 					Object1->yVec += yVec;
 					break;
 				case SDLK_LEFT: // if the user presses right arrow key
-					Object1->xVec +=-xVec;
+					Object1->xVec += -xVec;
 					break;
 				case SDLK_UP: // if the user presses up arrow key
 					Object1->yVec += -yVec;
@@ -267,20 +265,12 @@ void handleLoop() {
 				case SDLK_u: // if the user presses 'u' -- this will be utility for now, and will change if fps is displayed or not
 					if (displayFPS) {
 						displayFPS = false;
-						text->ChangeColor({ 255, 255, 255 });
-						text->UpdateMessage("hello!");
-						text->MoveY(5);
 					}
 					else {
 						displayFPS = true;
-						text->ChangeColor({ 0, 0, 0 });
-						text->UpdateMessage("hi");
-						text->MoveX(5);
 					}
 					break;
-
 				}
-
 			}
 			else if (e.type == SDL_KEYUP && e.key.repeat == 0) // if the user releases a key, go through this statement
 			{
@@ -317,22 +307,20 @@ void handleLoop() {
 		}
 
 		if (displayFPS && fpsText == NULL) { // this creates the fps text -- we want it to only be made once, so we make sure it only does this if fpsText == NULL
-			//fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
+			fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
 		}
 
-		// these two things below me are purely for testing / demonstration purposes
-		// gCamera->MoveX(xVel);
-		// gCamera->MoveY(yVel);
 
-		Player1->MoveY(yVel, gLevel1->CombinedCollision);
-		Player1->MoveX(xVel, gLevel1->CombinedCollision);
+		// at some point, this will need to be put into gLevel1->SpriteLayer->MoveAllSprites2, but we will likely need to pass in the combined collision / yVel / xVel -- or make the velocities based on something else
+		if (Player1->MoveY(yVel, gLevel1->CombinedCollision)) {
+			Player1->MoveTargetTileY();
+		}
+		if (Player1->MoveX(xVel, gLevel1->CombinedCollision)) {
+			Player1->MoveTargetTileX();
+		}
 
 		//test to see if auto movement works 
-		//for (int i = 0; i < std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()); i++) {
-			gLevel1->SpriteLayer->MoveAllSprites2();	
-		//}
-			// gLevel1->SpriteLayer->DisplayTileBasedArray();
-			//SDL_Delay(250);
+		gLevel1->SpriteLayer->MoveAllSprites2();	
 		// printf("%d %d -- %d %d\n", Player1->xPos, Player1->yPos, gCamera->x, gCamera->y);// gLevel1->Camera->x, gLevel1->Camera->y); // camera x and y are not going back to 0. they need to when moving back up tho... awk.
 
 
