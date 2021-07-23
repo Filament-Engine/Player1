@@ -2905,7 +2905,7 @@ public:
 						SpriteStacks.push_back(TempStackable); //do not delete until it is handled. Just overwrite Tempstackable poitner with new XYArr
 
 						//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
-						//Queue2[i]->UndoBehavior();
+						Queue2[i]->UndoBehavior();
 						ReMapSprite(Queue2[i]);
 						Queue2[i] = NULL;
 
@@ -3128,11 +3128,12 @@ public:
 		}
 		else { //it moved!
 			printf("It moved! Now to recheck the stack!\n");
-			//remap it, 
-			ReMapSprite(CurrentVictim);
+			
 			//move target tile
 			CurrentVictim->MoveTargetTileX();
 			CurrentVictim->MoveTargetTileY();
+			//remap it, 
+			ReMapSprite(CurrentVictim);
 			CompletedSprites[CurrentVictim->OrderCreation] = 1;
 			printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
 			SDL_Delay(10000);
