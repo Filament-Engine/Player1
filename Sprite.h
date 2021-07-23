@@ -2861,10 +2861,11 @@ public:
 						printf("6\n");
 						ReMapSprite(Queue2[i]);
 						CompletedSprites[i] = 1; //the Sprite with creation order 'i' has successfully completed it's movement
-						
+						printf("Object%d is marked as completed, begin the Stack Check\n", Queue2[i]->OrderCreation + 1);
 
 						std::vector<int> InvestigateIndexsX = {};
 						std::vector<int> InvestigateIndexsY = {};
+						//search for the compelted sprite in the stack
 						for (int d = 0; d < SpriteStacks.size(); d++) {
 							if (SpriteStacks[d]->SpriteXCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]) {
 								SpriteStacks[d]->SpriteXCollision.pop_back();
@@ -2877,23 +2878,27 @@ public:
 								endofstackY = true;
 							} 
 						}
-						
-						HandleCollision2(InvestigateIndexsX, SpriteStacks, CompletedSprites, 0, i);
-						HandleCollision2(InvestigateIndexsY, SpriteStacks, CompletedSprites, 1, i);
+						printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
 
+						if (InvestigateIndexsY.size() > 0 || InvestigateIndexsX.size() > 0) {
+							printf("Start Handle\n");
+							HandleCollision2(InvestigateIndexsX, InvestigateIndexsY, SpriteStacks, CompletedSprites, i);
+							printf("Finished Handle\n");
+						}
 						//should check for empty stacks, or pass them together to check as a pair.
 
 						
 						
-						
+						printf("Null in Que Object%d\n", Queue2[i]->OrderCreation + 1);
 						Queue2[i] = NULL;
 
 					}
 					else {
+						printf("Push back the temp stack\n");
 						SpriteStacks.push_back(TempStackable); //do not delete until it is handled. Just overwrite Tempstackable poitner with new XYArr
 
 						//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
-						Queue2[i]->UndoBehavior();
+						//Queue2[i]->UndoBehavior();
 						ReMapSprite(Queue2[i]);
 						Queue2[i] = NULL;
 
@@ -2927,57 +2932,169 @@ public:
 	}
 
 
-	void HandleCollision2(std::vector<int>InvestigateV, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompeltedSprites, int V, int QueLocation) {
+	void HandleCollision2(std::vector<int>InvestigateX, std::vector<int>InvestigateY, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation) {
 		//already popped back the first we found. Now investigate those idnexes
 		//1) Are you already completed <-pop back, add to our list
 		//2) are you less than the current que location? And are you not a victim? pop back (this may be unlikely or mpossible)
 		//3) are you empty at this index location for both x and y? Then erase it and move the interested stack, restarting the handle collision2.
 		Sprite* TempSprite;
 		bool IsTempSpriteVictim;
+		std::vector<int> EraseableX = {};
+		std::vector<int> EraseableY = {};
+		bool Debug = true;
 		//xs
-		if (V == 0) {
-			for (int i = 0; i < InvestigateV.size(); i++) {
-				//if it's already been moved completely
-				TempSprite = SpriteStacks[InvestigateV[i]]->SpriteXCollision[SpriteStacks[InvestigateV[i]]->SpriteXCollision.size() - 1]; //points to the end of the stack
-				if (CompeltedSprites[TempSprite->OrderCreation] == 1) {
-					SpriteStacks[InvestigateV[i]]->SpriteXCollision.pop_back(); //record for next itteration?
-				}
+
+		printf("Remove Sprite we found at the end of the stack (I believe already done in the main)\n");
+		SDL_Delay(250);
+		/* 
+		for (int i = 0; i < InvestigateX.size(); i++) {
+			//if it's already been moved completely
+			TempSprite = SpriteStacks[InvestigateX[i]]->SpriteXCollision[SpriteStacks[InvestigateX[i]]->SpriteXCollision.size() - 1]; //points to the end of the stack
+			if (CompletedSprites[TempSprite->OrderCreation] == 1) {
+				SpriteStacks[InvestigateX[i]]->SpriteXCollision.pop_back(); //record for next itteration?
+			}
 				
-				
-				for (int d = 0; d < InvestigateV.size(); d++) {
-					if (TempSprite->OrderCreation == SpriteStacks[InvestigateV[d]]->Victim->OrderCreation) {
-						IsTempSpriteVictim = true; //insert a continue?
-					}
+			
+			//If your not a victim, and your already supposed to be moved, check the CompeltedSprites, if it is completed, remove it.
+			//Your less than the que, and you've likely already gone, and your not in a stack, just double check that it has gone.
+			if (TempSprite->OrderCreation < i && CompletedSprites[TempSprite->OrderCreation]==1) { //really only need the second but in th eevent we want an override for the order I want to be able to change the collision, or order creation somehow.
+				if (CompletedSprites[TempSprite->OrderCreation] == 1) {
+					SpriteStacks[InvestigateX[i]]->SpriteXCollision.pop_back(); //record for next itteration?
 				}
-				//Your less than the que, and you've likely already gone, and your not in a stack, just double check that it has gone.
-				if (TempSprite->OrderCreation < i && !IsTempSpriteVictim) {
-					
-				}
+
+
+
 			}
 		}
-		//ys
-		if (V == 1) {
-			for (int i = 0; i < InvestigateV.size(); i++) {
-				//if it's already been moved completely
-				TempSprite = SpriteStacks[InvestigateV[i]]->SpriteYCollision[SpriteStacks[InvestigateV[i]]->SpriteYCollision.size() - 1]; //points to the end of the stack
-				if (CompeltedSprites[TempSprite->OrderCreation] == 1) {
-					SpriteStacks[InvestigateV[i]]->SpriteYCollision.pop_back(); //record for next itteration?
-				}
+		*/
 
 
-				for (int d = 0; d < InvestigateV.size(); d++) {
-					if (TempSprite->OrderCreation == SpriteStacks[InvestigateV[d]]->Victim->OrderCreation) {
-						IsTempSpriteVictim = true; //insert a continue?
-					}
-				}
-				//Your less than the que, and you've likely already gone, and your not in a stack, just double check that it has gone.
-				if (TempSprite->OrderCreation < i && !IsTempSpriteVictim) {
 
-				}
+		//Okay, now we actually want to investigate those changed positions. 
+
+		printf("Now investigate those edited, see if we can get rid of any\n");
+		SDL_Delay(250);
+		if (Debug) {
+			printf("Displaying InvestigateX = {");
+			for (int i = 0; i < InvestigateX.size(); i++) {
+				printf("%d, ", InvestigateX[i]);
+			}
+			printf("}\n");
+			printf("Displaying InvestigateY = {");
+			for (int i = 0; i < InvestigateY.size(); i++) {
+				printf("%d, ", InvestigateY[i]);
+			}
+			printf("}\n");
+		}
+
+
+		//Step 1) Figure out which ones to pop next if any. MAINLY: take the edited vectors, if both X and that Y are empty at the end of popping, attempt to move the victim, 
+		for (int i = 0; i < InvestigateX.size(); i++) {
+			if (SpriteStacks[InvestigateX[i]]->SpriteXCollision.size() < 1 && SpriteStacks[InvestigateX[i]]->SpriteYCollision.size() < 1) {
+				EraseableX.push_back(InvestigateX[i]); //we're going to erase backwards, so the larger index of x and Y
 			}
 		}
+		for (int i = 0; i < InvestigateY.size(); i++) {
+			if (SpriteStacks[InvestigateY[i]]->SpriteYCollision.size() < 1 && SpriteStacks[InvestigateY[i]]->SpriteXCollision.size() < 1) {
+				EraseableY.push_back(InvestigateY[i]); //we're going to erase backwards, so the larger index of x and Y
+			}
+		}
+		printf("Now that we've looked at them, EraseableV should have stacks whose victims are ready to be checked\n");
+		SDL_Delay(250);
+		if (Debug) {
+			if (EraseableX.size() > 0) {
+				printf("EraseableX={");
+				for (auto i = 0; i < EraseableX.size(); i++) {
+					printf("%d, ", EraseableX[i]);
+				}
+				printf("}\n");
+			}
+			if (EraseableY.size() > 0) {
+				printf("EraseableY={");
+				for (auto i = 0; i < EraseableY.size(); i++) {
+					printf("%d, ", EraseableY[i]);
+				}
+				printf("}\n");
+			}
+		}
+
+		std::vector<Sprite*> VictimsNoLonger = {};
+
+		//step 2, investigate those popped, see if any victims are left fully-alone
+		printf("Start Erasing\n");
+		SDL_Delay(250);
+		int Total = EraseableX.size() + EraseableY.size() -1;
+		for (int i = Total; i >-1; i--) {
+
+			//if one of the sizes is empty, but the other is full
+			if (EraseableX.size() > 0 && EraseableY.size() > 0) {
+				if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
+
+					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+					EraseableX.pop_back();
+				}
+				else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
+					VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
+					SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
+					EraseableY.pop_back();
+				}
+				else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
+					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+					EraseableX.pop_back();
+					EraseableY.pop_back();
+					i--;//popped twice, so go down an extra step in he loop.
+				}
+			}
+			else if (EraseableX.size() > 0) {
+				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+				SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+				EraseableX.pop_back();
+			}
+			else if (EraseableY.size() > 0) { //this should be a definite, but just for now
+				VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
+				SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
+				EraseableY.pop_back();
+			}
+			//note on how this operation works.
+			//EraseableX = {0, 5, 9, 12}, where these numbers are the index's on SpriteStacks that we last popped from, organized from least to greatest, Y is same.
+			// Eraseable, also are those who's XYArr has empty X,Y collisions (as in those have been moved at some point). 
+			//Then we don't want to accidently shift hte indexs, sowe approach from the back of the SpriteStacks while checking if we can erase. We ensure we don't erase any out of order through the first three if statements
+			//The next two last are just to get rid of remaining.
+			//Now we don't have doubles of indexs to erase. - we needed both of them, because it might've alerady had an empty X or Y by the time we popped the sprite.
+			//Finally we store these indexes into VictimsNoLonger. we will, one by one, from youngest to oldest (so starting at the end of VictimsNoLonger)
+				//see if we can move it. If checkfuture finds ANY collosion overlap, then do the proper undo's and flag it for collision.
+			//don't flag for overlap, since that happens after everythings been moved properly. 
+
+		}
+		printf("Now handle the victims no longer\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
+		if (Debug) {
+			printf("VictimsNoLonger = {");
+			for (int i = 0; i < VictimsNoLonger.size(); i++) {
+				printf("Object%d, ", VictimsNoLonger[i]->OrderCreation+1);
+			}
+			printf("}\n");
+		}
+		SDL_Delay(5000);
+		//Step 3, of those looked at, any victims that are empty should now beb moved. If they still cannot move, just do the proper undo procedure. 
+			//This is because, from the get go we ahve everything it overlaps with, so everything it could've possibly ran into is known. Thus if we moved everything it could've run into, and it still hits something, it means it hit it for sure.
+
+	    //Step 4, if it could move, find the proper indexes to investigate in the Sprites stack, mark it as completed, and do this all over again
+
+		//step 5 - exit
+			//if you no longer find any stacks with pop able elements, return  to the que
+
+
+		//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
 
 	}
+
+
+
+
+
+
 
 
 	//Recursive
@@ -3189,8 +3306,6 @@ public:
 
 		}
 	}
-
-
 	//Object to move first, //the stack inside the stack to attempt to move //In hte internal stack, what's the index to move?
 	int HandleStack(Sprite*& ObjectSprite, std::vector<Sprite*>& InterestedStack, int InternalStackIndex, int SpriteStackIndex) {
 		//InternalStack = the last index, as this recursive, subtract one so long as it's not negative.
@@ -3307,8 +3422,6 @@ public:
 			return 1;
 		}
 	};
-
-
 	int HandleFinalStack(std::vector<Sprite*>& InterestedStack, int EndOfStack) {
 		//If can move, return 1, if not return 0. DO NOT RECURSIVELY CALL <-we want to complete teh stack in order
 		//First, store the pointer, then pop the back 
@@ -3395,8 +3508,6 @@ public:
 		}
 
 	}
-
-
 	void RemoveSpriteFromMap(Sprite* ObjectSprite) {
 		// printf("RemoveSpriteFromMap\n");
 		int x1 = NULL;
