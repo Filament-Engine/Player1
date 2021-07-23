@@ -1,39 +1,21 @@
 #pragma once
 
-class Player {
+class Player : public Sprite {
 	//QUESTION - should we prepare the class to handle multiple different tiles to be a 'object' or should we just assume it is one rectangle and the animations are swapping between those?
-private:
-	SDL_Rect* SourceTile;
 public:
-	int xPos;
-	int yPos;
 	SDL_Rect* SelfTile;
-	SDL_Rect* TargetTile; //this needs to be edited by the programmer for specific instances/screen transitions.
-	std::string SourceName;
 	SDL_Texture* SelfImg;
 	SDL_Surface* TempOrigin;
-	//source img
-	//width of player
-	//height of palyer
-	//target x
-	//target y
-	int xVel;
-	int yVel;
-	//movement speed (vel x, vel y) - movmeent vector not c vectors :P
-	//animations?
-	//default spawn location
-	//'redraw' position x y
-	//'reference' position (to compare to colision space. perhaps the 0,0 of the target tile vs movement tile.
 
 	Player(int DefaultSpawnX, int DefaultSpawnY, int DefaultPixelH, int DefaultPixelW, std::string SourceKey, int SourceCoordx, int SourceCoordy, int SourcePixelH, int SourcePixelW, int xVelocity, int yVelocity, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
 
-		//SurfaceProperty* DefaultSourceSurface = SurfacePropertyMap["SourceName"]->texture;
+		//SurfaceProperty* DefaultSourceSurface = SurfacePropertyMap["IMGName"]->texture;
 		 //this is either atexture or a surface. 
 
 		xPos = DefaultSpawnX;
 		yPos = DefaultSpawnY;
 
-		SourceName = SourceKey; //AA
+		IMGName = SourceKey; //AA
 
 		printf("Init Player\n");
 		SourceTile = new SDL_Rect();
@@ -57,13 +39,13 @@ public:
 		//Surface -> Texture
 		TempOrigin = SDL_CreateRGBSurface(0, SourceTile->w, SourceTile->h, 32, 0, 0, 0, 0);
 		printf("checking\n");
-		SDL_BlitSurface(SurfacePropertyMap[SourceName]->GetSelfSurface(), SourceTile, TempOrigin, SelfTile);
+		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TempOrigin, SelfTile);
 
 		printf("checking2\n");
 		//case Temp Origin to a texture
 		SelfImg = SDL_CreateTextureFromSurface(gRenderer, TempOrigin);
-		xVel = xVelocity;
-		yVel = yVelocity;
+		xVec = xVelocity;
+		yVec = yVelocity;
 
 
 	}
@@ -108,7 +90,7 @@ public:
 				return 0;
 			}
 			else {
-				TargetTile->y += yVelocity; // actually moves the player
+				// TargetTile->y += yVelocity; // actually moves the player
 				return 1;
 			}
 		}
@@ -148,7 +130,7 @@ public:
 				return 0;
 			}
 			else { // if not out of bounds, move
-				TargetTile->x += xVelocity;
+				// TargetTile->x += xVelocity;
 				return 1; // the player icon moved
 			}
 		}
