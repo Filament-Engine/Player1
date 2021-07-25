@@ -252,6 +252,10 @@ public:
 		printf("oh boy am i finding the player... we will get this set up once player is a subclass of sprite\n");
 	}
 	void RandomMove() {
+		//INSERT a check so that if it's the same frame, don't recalcualte a random number. Otherwise the direction changes mid frame, which may make debugging stack errors harder.
+		//theoretically it should be fine.
+
+
 		if (TIME == 0) {
 			RandomX = rand() % 4; // 0/1 means don't move, 2 means move up, 3 means move down
 			RandomY = rand() % 4; // 0/1 means don't move, 2 means move left, 3 means move right.
@@ -260,25 +264,30 @@ public:
 			RandomX = 0;
 			RandomY = 0;
 		}
-
-
 		if (RandomX == 2) {
-
-			MoveX(-1);
+			xVec = -1;
+			MoveX(xVec);
 		}
 		else if (RandomX == 3) {
-
-			MoveX(1);
+			xVec = 1;
+			MoveX(xVec);
+		}
+		else if (RandomX == 1 || RandomX == 0) {
+			xVec = 0;
 		}
 
 		if (RandomY == 2) {
-
-			MoveY(-1);
+			yVec = -1;
+			MoveY(yVec);
 		}
 		else if (RandomY == 3) {
-
-			MoveY(1);
+			yVec = 1;
+			MoveY(yVec);
 		}
+		else if (RandomY == 1 || RandomY == 0) {
+			yVec = 0;
+		}
+
 	}
 	void AutoY() {
 		if (yVec > 0) { //going right
@@ -412,6 +421,9 @@ public:
 		if (DoMoveY) {
 			UndoMoveY(yVec);
 		}
+		if (DoRandomMove) {
+			UndoAutoMove();
+		}
 	}
 	void MoveTargetTileX() {
 
@@ -464,6 +476,27 @@ public:
 			//TargetTile->y += y;
 			return 1;
 		}
+	}
+	void UndoAutoMove() {
+		if (RandomX == 2) {
+			MoveX(-xVec);
+		}
+		else if (RandomX == 3) {	
+			MoveX(-xVec);
+		}
+		else if (RandomX == 1 || RandomX == 0) {
+			xVec = 0;
+		}
+		if (RandomY == 2) {
+			MoveY(-yVec);
+		}
+		else if (RandomY == 3) {
+			MoveY(-yVec);
+		}
+		else if (RandomY == 1 || RandomY == 0) {
+			yVec = 0;
+		}
+
 	}
 	Sprite* GetThis() {
 		return this;
@@ -2797,7 +2830,7 @@ public:
 		bool IsTempSpriteVictim;
 		std::vector<int> EraseableX = {};
 		std::vector<int> EraseableY = {};
-		bool Debug = false;
+		bool Debug = true;
 		//xs
 
 		printf("Remove Sprite we found at the end of the stack (I believe already done in the main)\n");
@@ -2962,7 +2995,7 @@ public:
 
 
 	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*> & VictimsNoLongerOrigin) {
-		bool Debug = false;
+		bool Debug = true;
 		//move victim,
 		printf("Try to move Object%d [handlevictim]\n", CurrentVictim->OrderCreation + 1);
 		RemoveSpriteFromMap(CurrentVictim);
@@ -3031,6 +3064,7 @@ public:
 			ReMapSprite(CurrentVictim);
 			CompletedSprites[CurrentVictim->OrderCreation] = 1;
 			printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
+			 
 
 
 			//Code below these comments are what was done in antoher function, so perhaps export it to a seperate function all together?
@@ -3144,8 +3178,8 @@ public:
 		
 			if (Debug) {
 				printf("And here's the Original VictimList = {");
-				for (int i = 0; i < VictimsNoLonger.size(); i++) {
-					printf("Object%d, ", VictimsNoLonger[i]->OrderCreation + 1);
+				for (int i = 0; i < VictimsNoLongerOrigin.size(); i++) {
+					printf("Object%d, ", VictimsNoLongerOrigin[i]->OrderCreation + 1);
 				}
 				printf("}\n");
 			}
