@@ -2657,16 +2657,24 @@ public:
 						std::vector<int> InvestigateIndexsY = {};
 						//search for the compelted sprite in the stack
 						for (int d = 0; d < SpriteStacks.size(); d++) {
+
 							//NOTE NOTE NOTE NOTE THIS NEEDS TO WORK UP A QUE SO LONG AS I>POPPED CREATIONORDER && COMPLETEDSPRITES[ORDERCREATION]==1, SO WE'VE FOUND THE START OF IT, NOW MAKE A WHILE THAT GOES 'UP' THE STACK
 							if (SpriteStacks[d]->SpriteXCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]) {
 								SpriteStacks[d]->SpriteXCollision.pop_back();
 								InvestigateIndexsX.push_back(d);
-								endofstackX = true;
+								while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
+									SpriteStacks[d]->SpriteXCollision.pop_back();
+									InvestigateIndexsX.push_back(d); //do this after the while we insert.
+								}
+
 							} 
 							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]) {
 								SpriteStacks[d]->SpriteYCollision.pop_back();
 								InvestigateIndexsY.push_back(d);
-								endofstackY = true;
+								while (SpriteStacks[d]->SpriteYCollision.size() > 0 > 0 && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
+									SpriteStacks[d]->SpriteYCollision.pop_back();
+									InvestigateIndexsY.push_back(d); //do this after the while we insert.
+								}
 							} 
 						}
 						printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
@@ -2816,7 +2824,7 @@ public:
 		}
 		*/
 
-
+		//the above comment is what we'd do if we didn't in main.
 
 		//Okay, now we actually want to investigate those changed positions. 
 
@@ -2876,6 +2884,9 @@ public:
 
 			//if one of the sizes is empty, but the other is full
 			if (EraseableX.size() > 0 && EraseableY.size() > 0) {
+				//We have these three calls because if it's in ErasableX, it's from the InestigateX, likewise for Y, thus if it appeared in both of them somehow, we want to popit back from both of them
+				//we also check the size of each, because we want to maintain some order (Earlier Sprites move before Later created Sprites)
+
 				if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
 
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
@@ -2895,6 +2906,7 @@ public:
 					i--;//popped twice, so go down an extra step in he loop.
 				}
 			}
+			//If one or the other ran out of items to add to the vector.
 			else if (EraseableX.size() > 0) {
 				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 				SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
@@ -2943,6 +2955,12 @@ public:
 		//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
 
 	}
+
+
+
+
+
+
 	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*> & VictimsNoLongerOrigin) {
 		bool Debug = false;
 		//move victim,
@@ -3026,15 +3044,18 @@ public:
 			//search for the compelted sprite in the stack -this function needs to be improved to work up a stack, not just across all stacks.
 			for (int d = 0; d < SpriteStacks.size(); d++) {
 				//NOTE NOTE NOTE NOTE THIS NEEDS TO WORK UP A QUE SO LONG AS I>POPPED CREATIONORDER && COMPLETEDSPRITES[ORDERCREATION]==1, SO WE'VE FOUND THE START OF IT, NOW MAKE A WHILE THAT GOES 'UP' THE STACK
-				if (SpriteStacks[d]->SpriteXCollision.size() > 0 && Queue2[QueLocation] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]) {
-					SpriteStacks[d]->SpriteXCollision.pop_back();
-					InvestigateIndexsX.push_back(d); //do this after the while we insert.
-
+				if (SpriteStacks[d]->SpriteXCollision.size() > 0 ) { //if there are still things your colliding with on X, AND The SpriteMoved pointer MATCHES the pointer at the end of that stack!
+					//we may just need the while statement
+					while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d]==1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
+						SpriteStacks[d]->SpriteXCollision.pop_back();
+						InvestigateIndexsX.push_back(d); //do this after the while we insert.
+					}
 				} 
-				if (SpriteStacks[d]->SpriteYCollision.size() > 0 && Queue2[QueLocation] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]) {
-					SpriteStacks[d]->SpriteYCollision.pop_back();
-					InvestigateIndexsY.push_back(d);
-
+				if (SpriteStacks[d]->SpriteYCollision.size() > 0 ) {
+					while (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[d] == 1) {
+						SpriteStacks[d]->SpriteYCollision.pop_back();
+						InvestigateIndexsY.push_back(d);
+					}
 				} 
 			}
 			//^From the main loop
@@ -3130,7 +3151,7 @@ public:
 			}
 
 
-			
+			//This now inserts newly uncovered victims into the victimsNoLonger vector appropriately. This is so when this function returns, you can then try moving it again. 
 			while (VictimsNoLonger.size() > 0) {
 				BinSearchInsert(VictimsNoLongerOrigin, VictimsNoLonger, 0, VictimsNoLongerOrigin.size() - 1);
 				if (Debug) {
