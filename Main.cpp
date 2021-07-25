@@ -157,10 +157,31 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 3, Object3->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object3); //NEW 
 
-				Sprite* Object4 = new Sprite(120, 120, "AA219", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 0, 120, 120, "AxisX"); // TEMP
+				Sprite* Object4 = new Sprite(120, 120, "AA249", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 0, 120, 120, "AxisX"); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object4); //NEW 
+
+
+				Sprite* Object5 = new Sprite(80, 120, "AA249", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 0, 120, 120, "AxisX"); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 5, Object5->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object5); //NEW 
+
+
+
+				Sprite* Object6 = new Sprite(37, 112, "AA249", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 0, 120, 120, "AxisX"); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 6, Object6->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object6); //NEW 
+
+
+				//lets just see if it works again
+				Sprite* Object7 = new Sprite(16, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 1, 16, 96, "AxisY"); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 7, Object7->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object7); //NEW 
+
 
 
 				//After pushing back all the objects -DONE ONCE

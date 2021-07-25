@@ -897,7 +897,7 @@ public:
 				yAxis = -1;
 			}
 		} //get the Y and X direction, for Measure
-		//printf("3.1\n"); //General Direction found
+		printf("3.1\n"); //General Direction found
 		int Measure; //Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
 		if (true) {
 			//can be improved by nesting. for now ignore.
@@ -931,7 +931,7 @@ public:
 		}//Find Measure's value
 		int TempXOverlap;
 		int TempYOverlap;
-		//printf("3.2\n"); //Measure found
+		printf("3.2\n"); //Measure found
 		//figure out what your hitting, and how far overlapped.
 		if (true) {
 			//2) NOTE IF THERE IS A BUG, WHERE ITS COLLIDIG OT ITS RIGHT OR BELOW EXTRA, MAKE A CHECK THAT IF x2%16=0 IT IS NOW EQUAL TO x1, THUS IT DOESNT MATTER IF WE DO x2 OR x1 IN THE X CHECK, so long as they are the same, TAHT IS ALL. - a bug from previous, but the naming convention should be based on hte edge that is 'leading'
@@ -973,14 +973,14 @@ public:
 							TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 						}
 						//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
-						if (TempXOverlap < 17 && TempXOverlap > 0) {
+						if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x1][i]);
 							SpriteX.push_back(TempXOverlap);
-						}
-						if (TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y1][x1][i]);
 							SpriteY.push_back(TempYOverlap);
-						}
+							TempXOverlap = 0;
+							TempYOverlap = 0;
+						} 
 					}
 				}
 				else {
@@ -1003,14 +1003,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap); //2) The overlap value will be the same, even if we end up pushing it twice.
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("c\n");
@@ -1030,14 +1030,14 @@ public:
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
@@ -1057,14 +1057,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("e\n");
@@ -1088,18 +1088,14 @@ public:
 							if (BugTest) {
 								printf("%d %d Overlap X and Y\n", TempXOverlap, TempYOverlap);
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
-								printf("Push overlapx\n");
-								SpriteOverlapX.push_back(LM[y2][x2][i]);
-								printf("Push spritex\n");
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) { 
+								SpriteOverlapX.push_back(LM[y2][x2][i]); 
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
-								printf("Push overlapy\n");
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
-								printf("Push spritey\n");
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 
 
 
@@ -1124,14 +1120,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("g\n");
@@ -1152,14 +1148,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("h\n");
@@ -1179,13 +1175,13 @@ public:
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
+								TempXOverlap = 0;
+								TempYOverlap = 0;
 							}
 						}
 					}
@@ -1216,14 +1212,14 @@ public:
 						else {
 							TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 						}
-						if (TempXOverlap < 17 && TempXOverlap > 0) {
+						if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x2][i]);
 							SpriteX.push_back(TempXOverlap);
-						}
-						if (TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y1][x2][i]);
 							SpriteY.push_back(TempYOverlap);
-						}
+							TempXOverlap = 0;
+							TempYOverlap = 0;
+						} 
 					}
 				}
 				else {
@@ -1247,14 +1243,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x2][i]);
-								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
+								SpriteX.push_back(TempXOverlap); 
 								SpriteOverlapY.push_back(LM[y1][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("k\n");
@@ -1275,14 +1271,14 @@ public:
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
@@ -1303,13 +1299,13 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
+								TempXOverlap = 0;
+								TempYOverlap = 0;
 							}
 						}
 						if (BugTest) {
@@ -1331,14 +1327,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 
 					}
@@ -1360,14 +1356,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("o\n");
@@ -1386,16 +1382,15 @@ public:
 							}
 							else {
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
-							}
-
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							} 
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("p\n");
@@ -1416,14 +1411,15 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x2][i]);
 								SpriteY.push_back(TempYOverlap);
+								TempXOverlap = 0;
+								TempYOverlap = 0;
 							}
+							 
 						}
 
 					}
@@ -1454,14 +1450,14 @@ public:
 							TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 						}
 
-						if (TempXOverlap < 17 && TempXOverlap > 0) {
+						if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y2][x1][i]);
 							SpriteX.push_back(TempXOverlap);
-						}
-						if (TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y2][x1][i]);
 							SpriteY.push_back(TempYOverlap);
-						}
+							TempXOverlap = 0;
+							TempYOverlap = 0;
+						} 
 					}
 				}
 				else {
@@ -1483,14 +1479,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("s\n");
@@ -1509,14 +1505,14 @@ public:
 							else {
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
@@ -1534,14 +1530,14 @@ public:
 							else {
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("t\n");
@@ -1561,14 +1557,14 @@ public:
 							else {
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 
 					}
@@ -1591,14 +1587,14 @@ public:
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("v\n");
@@ -1618,14 +1614,14 @@ public:
 							else {
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("w\n");
@@ -1645,14 +1641,14 @@ public:
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 
 					}
@@ -1683,14 +1679,14 @@ public:
 						else {
 							TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 						} 
-						if (TempXOverlap < 17 && TempXOverlap > 0) {
+						if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y2][x2][i]);
 							SpriteX.push_back(TempXOverlap);
-						}
-						if (TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y2][x2][i]);
 							SpriteY.push_back(TempYOverlap);
-						}
+							TempXOverlap = 0;
+							TempYOverlap = 0;
+						} 
 					}
 				}
 				else {
@@ -1714,14 +1710,14 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("z\n");
@@ -1744,20 +1740,16 @@ public:
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 
 								printf("LISTEN\n");
-							}
-							printf("HI\n");
+							} 
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-								printf("PUSHED x\n");
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-								printf("PUSHED Y]n");
-							}
-							printf("COMON\n");
+								TempXOverlap = 0;
+								TempYOverlap = 0; 
+							}  
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
@@ -1779,14 +1771,14 @@ public:
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("ab\n");
@@ -1806,14 +1798,14 @@ public:
 							else {
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 
 					}
@@ -1836,14 +1828,14 @@ public:
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x1][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x1][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("ad\n");
@@ -1863,14 +1855,14 @@ public:
 							else {
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y2][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y2][x2][i]);
 								SpriteY.push_back(TempYOverlap);
-							}
+								TempXOverlap = 0;
+								TempYOverlap = 0;
+							} 
 						}
 						if (BugTest) {
 							printf("ae\n");
@@ -1892,36 +1884,22 @@ public:
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
 
-							if (TempXOverlap < 17 && TempXOverlap > 0) {
+							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 								SpriteOverlapX.push_back(LM[y1][x2][i]);
 								SpriteX.push_back(TempXOverlap);
-							}
-							if (TempYOverlap < 17 && TempYOverlap > 0) {
 								SpriteOverlapY.push_back(LM[y1][x2][i]);
 								SpriteY.push_back(TempYOverlap);
+								TempXOverlap = 0;
+								TempYOverlap = 0;
 							}
+							 
 						}
 
 					}
 				}
 
 			}
-
-			/*
-			
-			xOverlapped = 0; 
-			TempYOverlap = 0; 
-			*/
-			//	(xOverlapped > 0 && xOverlapped < 17) &&
-			
-			/*
-
-			yOverlapped = 0;
-			TempXOverlap = 0;
-			*/
-			//	(yOverlapped > 0 && yOverlapped < 17) &&
-
-			//base lrud directions
+			//base l,r,u,d directions
 			else if (Measure == 6) {//L
 			//edges are [x1][y1] and [x1][y2]
 				if (TempY2Math == 0) {
@@ -1939,7 +1917,6 @@ public:
 								yOverlapped = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 							if (yOverlapped > 0 && yOverlapped < 17) {
-								printf("Truely overalpped with something (Going Left, at least one x pixel overlap UL)\n");
 							}
 						}
 
@@ -1959,7 +1936,7 @@ public:
 							SpriteX.push_back(TempXOverlap);
 							yOverlapped = 0;
 							TempXOverlap = 0;
-							SDL_Delay(5000);
+
 						}
 					}
 				}
@@ -1975,7 +1952,6 @@ public:
 							yOverlapped = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							
 							if (yOverlapped > 0 && yOverlapped < 17) {
-								printf("Truely overalpped with something (Going Left, at least one x pixel overlap UL)\n");
 							}
 						}
 
@@ -1995,7 +1971,7 @@ public:
 							SpriteX.push_back(TempXOverlap);
 							yOverlapped = 0;
 							TempXOverlap = 0;
-							SDL_Delay(5000);
+
 						}
 					}
 					if (BugTest) {
@@ -2012,7 +1988,6 @@ public:
 								yOverlapped = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 							if (yOverlapped > 0 && yOverlapped < 17) {
-								printf("Truely overalpped with something (Going Left, at least one x pixel overlap LL)\n");
 							}
 						}
 
@@ -2032,7 +2007,7 @@ public:
 							SpriteX.push_back(TempXOverlap);
 							yOverlapped = 0;
 							TempXOverlap = 0;
-							SDL_Delay(5000);
+
 						}
 					}
 				}
@@ -2156,8 +2131,6 @@ public:
 					}
 				}
 			}
-
-
 			else if (Measure == 11) {//D
 				//edges are [x1][y2] and [x2][y2]
 
@@ -2390,8 +2363,6 @@ public:
 					}
 				}
 			}
-			
-			
 			//still
 			else if (Measure == 10) {//0
 				if (BugTest) {
@@ -2400,7 +2371,7 @@ public:
 			}
 			//All overlap, no collision
 			if (Measure != 10) {
-				SDL_Delay(100);
+				//used just for testing directional/diag movements
 			}
 			 
 		}
@@ -2504,7 +2475,7 @@ public:
 				printf("{Object%d, ", SpriteOverlapX[i]->OrderCreation + 1);
 				printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteX[i], SpriteOverlapX[i]->xPos, SpriteOverlapX[i]->yPos);
 				if (SpriteX[i] > 0) {
-					//SDL_Delay(250);
+
 				}
 			}
 			printf("\n");
@@ -2515,14 +2486,14 @@ public:
 				printf("{Object%d, ", SpriteOverlapY[i]->OrderCreation+1);
 				printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteY[i], SpriteOverlapY[i]->xPos, SpriteOverlapY[i]->yPos);
 				if (SpriteY[i] > 0) {
-					//SDL_Delay(250);
+
 				}
 			}
 			printf("\n");
 		}
 		if (BugTest && (SpriteOverlapY.size()> 0 || SpriteOverlapX.size()>0) ) {
 			printf("Take Time to ensure the above looks correct for Object%d.\n", ObjectSprite->OrderCreation + 1);
-		//	SDL_Delay(5000);
+
 		}
 	
 		
@@ -2536,7 +2507,7 @@ public:
 		}
 		else {
 			printf("Collidied on X, something's pushed!\n");
-			//SDL_Delay(5000);
+
 			TempStackable->SpriteXCollision = {};
 			for (int i = 0; i < SpriteOverlapX.size(); i++) {
 				TempStackable->SpriteXCollision.push_back(SpriteOverlapX[i]);
@@ -2548,7 +2519,7 @@ public:
 		}
 		else {
 			printf("Collidied on Y, something's pushed!\n");
-			//SDL_Delay(5000);
+
 			TempStackable->SpriteYCollision = {};
 			for (int i = 0; i < SpriteOverlapY.size(); i++) {
 				TempStackable->SpriteYCollision.push_back(SpriteOverlapY[i]);
@@ -2557,11 +2528,11 @@ public:
 		//Trying to figure out how to store then 'return' these values as readable.
 		if (TempStackable->SpriteXCollision.size() > 0) {
 			printf("I've got an X collision with Object%d\n", TempStackable->SpriteXCollision[0]->OrderCreation + 1);
-			//SDL_Delay(5000);
+
 		}
 		if (TempStackable->SpriteYCollision.size() > 0) {
 			printf("I've got an Y collision with Object%d\n", TempStackable->SpriteYCollision[0]->OrderCreation + 1);
-			//SDL_Delay(5000);
+
 		}
 		if (TempStackable->SpriteYCollision.size() > 0 || TempStackable->SpriteXCollision.size() > 0) {
 			TempStackable->Victim = ObjectSprite; //Our sprite is a 'victim', it can't move.
@@ -2570,7 +2541,7 @@ public:
 			TempStackable->Victim = NULL; //it moved, so there is no 'victim'.
 		}
 		//= [{SpriteOverlapX}, {SpriteOverlapY}];
-		//printf("3.4\n"); //arrray to return is created
+		printf("3.4\n"); //arrray to return is created
 	}
 
 	
@@ -2652,50 +2623,21 @@ public:
 
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
 
-			/*
-			printf("Check for end of Stack\n");
-			for (int d = 0; d < SpriteStacks.size(); d++) { //improve how we're doing this later
-				if (SpriteStacks[d]->SpriteXCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size()-1]) {
-					endofstackX = true;
-				}
-				printf("x");
-				if (SpriteStacks[d]->SpriteYCollision.size() >0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size()-1]) {
-					endofstackY = true;
-				}
-				printf("y\n");
-			}
-			printf("End of stack found if any\n");
-			if (endofstackX || endofstackY) {
-				printf("The que found that object%d is in a stack!\n", Queue2[i]->OrderCreation + 1);
-				SDL_Delay(5000);
-			}
 
-			if (endofstackX && endofstackY) {
-				printf("BOTH on stack\n");
-			}
-			else if (endofstackX) {
-				printf("X on stack!\n");
-			}
-			else if (endofstackY) {
-				printf("Y on stack!\n");
-			}
-			*/
-
-
+			//deleted large comment here, not sure why I had it. maybe based on previous version of stack?
 
 			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
 			if (Queue2[i] != NULL) { //redudant, archaic
 					printf("1\n");
 					RemoveSpriteFromMap(Queue2[i]);
-				//	printf("2\n");
+					printf("2\n");
 					Queue2[i]->Behavior();
-				//	printf("3\n");
+					printf("3\n");
 					TempStackable = new XYArr; //will delete if emptied, otherwise we'll push the object to the stack.
 				   //Question, if I make a new XYArr, without deleting this one, will it change pointers automatically without overwritting? Yes it does :D!
 					CheckFutureSpritePosition2(Queue2[i], TempStackable);
 					//printf("TempStackable poitner is %p, for object%d\n", TempStackable, Queue2[i]->OrderCreation+1);
-					//SDL_Delay(5000);
-
+					// 
 					//Check if we got anything
 
 					//success
@@ -2785,7 +2727,9 @@ public:
 			TempStackable = new XYArr; //besure to delete before leaving function.
 			CheckFutureSpritePosition2(SpriteStacks[0]->Victim, TempStackable);
 			printf("%d %d, %d %d\n", SpriteStacks[0]->Victim->xPos, SpriteStacks[0]->Victim->yPos, SpriteStacks[0]->Victim->TargetTile->x, SpriteStacks[0]->Victim->TargetTile->y);
-			int xChange = SpriteStacks[0]->Victim->xPos - SpriteStacks[0]->Victim->TargetTile->x; // +1 means moved right, -1 means moved left
+
+			//ask jack to explain more in detail what each operation is doing. I'll look at it later tonight if I have time.
+			int xChange = SpriteStacks[0]->Victim->xPos - SpriteStacks[0]->Victim->TargetTile->x; // +1 means moved right, -1 means moved left  
 			int yChange = SpriteStacks[0]->Victim->yPos - SpriteStacks[0]->Victim->TargetTile->y; // +1 means moved down, -1 means moved up
 			printf("%d %d\n", xChange, yChange);
 			printf("%d\n", TempStackable->SpriteXCollision.size());
@@ -2793,6 +2737,7 @@ public:
 			int x = TempStackable->SpriteXCollision.size(); // this is done so the same function is not called multiple times
 			int y = TempStackable->SpriteYCollision.size(); // this is done so the same function is not called multiple times
 
+			//teleports to appropriate position <-ask jack to make this afunction, not just an operation.
 			if (x > 0) { // this is a check just to make sure the spriteXCollision is not empty
 				if (xChange > 0) { // if moving right
 					if (SpriteStacks[0]->Victim->TargetTile->x + TILE_WIDTH <= TempStackable->SpriteXCollision[x - 1]->TargetTile->x) { // this is just making sure that the x position of Current Victim is more left than the TempStackable one
@@ -2805,7 +2750,6 @@ public:
 					}
 				}
 			}
-
 			if (y > 0) { // this is a check just to make sure the spriteYCollision is not empty
 				if (yChange > 0) { // if moving down
 					if (SpriteStacks[0]->Victim->TargetTile->y + TILE_HEIGHT <= TempStackable->SpriteYCollision[y - 1]->TargetTile->y) { // this is just making sure that the y position of Current Victim is above than the TempStackable one
@@ -2818,6 +2762,8 @@ public:
 					}
 				}
 			}//flag it for collision 
+
+
 			ReMapSprite(SpriteStacks[0]->Victim); //quesiton, if I have two objects taht odn't oved on top of one another, this collision shoudl go off, and the undo, does that just keep it in the same space, no matter what? I feel like kif it doesn't move I shouldn't even allow it to enter the que in the first place... questions for later, might be less worth while the less object collision stacks that are possible. I should make some ratio of level to sprites to control how 'involved' the stack process is. for now lets go as deep as possible with the computation aspect, and trim down for other cases where the user doesn't care for such exact detections.
 			printf("Remap Object%d [Current Victim]\n", SpriteStacks[0]->Victim->OrderCreation + 1);
 			//no need ot pop from SpriteStacks
@@ -2826,7 +2772,12 @@ public:
 			SpriteStacks.erase(SpriteStacks.begin());
 			//SDL_Delay(10000);
 		}
+		printf("9	 HANLED THE REST OF STACK	\n");
 		*/
+
+
+
+
 	}
 	
 	void HandleCollision2(std::vector<int>InvestigateX, std::vector<int>InvestigateY, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation) {
@@ -2870,7 +2821,7 @@ public:
 		//Okay, now we actually want to investigate those changed positions. 
 
 		printf("Now investigate those edited, see if we can get rid of any\n");
-		//SDL_Delay(250);
+
 		if (Debug) {
 			printf("Displaying InvestigateX = {");
 			for (int i = 0; i < InvestigateX.size(); i++) {
@@ -2897,7 +2848,7 @@ public:
 			}
 		}
 		printf("Now that we've looked at them, EraseableV should have stacks whose victims are ready to be checked\n");
-		//SDL_Delay(250);
+
 		if (Debug) {
 			if (EraseableX.size() > 0) {
 				printf("EraseableX={");
@@ -2919,7 +2870,7 @@ public:
 
 		//step 2, investigate those popped, see if any victims are left fully-alone
 		printf("Start Erasing\n");
-		//SDL_Delay(250);
+
 		int Total = EraseableX.size() + EraseableY.size() -1;
 		for (int i = Total; i >-1; i--) {
 
@@ -2973,7 +2924,7 @@ public:
 			}
 			printf("}\n");
 		}
-		//SDL_Delay(5000);
+
 		//Step 3, of those looked at, any victims that are empty should now beb moved. If they still cannot move, just do the proper undo procedure. 
 			//This is because, from the get go we ahve everything it overlaps with, so everything it could've possibly ran into is known. Thus if we moved everything it could've run into, and it still hits something, it means it hit it for sure.
 
@@ -3050,7 +3001,7 @@ public:
 			//no need ot pop from SpriteStacks
 			//no need to insert to spritestacks
 			CompletedSprites[CurrentVictim->OrderCreation] = 1; //it's completed, won't move anymore. This way when we try to move the victims at the end of que2 to appropriate spaces, if they would collide with obj1 then that's what they'll do
-			//SDL_Delay(10000);
+
 		}
 		else { //it moved!
 			printf("It moved! Now to recheck the stack!\n");
@@ -3062,7 +3013,7 @@ public:
 			ReMapSprite(CurrentVictim);
 			CompletedSprites[CurrentVictim->OrderCreation] = 1;
 			printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
-			//SDL_Delay(10000);
+
 
 			//Code below these comments are what was done in antoher function, so perhaps export it to a seperate function all together?
 			//search all stacks for this item, and pop it 
@@ -3111,7 +3062,7 @@ public:
 		
 			//step 2, investigate those popped, see if any victims are left fully-alone
 			printf("Start Erasing\n");
-			//SDL_Delay(250);
+
 			int Total = EraseableX.size() + EraseableY.size() -1;
 			std::vector<Sprite*> VictimsNoLonger = {};
 			for (int i = Total; i >-1; i--) {
@@ -3178,7 +3129,7 @@ public:
 				printf("}\n");
 			}
 
-			//SDL_Delay(5000);
+
 			
 			while (VictimsNoLonger.size() > 0) {
 				BinSearchInsert(VictimsNoLongerOrigin, VictimsNoLonger, 0, VictimsNoLongerOrigin.size() - 1);
@@ -3460,14 +3411,14 @@ public:
 					// printf("UL [%d, %d], ", y1, x1);
 					if (LM[y1][x1].size() > 0) {
 						// printf("Occupied, ");
-						// SDL_Delay(1000);
+
 					}
 				}
 				if (failx2) {
 					// printf("UR [%d, %d], ", y1, x2);
 					if (LM[y1][x2].size() > 0) {
 						// printf("Occupied, ");
-						// SDL_Delay(1000);
+
 					}
 				}
 			}
@@ -3476,14 +3427,14 @@ public:
 					// printf("LL [%d, %d], ", y2, x1);
 					if (LM[y2][x1].size() > 0) {
 						// printf("Occupied, ");
-						// SDL_Delay(1000);
+
 					}
 				}
 				if (failx2) {
 					// printf("LR [%d, %d], ", y2, x2);
 					if (LM[y2][x2].size() > 0) {
 						// printf("Occupied, ");
-						// SDL_Delay(1000);
+
 					}
 				}
 			}
@@ -3500,7 +3451,7 @@ public:
 
 		if (ObjectSprite->OrderCreation == 0) {
 			// DisplayTileBasedArray();
-		//	SDL_Delay(500);
+
 		}
 
 	}
@@ -3961,7 +3912,7 @@ public:
 			//NOTE - Especially if it says something about the vector itterators in removespritefrommap()
 
 			// printf("Object%d in stack to be moved\n", ObjectSprite->OrderCreation+1);
-			//SDL_Delay(10000);
+
 
 			RemoveSpriteFromMap(InterestedStack[InternalStackIndex]);
 			InterestedStack[InternalStackIndex]->Behavior();
@@ -4076,8 +4027,8 @@ public:
 
 
 		// printf("Object%d in stack (end) to be moved\n", InterestedStack[EndOfStack]->OrderCreation + 1);
-		//SDL_Delay(10000);
-
+		// 
+		// 
 		//move
 		printf("Object%d to be handled [end]\n", InterestedStack[EndOfStack]->OrderCreation + 1);
 
