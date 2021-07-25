@@ -139,6 +139,9 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 				
+				
+				//BACK UP SPRITES FOR TESTING PURPOSES
+				/* 
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
@@ -181,7 +184,29 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 7, Object7->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object7); //NEW 
+				*/
 
+				//RANDOM SPRITES BEGIN
+				//kept Object1 because it's global, don't want to mess anything up.
+				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomeMove"); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
+
+
+				std::vector<Sprite*> RandomMoveSprites;
+				RandomMoveSprites.resize(20); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
+				int xPosTemp =0;
+				int yPosTemp =0;
+
+				for (int j = 0; j < RandomMoveSprites.size(); j++) {
+					
+					//they will all start on the first row, but three colomns apart (each occupying the 'third' column.
+					RandomMoveSprites[j] = new Sprite(xPosTemp+(3*j)*TILE_WIDTH, yPosTemp*TILE_HEIGHT, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomMove");
+					printf("Object%d, created order = %d\n", j+2, Object1->OrderCreation);
+					gLevel1->SpriteLayer->MapSprite(RandomMoveSprites[j]); //NEW 
+				}
+				//RANDOM SPRITES END
 
 
 				//After pushing back all the objects -DONE ONCE
