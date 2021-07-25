@@ -157,6 +157,10 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 3, Object3->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object3); //NEW 
 
+				Sprite* Object4 = new Sprite(120, 120, "AA219", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), 0, 120, 120, "AxisX"); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object4); //NEW 
 
 
 				//After pushing back all the objects -DONE ONCE
