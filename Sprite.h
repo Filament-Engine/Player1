@@ -267,7 +267,7 @@ public:
 			RandomY = rand() % 4; // 0/1 means don't move, 2 means move left, 3 means move right.
 			OriginalFrame = TIME; //NEW
 		}
-		if (TIME > 16) {
+		if (TIME > 15) {
 			OriginalFrame = -1; //NEW
 			RandomX = 0;
 			RandomY = 0;
@@ -2713,7 +2713,7 @@ public:
 							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]) {
 								SpriteStacks[d]->SpriteYCollision.pop_back();
 								InvestigateIndexsY.push_back(d);
-								while (SpriteStacks[d]->SpriteYCollision.size() > 0 > 0 && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
+								while (SpriteStacks[d]->SpriteYCollision.size() > 0   && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 									SpriteStacks[d]->SpriteYCollision.pop_back();
 									//InvestigateIndexsY.push_back(d); //already pushed back
 								}
@@ -2836,11 +2836,11 @@ public:
 		printf("9 	 HANDLED REST OF STACK	 \n");
 
 		//For Random Sprites
-
-		if (TIME < 16) {
+		/* 
+		if (TIME < 18) {
 			printf("Check all positions at the end of movement:\n");
 			for (int i = 0; i < AllSprites.size(); i++) {
-				printf("Object%d, {%d, %d}\n", AllSprites[i]->OrderCreation+1, AllSprites[i]->xPos, AllSprites[i]->yPos);
+				printf("Object%d, {%d, %d}, Velocities= {%d, %d}\n", AllSprites[i]->OrderCreation+1, AllSprites[i]->xPos, AllSprites[i]->yPos, AllSprites[i]->xVec, AllSprites[i]->yVec);
 			} 
 		}
 		if (TIME == 15) {
@@ -2855,7 +2855,7 @@ public:
 			printf("TIME==17\n");
 			SDL_Delay(5000);
 		}
-
+		*/
 		//For Test Sprites
 		/* 
 		printf("Check all positions at the end of movement:\n");
@@ -2956,45 +2956,61 @@ public:
 		std::vector<Sprite*> VictimsNoLonger = {};
 
 		//step 2, investigate those popped, see if any victims are left fully-alone
-		printf("Start Erasing\n");
-
-		int Total = EraseableX.size() + EraseableY.size() -1;
-		for (int i = Total; i >-1; i--) {
-
+		//BREAKS SOMEWHERE BELOW HERE! 
+		int Total = EraseableX.size() + EraseableY.size() - 1;
+		printf("%d\n", Total);
+		for (int i = Total; i > -1; i--) {
+			printf("a\n");
 			//if one of the sizes is empty, but the other is full
 			if (EraseableX.size() > 0 && EraseableY.size() > 0) {
+				printf("b\n");
 				//We have these three calls because if it's in ErasableX, it's from the InestigateX, likewise for Y, thus if it appeared in both of them somehow, we want to popit back from both of them
 				//we also check the size of each, because we want to maintain some order (Earlier Sprites move before Later created Sprites)
 
 				if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
+					printf("c\n");
 
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
+					printf("d\n");
 				}
 				else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
+					printf("e\n");
 					VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 					EraseableY.pop_back();
+					printf("f\n");
 				}
 				else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
+					printf("g\n");
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
 					EraseableY.pop_back();
-					i--;//popped twice, so go down an extra step in he loop.
+					printf("h\n");
+					i--;//popped twice, so go down an extra step in the loop.
 				}
 			}
 			//If one or the other ran out of items to add to the vector.
 			else if (EraseableX.size() > 0) {
-				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+				printf("i\n");
+				printf("EraseableX Size = %d\n", EraseableX.size());
+				printf("EraseableX Last Value = %d\n", EraseableX[EraseableX.size() - 1]);
+				printf("object%d\n", SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim->OrderCreation + 1);
+				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim); // error here
+				printf("i1\n");
 				SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+				printf("i2\n");
 				EraseableX.pop_back();
+				printf("j\n");
 			}
 			else if (EraseableY.size() > 0) { //this should be a definite, but just for now
+				printf("k\n");
 				VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 				SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 				EraseableY.pop_back();
+				printf("l\n");
 			}
 			//note on how this operation works.
 			//EraseableX = {0, 5, 9, 12}, where these numbers are the index's on SpriteStacks that we last popped from, organized from least to greatest, Y is same.
@@ -3007,6 +3023,8 @@ public:
 			//don't flag for overlap, since that happens after everythings been moved properly. 
 
 		}
+
+
 		printf("Now handle the victims no longer\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
 		if (Debug) {
 			printf("VictimsNoLonger = {");
@@ -3249,7 +3267,7 @@ public:
 					printf("}\n");
 				}
 				printf("This is rare, so give your self a minute to get some photos or look at it\n");
-				SDL_Delay(5000);
+				//SDL_Delay(5000);
 			}
 		}
 		//add those new victims into the appropraite posiiton on the current victim que.  

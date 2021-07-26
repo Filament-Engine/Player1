@@ -393,7 +393,8 @@ void handleLoop() {
 
 		gLevel1->RenderThis(Player1);
 		TIME++;
-		if (TIME >= MAX_FPS) {
+		//if (TIME >= MAX_FPS) {
+		if (TIME >= 30) {
 			TIME = 0;
 		}
 
