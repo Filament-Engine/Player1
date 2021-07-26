@@ -195,7 +195,9 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 
 				std::vector<Sprite*> RandomMoveSprites;
-				RandomMoveSprites.resize(20); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
+
+				//0-20 (width wise, don't have gaurd for going over edge of spawn area).
+				RandomMoveSprites.resize(5); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
 				int xPosTemp =0;
 				int yPosTemp =0;
 
@@ -203,7 +205,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 					
 					//they will all start on the first row, but three colomns apart (each occupying the 'third' column.
 					RandomMoveSprites[j] = new Sprite(xPosTemp+(3*j)*TILE_WIDTH, yPosTemp*TILE_HEIGHT, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomMove");
-					printf("Object%d, created order = %d\n", j+2, Object1->OrderCreation);
+					printf("Object%d, created order = %d, Position={%d, %d}\n", j+2, Object1->OrderCreation, xPosTemp + (3 * j) * TILE_WIDTH, yPosTemp* TILE_HEIGHT);
 					gLevel1->SpriteLayer->MapSprite(RandomMoveSprites[j]); //NEW 
 				}
 				//RANDOM SPRITES END

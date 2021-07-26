@@ -33,11 +33,15 @@ public:
 	int xVec;
 	int yVec;
 
+	//used to calculate whether a frame has finished rendering or not within Random move
+	int OriginalFrame;
+
 	// normal constructor -- uses moveX and moveY
 	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order) {
 		xPos = x;
 		yPos = y;
 		label = l;
+		OriginalFrame = -1;
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
@@ -85,6 +89,7 @@ public:
 		xPos = x;
 		yPos = y;
 		label = l;
+		OriginalFrame = -1;
 
 		if (MovementType == "MoveX") {
 
@@ -108,9 +113,7 @@ public:
 
 		OrderCreation = Order;//NEW
 		leftVlimit = 0; //edited by user potentially idk what default we want.
-		rightVlimit = 0;
-		DoMoveX = true;
-		DoMoveY = true;
+		rightVlimit = 0; 
 		xVec = 0;
 		yVec = 0;
 
@@ -150,6 +153,7 @@ public:
 		xPos = x;
 		yPos = y;
 		label = l;
+		OriginalFrame = -1;
 
 		IMGName = label.substr(0, 2); // this is the letter part of label -- the AA
 
@@ -256,15 +260,19 @@ public:
 		//theoretically it should be fine.
 		// 
 		//if (FrameCounter > FrameStored)
+		printf("Time = %d\n", TIME);
 
-		if (TIME == 0) {
+		if (TIME == 0 && TIME != OriginalFrame) { //NEW
 			RandomX = rand() % 4; // 0/1 means don't move, 2 means move up, 3 means move down
 			RandomY = rand() % 4; // 0/1 means don't move, 2 means move left, 3 means move right.
+			OriginalFrame = TIME; //NEW
 		}
 		if (TIME >= 16) {
+			OriginalFrame = -1; //NEW
 			RandomX = 0;
 			RandomY = 0;
 		}
+		
 		if (RandomX == 2) {
 			xVec = -1;
 			MoveX(xVec);
@@ -2698,7 +2706,7 @@ public:
 								InvestigateIndexsX.push_back(d);
 								while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 									SpriteStacks[d]->SpriteXCollision.pop_back();
-									InvestigateIndexsX.push_back(d); //do this after the while we insert.
+									//InvestigateIndexsX.push_back(d); //already pushed back
 								}
 
 							} 
@@ -2707,7 +2715,7 @@ public:
 								InvestigateIndexsY.push_back(d);
 								while (SpriteStacks[d]->SpriteYCollision.size() > 0 > 0 && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 									SpriteStacks[d]->SpriteYCollision.pop_back();
-									InvestigateIndexsY.push_back(d); //do this after the while we insert.
+									//InvestigateIndexsY.push_back(d); //already pushed back
 								}
 							} 
 						}
@@ -2823,6 +2831,19 @@ public:
 		// int GlobalFrame = x - (A)*(x/A), A=MaxFramerate - 
 		//Eraseable size error
 
+		//NEW
+		SpriteStacks.clear();
+		printf("9 	 HANDLED REST OF STACK	 \n");
+
+		if (TIME < 16) {
+			printf("Check all positions at the end of movement:\n");
+			for (int i = 0; i < AllSprites.size(); i++) {
+				printf("Object%d, {%d, %d}\n", AllSprites[i]->OrderCreation+1, AllSprites[i]->xPos, AllSprites[i]->yPos);
+			} 
+		}
+		if (TIME == 15) {
+			SDL_Delay(5000);
+		}
 
 	}
 	
@@ -3078,6 +3099,7 @@ public:
 			//investigate
 			//get new victims
 			
+			bool AlreadyPushedIndex = false; //NEW <- to avoid pushing back tons of indexX when we only looked at it once and all we needed to know.
 			std::vector<int> InvestigateIndexsX = {};
 			std::vector<int> InvestigateIndexsY = {};
 			//search for the compelted sprite in the stack -this function needs to be improved to work up a stack, not just across all stacks.
@@ -3087,15 +3109,21 @@ public:
 					//we may just need the while statement
 					while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d]==1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 						SpriteStacks[d]->SpriteXCollision.pop_back();
-						InvestigateIndexsX.push_back(d); //do this after the while we insert.
+						if (!AlreadyPushedIndex) { //NEW
+							InvestigateIndexsX.push_back(d); //do this after the while we insert.
+						}
 					}
 				} 
+				AlreadyPushedIndex = false;
 				if (SpriteStacks[d]->SpriteYCollision.size() > 0 ) {
 					while (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[d] == 1) {
 						SpriteStacks[d]->SpriteYCollision.pop_back();
-						InvestigateIndexsY.push_back(d);
+						if (!AlreadyPushedIndex) { //NEW
+							InvestigateIndexsY.push_back(d);
+						}
 					}
-				} 
+				}
+				AlreadyPushedIndex = false;
 			}
 			//^From the main loop
 			//now every stack should be popped as much as it could be. Then we must find the eraseable elements again. NOTE I SHOULD ERASE IT FROM THE STACK WHEN WE FIRST ADD IT
