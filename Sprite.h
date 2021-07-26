@@ -254,7 +254,8 @@ public:
 	void RandomMove() {
 		//INSERT a check so that if it's the same frame, don't recalcualte a random number. Otherwise the direction changes mid frame, which may make debugging stack errors harder.
 		//theoretically it should be fine.
-
+		// 
+		//if (FrameCounter > FrameStored)
 
 		if (TIME == 0) {
 			RandomX = rand() % 4; // 0/1 means don't move, 2 means move up, 3 means move down
@@ -422,7 +423,7 @@ public:
 			UndoMoveY(yVec);
 		}
 		if (DoRandomMove) {
-			UndoAutoMove();
+			UndoRandomMove();
 		}
 	}
 	void MoveTargetTileX() {
@@ -477,7 +478,7 @@ public:
 			return 1;
 		}
 	}
-	void UndoAutoMove() {
+	void UndoRandomMove() {
 		if (RandomX == 2) {
 			MoveX(-xVec);
 		}
@@ -2816,7 +2817,11 @@ public:
 		printf("9	 HANLED THE REST OF STACK	\n");
 		*/
 
-
+		//clear the stack (delete teh stacks in spritestacks)
+		//figure out why the sprites sometimes stutter, or move over more tahn they should
+		//We need a frame global counter, so that random move doesn't switch directions mid frame, 
+		// int GlobalFrame = x - (A)*(x/A), A=MaxFramerate - 
+		//Eraseable size error
 
 
 	}
@@ -3117,7 +3122,7 @@ public:
 		
 			//step 2, investigate those popped, see if any victims are left fully-alone
 			printf("Start Erasing\n");
-
+			//BREAKS SOMEWHERE BELOW HERE! 
 			int Total = EraseableX.size() + EraseableY.size() -1;
 			std::vector<Sprite*> VictimsNoLonger = {};
 			for (int i = Total; i >-1; i--) {
@@ -3196,7 +3201,7 @@ public:
 					printf("}\n");
 				}
 				printf("This is rare, so give your self a minute to get some photos or look at it\n");
-				SDL_Delay(60000);
+				SDL_Delay(5000);
 			}
 		}
 		//add those new victims into the appropraite posiiton on the current victim que.  
@@ -3212,6 +3217,13 @@ public:
 		int Middle;
 		Middle = (Left - (Right - Left) / 2);
 		if (Left == Middle || Right == Middle) {
+			//this si for the error {3} inserted into {15, 12} resulting in {3, 15, 12} when we want {15, 3, 12}, which will then po pto be {15, 3}. - should only rely on it at a certain size...
+			if (Middle + 1 < Origin.size()) {
+				if (Origin[Middle]->OrderCreation > Insertable.back()->OrderCreation) {
+					//if the item to your right is greater than yourself, you want to move forward because your younger
+					Middle += 1;
+				} 
+			}
 			printf("I thinK the position your looking for is %d\n", Middle);
 			Origin.insert(Origin.begin()+Middle, Insertable.back());
 			printf("Inserted the new Victim into the Original list\n");
@@ -3220,11 +3232,11 @@ public:
 		}
 		else {
 			//it is somewhere in the left half of the array (begining, if odd, round down the half)
-			if (Insertable.back()->OrderCreation < Origin[Middle]->OrderCreation) {
+			if (Insertable.back()->OrderCreation > Origin[Middle]->OrderCreation) {
 				BinSearchInsert(Origin, Insertable, Left, Middle);
 			}
 			//it is somewhere in the rihg thalf of hte array (if odd, round up, to end)
-			else if (Insertable.back()->OrderCreation > Origin[Middle]->OrderCreation) {
+			else if (Insertable.back()->OrderCreation < Origin[Middle]->OrderCreation) {
 				BinSearchInsert(Origin, Insertable, Middle + 1, Right);
 			}
 			//you found an equivalent position (should be impossible!)

@@ -398,7 +398,7 @@ void handleLoop() {
 			//Wait remaining time
 			SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
 		}
-
+		//CurrentFrame+=1; 
 	}
 }
 
