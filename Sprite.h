@@ -3044,10 +3044,13 @@ public:
 
 		printf("Take care of victims\n");
 		while (VictimsNoLonger.size() != 0) {
-			printf("Take care of victim = Object%d\n", VictimsNoLonger[0]->OrderCreation + 1);
-			HandleVictims(VictimsNoLonger[0], SpriteStacks, CompletedSprites, QueLocation, VictimsNoLonger);
+			printf("Top of VictimsNoLonger while loop\n");
+			printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
+			HandleVictims(VictimsNoLonger[VictimsNoLonger.size()-1], SpriteStacks, CompletedSprites, QueLocation, VictimsNoLonger); //new
+			printf("Finished HandleVictims\n");
 			VictimsNoLonger.pop_back(); //no matter what, either it moves or it doesn't, but it won't be part of the sprites stack anymore, thus there will never be another check for it
 			printf("Popped the victim from the stack\n");
+			
 		}
 		//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
 
@@ -3258,6 +3261,8 @@ public:
 
 			//This now inserts newly uncovered victims into the victimsNoLonger vector appropriately. This is so when this function returns, you can then try moving it again. 
 			while (VictimsNoLonger.size() > 0) {
+				printf("Top of VictimsNoLonger BinSearch Loop\n");
+				printf("Victims No Longer Size = %d, Origin Size = %d\n", VictimsNoLonger.size(), VictimsNoLongerOrigin.size());
 				BinSearchInsert(VictimsNoLongerOrigin, VictimsNoLonger, 0, VictimsNoLongerOrigin.size() - 1);
 				if (Debug) {
 					printf("Inserted VictimsNoLonger = {");
@@ -3269,7 +3274,9 @@ public:
 				printf("This is rare, so give your self a minute to get some photos or look at it\n");
 				//SDL_Delay(5000);
 			}
+			printf("Hmm?\n");
 		}
+		printf("Still in HandleVictims?\n");
 		//add those new victims into the appropraite posiiton on the current victim que.  
 			//Mark CompletedSprites as successful
 		//so this will just run one at a time. So it is fine for just to insert because I'm not trying to do the items right as they are revealed, rather I just want to add any new eraseable items, 
@@ -3279,36 +3286,60 @@ public:
 	
 	//recursive
 	void BinSearchInsert(std::vector<Sprite*>& Origin, std::vector<Sprite*>& Insertable, int Left, int Right) {
-		 
+
 		int Middle;
 		Middle = (Left - (Right - Left) / 2);
-		if (Left == Middle || Right == Middle) {
-			//this si for the error {3} inserted into {15, 12} resulting in {3, 15, 12} when we want {15, 3, 12}, which will then po pto be {15, 3}. - should only rely on it at a certain size...
-			if (Middle + 1 < Origin.size()) {
-				if (Origin[Middle]->OrderCreation > Insertable.back()->OrderCreation) {
-					//if the item to your right is greater than yourself, you want to move forward because your younger
-					Middle += 1;
-				} 
+		printf("BinSearch, L = %d, R = %d, M = %d\n", Left, Right, Middle);
+
+
+		if (Middle < 0) {
+			if (Origin[0]->OrderCreation > Insertable.back()->OrderCreation) {
+				printf("I thinK the position your looking for is %d\n", 1);
+				Origin.insert(Origin.begin() + 1, Insertable.back());
+				printf("Inserted the new Victim into the Original list\n");
+				Insertable.pop_back(); //this hsould keep it from being infinite.
+				printf("Pop backed from the new victims\n");
 			}
-			printf("I thinK the position your looking for is %d\n", Middle);
-			Origin.insert(Origin.begin()+Middle, Insertable.back());
-			printf("Inserted the new Victim into the Original list\n");
-			Insertable.pop_back(); //this hsould keep it from being infinite.
-			printf("Pop backed from the new victims\n");
+			else {
+				printf("I thinK the position your looking for is %d\n", 0);
+				Origin.insert(Origin.begin() + 0, Insertable.back());
+				printf("Inserted the new Victim into the Original list\n");
+				Insertable.pop_back(); //this hsould keep it from being infinite.
+				printf("Pop backed from the new victims\n");
+			}
 		}
 		else {
-			//it is somewhere in the left half of the array (begining, if odd, round down the half)
-			if (Insertable.back()->OrderCreation > Origin[Middle]->OrderCreation) {
-				BinSearchInsert(Origin, Insertable, Left, Middle);
+			if (Left == Middle || Right == Middle) {
+				//this si for the error {3} inserted into {15, 12} resulting in {3, 15, 12} when we want {15, 3, 12}, which will then po pto be {15, 3}. - should only rely on it at a certain size...
+				if (Middle + 1 < Origin.size()) {
+					if (Origin[Middle]->OrderCreation > Insertable.back()->OrderCreation) {
+						//if the item to your right is greater than yourself, you want to move forward because your younger
+						printf("Move the middle!\n");
+						Middle += 1;
+					}
+				}
+				printf("I thinK the position your looking for is %d\n", Middle);
+				Origin.insert(Origin.begin() + Middle, Insertable.back());
+				printf("Inserted the new Victim into the Original list\n");
+				Insertable.pop_back(); //this hsould keep it from being infinite.
+				printf("Pop backed from the new victims\n");
 			}
-			//it is somewhere in the rihg thalf of hte array (if odd, round up, to end)
-			else if (Insertable.back()->OrderCreation < Origin[Middle]->OrderCreation) {
-				BinSearchInsert(Origin, Insertable, Middle + 1, Right);
-			}
-			//you found an equivalent position (should be impossible!)
 			else {
-				printf("Impossible insertion?");
+				//it is somewhere in the left half of the array (begining, if odd, round down the half)
+				if (Insertable.back()->OrderCreation > Origin[Middle]->OrderCreation) {
+					BinSearchInsert(Origin, Insertable, Left, Middle);
+					printf("Item we're trying to insert is greater than the middle's order creation\n");
+				}
+				//it is somewhere in the rihg thalf of hte array (if odd, round up, to end)
+				else if (Insertable.back()->OrderCreation < Origin[Middle]->OrderCreation) {
+					BinSearchInsert(Origin, Insertable, Middle + 1, Right);
+					printf("Item we're trying to insert is less than the middle's order creation\n");
+				}
+				//you found an equivalent position (should be impossible!)
+				else {
+					printf("Impossible insertion?");
 
+				}
 			}
 		}
 	}
