@@ -260,14 +260,14 @@ public:
 		//theoretically it should be fine.
 		// 
 		//if (FrameCounter > FrameStored)
-		printf("Time = %d\n", TIME);
+		
 
 		if (TIME == 0 && TIME != OriginalFrame) { //NEW
 			RandomX = rand() % 4; // 0/1 means don't move, 2 means move up, 3 means move down
 			RandomY = rand() % 4; // 0/1 means don't move, 2 means move left, 3 means move right.
 			OriginalFrame = TIME; //NEW
 		}
-		if (TIME >= 16) {
+		if (TIME > 16) {
 			OriginalFrame = -1; //NEW
 			RandomX = 0;
 			RandomY = 0;
@@ -2835,6 +2835,8 @@ public:
 		SpriteStacks.clear();
 		printf("9 	 HANDLED REST OF STACK	 \n");
 
+		//For Random Sprites
+
 		if (TIME < 16) {
 			printf("Check all positions at the end of movement:\n");
 			for (int i = 0; i < AllSprites.size(); i++) {
@@ -2842,8 +2844,26 @@ public:
 			} 
 		}
 		if (TIME == 15) {
+			printf("TIME==15\n");
 			SDL_Delay(5000);
 		}
+		if (TIME == 16) {
+			printf("TIME==16\n");
+			SDL_Delay(5000);
+		}
+		if (TIME == 17) {
+			printf("TIME==17\n");
+			SDL_Delay(5000);
+		}
+
+		//For Test Sprites
+		/* 
+		printf("Check all positions at the end of movement:\n");
+		for (int i = 0; i < AllSprites.size(); i++) {
+			printf("Object%d, {%d, %d}\n", AllSprites[i]->OrderCreation + 1, AllSprites[i]->xPos, AllSprites[i]->yPos);
+		}
+		SDL_Delay(500);
+		*/
 
 	}
 	

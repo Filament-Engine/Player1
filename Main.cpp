@@ -141,6 +141,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				
 				
 				//BACK UP SPRITES FOR TESTING PURPOSES
+				//TEST SPRITES BEGIN
 				/* 
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
@@ -184,8 +185,9 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 7, Object7->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object7); //NEW 
+				//TEST SPRITES END
 				*/
-
+				 
 				//RANDOM SPRITES BEGIN
 				//kept Object1 because it's global, don't want to mess anything up.
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomeMove"); // TEMP
@@ -197,7 +199,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				std::vector<Sprite*> RandomMoveSprites;
 
 				//0-20 (width wise, don't have gaurd for going over edge of spawn area).
-				RandomMoveSprites.resize(5); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
+				RandomMoveSprites.resize(20); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
 				int xPosTemp =0;
 				int yPosTemp =0;
 
@@ -209,6 +211,9 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 					gLevel1->SpriteLayer->MapSprite(RandomMoveSprites[j]); //NEW 
 				}
 				//RANDOM SPRITES END
+				 
+
+
 
 
 				//After pushing back all the objects -DONE ONCE
@@ -359,7 +364,17 @@ void handleLoop() {
 		}
 
 		if (displayFPS && fpsText == NULL) { // this creates the fps text -- we want it to only be made once, so we make sure it only does this if fpsText == NULL
-			fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
+			
+			//fpsText = new Text("Fonts/arial.ttf", "FPS", 18, { 255, 255, 255 }, 0, 0, false);
+			if (TIME == 15) {
+				fpsText = new Text("Fonts/arial.ttf", "TIME:15", 18, { 255, 255, 255 }, 0, 0, false);
+			}
+			if (TIME == 16) {
+				fpsText = new Text("Fonts/arial.ttf", "TIME:16", 18, { 255, 255, 255 }, 0, 0, false);
+			}
+			if (TIME == 17) {
+				fpsText = new Text("Fonts/arial.ttf", "TIME:17", 18, { 255, 255, 255 }, 0, 0, false);
+			}
 		}
 
 
@@ -408,7 +423,8 @@ int wmain(int argc, char* args[]) {
 	// gCamera = new Camera(0, 0);
 	long int TotalTilesOfSurface;
 	//FileHandler assumed ot be 'load file'
-	std::string MapRepo = UserDirectory() + "72,000.txt"; //CHANGE ME - Requires knowing Repo from Save Files
+	//std::string MapRepo = UserDirectory() + "72,000.txt"; //CHANGE ME - Requires knowing Repo from Save Files
+	std::string MapRepo = UserDirectory() + "Checkers.txt"; //CHANGE ME - Requires knowing Repo from Save Files
 
 
 		//Load media
