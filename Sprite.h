@@ -3146,12 +3146,25 @@ public:
 			//search for the compelted sprite in the stack -this function needs to be improved to work up a stack, not just across all stacks.
 			for (int d = 0; d < SpriteStacks.size(); d++) {
 				//NOTE NOTE NOTE NOTE THIS NEEDS TO WORK UP A QUE SO LONG AS I>POPPED CREATIONORDER && COMPLETEDSPRITES[ORDERCREATION]==1, SO WE'VE FOUND THE START OF IT, NOW MAKE A WHILE THAT GOES 'UP' THE STACK
+				
 				if (SpriteStacks[d]->SpriteXCollision.size() > 0 ) { //if there are still things your colliding with on X, AND The SpriteMoved pointer MATCHES the pointer at the end of that stack!
 					//we may just need the while statement
+
+					if (Debug) {
+						printf("Check SpriteXCollsion for dobules, there should be none if Jack properly pruned\n");
+						printf("SpriteXCollsion = {");
+						for (int j = 0; j < SpriteStacks[d]->SpriteXCollision.size(); j++) {
+							printf("%d, ", SpriteStacks[d]->SpriteXCollision[j]->OrderCreation);
+						}
+						printf("}\n");
+					}
+
 					while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d]==1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 						SpriteStacks[d]->SpriteXCollision.pop_back();
 						if (!AlreadyPushedIndex) { //NEW
+							printf("Pushbacked on the X index d = %d\n", d);
 							InvestigateIndexsX.push_back(d); //do this after the while we insert.
+							AlreadyPushedIndex = true;
 						}
 					}
 				} 
@@ -3160,12 +3173,29 @@ public:
 					while (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[d] == 1) {
 						SpriteStacks[d]->SpriteYCollision.pop_back();
 						if (!AlreadyPushedIndex) { //NEW
+							printf("Pushbacked on the Y index d = %d\n", d);
 							InvestigateIndexsY.push_back(d);
+							AlreadyPushedIndex = true;
 						}
 					}
 				}
 				AlreadyPushedIndex = false;
 			}
+
+			if (Debug) {
+				printf("PAY ATTENTION - MAKE SURE THERE ARE NO DOUBLES INSIDE EACH\n");
+				printf("InvestigateIndexsX ={");
+				for (int j = 0; j < InvestigateIndexsX.size(); j++) {
+					printf("%d, ", InvestigateIndexsX[j]);
+				}
+				printf("}\n");
+				printf("InvestigateIndexsY ={");
+				for (int j = 0; j < InvestigateIndexsY.size(); j++) {
+					printf("%d, ", InvestigateIndexsY[j]);
+				}
+				printf("}\n");
+			}
+
 			//^From the main loop
 			//now every stack should be popped as much as it could be. Then we must find the eraseable elements again. NOTE I SHOULD ERASE IT FROM THE STACK WHEN WE FIRST ADD IT
 			//THEN SORT IT INTO VICTIMSPRITES
@@ -3190,42 +3220,137 @@ public:
 		 
 		
 			//step 2, investigate those popped, see if any victims are left fully-alone
-			printf("Start Erasing\n");
+			printf("Start Erasing [HandleVictims]\n");
+
+
+			if (Debug) {
+				printf("EraseableX = {");
+				for (int j = 0; j < EraseableX.size(); j++) {
+					printf("%d, ", EraseableX[j]);
+				}
+				printf("}\n");
+
+				printf("EraseableY = {");
+				for (int j = 0; j < EraseableY.size(); j++) {
+					printf("%d, ", EraseableY[j]);
+				}
+				printf("}\n");
+			}
+
+
 			//BREAKS SOMEWHERE BELOW HERE! 
 			int Total = EraseableX.size() + EraseableY.size() -1;
+			printf("Total = %d\n", Total);
+
 			std::vector<Sprite*> VictimsNoLonger = {};
 			for (int i = Total; i >-1; i--) {
-
+				printf("i = %d\n", i);
 				//if one of the sizes is empty, but the other is full
 				if (EraseableX.size() > 0 && EraseableY.size() > 0) {
+					printf("Neither X or Y are emptied...\n");
 					if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
-
+						printf("Y < X\n");
 						VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 						SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 						EraseableX.pop_back();
+						if (Debug) {
+							printf("EraseableX = {");
+							for (int j = 0; j < EraseableX.size(); j++) {
+								printf("%d, ", EraseableX[j]);
+							}
+							printf("}\n");
+
+							printf("EraseableY = {");
+							for (int j = 0; j < EraseableY.size(); j++) {
+								printf("%d, ", EraseableY[j]);
+							}
+							printf("}\n");
+						}
 					}
 					else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
+						printf("X < Y\n");
 						VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 						SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 						EraseableY.pop_back();
+						if (Debug) {
+							printf("EraseableX = {");
+							for (int j = 0; j < EraseableX.size(); j++) {
+								printf("%d, ", EraseableX[j]);
+							}
+							printf("}\n");
+
+							printf("EraseableY = {");
+							for (int j = 0; j < EraseableY.size(); j++) {
+								printf("%d, ", EraseableY[j]);
+							}
+							printf("}\n");
+						}
 					}
 					else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
+						printf("Y == X (Pop both back, lower i additional amount\n");
+
+						printf("SpriteStack[%d] to be reased\n", EraseableX[EraseableX.size() - 1]);
+						printf("Lucky VictimNoLonger Sprite = Object%d\n", SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim->OrderCreation + 1);
 						VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+						printf("Pushed back into VictimsNoLonger\n");
 						SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+						printf("Removed it from SpriteStacks\n");
 						EraseableX.pop_back();
 						EraseableY.pop_back();
+						printf("Popped back both\n");
 						i--;//popped twice, so go down an extra step in he loop.
+						if (Debug) {
+							printf("EraseableX = {");
+							for (int j = 0; j < EraseableX.size(); j++) {
+								printf("%d, ", EraseableX[j]);
+							}
+							printf("}\n");
+
+							printf("EraseableY = {");
+							for (int j = 0; j < EraseableY.size(); j++) {
+								printf("%d, ", EraseableY[j]);
+							}
+							printf("}\n");
+						}
 					}
 				}
 				else if (EraseableX.size() > 0) {
+					printf("Only X Left\n");
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
+					if (Debug) {
+						printf("EraseableX = {");
+						for (int j = 0; j < EraseableX.size(); j++) {
+							printf("%d, ", EraseableX[j]);
+						}
+						printf("}\n");
+
+						printf("EraseableY = {");
+						for (int j = 0; j < EraseableY.size(); j++) {
+							printf("%d, ", EraseableY[j]);
+						}
+						printf("}\n");
+					}
 				}
 				else if (EraseableY.size() > 0) { //this should be a definite, but just for now
+					printf("Only Y Left\n");
 					VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 					EraseableY.pop_back();
+					if (Debug) {
+						printf("EraseableX = {");
+						for (int j = 0; j < EraseableX.size(); j++) {
+							printf("%d, ", EraseableX[j]);
+						}
+						printf("}\n");
+
+						printf("EraseableY = {");
+						for (int j = 0; j < EraseableY.size(); j++) {
+							printf("%d, ", EraseableY[j]);
+						}
+						printf("}\n");
+					}
 				}
 				//note on how this operation works.
 				//EraseableX = {0, 5, 9, 12}, where these numbers are the index's on SpriteStacks that we last popped from, organized from least to greatest, Y is same.
@@ -3238,7 +3363,7 @@ public:
 				//don't flag for overlap, since that happens after everythings been moved properly.
 
 			}
-
+			printf("Oh dear,\n");
 
 		
 			if (Debug) {
