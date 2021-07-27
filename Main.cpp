@@ -233,8 +233,8 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
-				Object2 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
-				Object3 = new Sprite(80, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object3 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object2 = new Sprite(80, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
 				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
@@ -270,8 +270,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				//I'm adding directly to object so this is redundant.
 				AllSprites.clear(); // this is removing the AllSprites data because we have this data transfered into gLevel1->SpriteLayer instead
-
-				gLevel1->CombineTextures();
+				 
 
 
 			}
@@ -539,17 +538,12 @@ int wmain(int argc, char* args[]) {
 
 
 		//Load media
-	if (!loadMedia())
-	{
-		printf("Failed to load media!\n");
-	}
-	else
-	{
-		FileHandler(MapRepo, TotalTilesOfSurface);
+	
+	FileHandler(MapRepo, TotalTilesOfSurface);
 
 		
-		handleLoop();
-	}
+	handleLoop();
+	
 
 	close(gLevel1, Player1, &SurfacePropertyMap); //Free resources and close SDL - INSERT call deconstructor of every tile. 
 
