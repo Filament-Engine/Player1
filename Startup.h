@@ -35,21 +35,3 @@ bool init()// SDL_Window* Window, SDL_Surface* ScreenSurface, SDL_Renderer* Rend
 	}
 	return success;
 }
-
-//Currently not in Use
-bool loadMedia()
-{ //EDIT, this may replace get dimension when time to split files into JSON.
-	//Loading success flag
-	bool success = true;
-
-	/*
-	//Load splash image
-	gTileSourceSurface = SDL_LoadBMP("C:/Users/thebl/source/repos/Dungeon(1).bmp"); //CHANGE ME
-	if (gTileSourceSurface == NULL)
-	{
-		printf("Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
-		success = false;
-	}*/
-
-	return success;
-}

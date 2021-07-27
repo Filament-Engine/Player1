@@ -1,10 +1,7 @@
 #pragma once
 
 bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
-	//for all globals that aren't constant, we'll be passing references through where they are needed, then storing in main. TotalTilesOfSurface is one example.
-	// printf("Tilesets found\n");
-
-
+	// these ar evariables for the loop
 	int i;
 	int j; // this is the variable that corresponds to the total amount of collision data in a layer
 	int k;
@@ -13,9 +10,8 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 	int TotalExpected;
 
 
-	std::string s1; // these should be declared out of the while loop
-	std::string* s2; // should be declared out of the while loop
-
+	std::string s1; // this takes the full line
+	std::string* s2; // this is the part of the line we want to be reading at any given moment
 
 	//Ensure the Filestream is open
 	if (sourceIMG.is_open()) {
@@ -36,23 +32,21 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 			j = 0; // this is the variable that corresponds to the total amount of collision data in a layer
 			k = 0;
 
+			//k is the number of elements read so far
+			//i is the length of s2, reset each time
+			//j is the position in s1, our got line (0,0,0,0,01,1,1,10,0,0 etc]
+
 			//If there is to much counter throw
 			if (counter < SurfacePropertyMap.size()) { //it's alright if it is < since we started enum at 0. 
 				// printf("%s is Enum[counter]\n", SurfacePropertyEnum[counter].c_str());
 				TotalExpected = SurfacePropertyMap[SurfacePropertyEnum[counter]]->TotalTile;
 
-				//	= new int[TotalExpected];
-				// printf("Total Expected it %d\n", TotalExpected);
-				// printf("counter is %d\n", counter);
-				//printf("TOTAL EXPECTED IS %d\n", TotalExpected); //checkto see if width and height are stored as pixels or tiles
 				//INSERT destructor
 				int* TempCollisionArr = new int[TotalExpected];
-				// printf("TempCollisionArr array made with %d total \n", TotalExpected);
-				//if this throws an exceptoin, violation error it means the information are inaccessible in the map for some reason other than going off the map.
 
 
 
-				while (s1[j] != '\0') {
+				while (s1[j] != '\0') { // here we read the entirety of the line
 					while (s1[j] != ',') {
 						s2[i] = s1[j];
 						i++;
@@ -63,10 +57,10 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 
 					d = 0;
 
-					//i is the size of the string! s2. THUS
+					//i is the size of the string, s2
 
 
-					for (int l = 0; l < 4; l++) {
+					for (int l = 0; l < 4; l++) { // here we read in the string as an integer
 						if (s2[l] != "\0") {
 
 							d += std::stoi(s2[l]) * (std::pow(10, ((i - 1) - l)));
@@ -75,21 +69,12 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 						}
 					}
 
-					if (k > TotalExpected) { //CHECK - it might also be if they are equal
+					if (k >= TotalExpected) { // checks to see if there are more values read than expected
 						printf("YOU READ TO MANY COLLISION DATA FOR THE AMOUNT OF TILES YOUR ASSIGNING TOO\n");
 						return false;
 					}
 					TempCollisionArr[k] = d;
 					SurfacePropertyMap[SurfacePropertyEnum[counter]]->collision[k] = d;
-
-					if (d != 0) { //reduces spam.
-						// printf("%d placed into TempCollsion, which then is %d, CHECK - %d is at index %d\n \n", d, TempCollisionArr[k], SurfacePropertyMap[SurfacePropertyEnum[counter]]->collision[k], k);
-					}
-
-					//make a check that if there are MORE elements expected - throw ("Wrong layer collision data read!!")
-					//k is the number of elements read so far
-					//i is the length of s2, reset each time
-					//j is the position in s1, our got line (0,0,0,0,01,1,1,10,0,0 etc]
 
 					//iterates forward position
 					k++;
@@ -99,7 +84,7 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 					j++;
 
 				}
-				if (SurfacePropertyMap[SurfacePropertyEnum[counter]]->TotalTile > k) {
+				if (SurfacePropertyMap[SurfacePropertyEnum[counter]]->TotalTile > k) { // if we've reached the end and there are less values read than expected
 					printf("NOT ALL TILES IN SURFACE %s IS GIVEN A DEFAULT COLLISION. TRY:\n", SurfacePropertyEnum[counter].c_str());
 					for (int a = 0; a < TotalExpected; a++) {
 						printf("0,");
@@ -107,18 +92,11 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 					printf("\n");
 					return false;
 				}
-				//Before you grab the NEXt line, store the entire array inside that surface property's array of collision data
-				//Eventually we'll skip this middle man array and go directly to surface property expected, but for now seperate for bug testing.
 
-
-				//Grab the next the img file, and the 'label'. Or "Tiles" header.
-					//check to see if you have more room to grow
-
-				//release memory - CHECK V
-				printf("Released Temp Collision Arr -scalar delete is because it moves out of the function, and gets freed anyways I believe\n");
+				//release memory
 				delete TempCollisionArr;
 
-
+				// gets the next line to see if we can continue or if we stop
 				getline(sourceIMG, line);
 				counter++; // iterates the counter
 			}
@@ -144,6 +122,7 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 	return false;
 }
 
+// this is a function that reads in the "OverridCollision" part of the map and then overrides any part of the collision where there is data
 void OverrideCollision(std::ifstream& sourceIMG, std::string& line, Level* level) {
 	if (sourceIMG.is_open()) {
 

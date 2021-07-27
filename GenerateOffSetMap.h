@@ -3,11 +3,10 @@
 #include<string>
 #include "SurfaceProperty.h"
 
-//Necessary for Surface Creation
+//Necessary for Surface Creation so we can read the string for which surface property when want to access
 long int GenerateOffSetMap(std::map<std::string, SurfaceProperty*>* SurfacePropertyMap) {
 	long int Offset = 0;
 	for (auto p : *SurfacePropertyMap) {
-		// printf("OFFSET INSERTED IS %d FOR %s\n", Offset, p.first.c_str());
 		OffSetMap.insert(std::make_pair(p.first, Offset));
 		Offset += p.second->GetTotalTile(); //accumulates
 	}

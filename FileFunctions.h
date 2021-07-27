@@ -16,11 +16,11 @@ std::string UserDirectory() {
 	}
 	else { // if able to get the window user directory...
 		std::string temp = "/source/repos/";
-		std::string path2 = path + temp; // adds "/source/repos/" to the
+		std::string path2 = path + temp; // adds "/source/repos/" to the path2
 
 		temp.erase(); // erases the temp string
 
-		std::replace(path2.begin(), path2.end(), '\\', '/'); // replaces all of the '' with ' / '
+		std::replace(path2.begin(), path2.end(), '\\', '/'); // replaces all of the '\' with '/'
 
 		return path2; // returns the path2
 	}
@@ -59,7 +59,7 @@ bool ScreenTileDimension(std::ifstream& sourceIMG, std::string& line) {
 			}
 			else {
 				//CHANGE - the close file should still be called in FileHandler, but could be called here after compartimentalization is complete.  
-				printf("End of file was reached :/\n");
+				printf("Error when reading in map!\n");
 				return false;
 			}
 		}

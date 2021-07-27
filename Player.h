@@ -1,7 +1,7 @@
 #pragma once
 
+// this is the player class -- what the user controls
 class Player : public Sprite {
-	//QUESTION - should we prepare the class to handle multiple different tiles to be a 'object' or should we just assume it is one rectangle and the animations are swapping between those?
 public:
 	SDL_Rect* SelfTile;
 	SDL_Texture* SelfImg;

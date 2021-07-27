@@ -27,7 +27,6 @@ bool SurfaceCreation(std::ifstream& sourceIMG, std::string& line, long int& Tota
 			std::string TempPath2 = UserDirectory();//CHANGE ME - Need to know Save File Repository Path.
 			char* TempPath = StringAndStringToCharArr(TempPath2, tempSource);
 			//Create new surface with expected file location
-			printf("%d %d\n", TILE_WIDTH, TILE_HEIGHT);
 			new SurfaceProperty(tempName, tempSource, IMG_Load(TempPath), TempPath, &*SurfacePropertyMap);
 
 			SurfacePropertyEnum.insert(std::make_pair(counter, tempName));
