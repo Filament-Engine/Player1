@@ -9,7 +9,6 @@ void CreatePlayer(Player** player, std::map<std::string, SurfaceProperty*> SPMap
 	int DefaultSpawnY = 0;
 	int DefaultPixelH = 16;
 	int DefaultPixelW = 16;
-	//SurfaceProperty* DefaultSourceSurface = SurfacePropertyMap["AA"]; -default for now
 	std::string DefaultSourceName = "AA";
 	int SourceCoordx = 5;
 	int SourceCoordy = 0;

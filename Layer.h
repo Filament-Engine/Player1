@@ -5,10 +5,9 @@
 #include <map>
 #include <string>
 
-// I CANT ENTER? WHAT - Okay I had to manually save it, I guess thats what hte lock does.
-//TEST 1 for branch making. -ended up making a local branch but not one on git... interesting?
 
 
+// layers are used to display tiles. additionally, layers can stack up on top of each other
 class Layer {
 public:
 	SDL_Surface* SelfHiddenSurface;
@@ -17,6 +16,7 @@ public:
 	std::string** DrawnTiles;
 	int** Arr;
 
+	// constructor for the layer
 	Layer(std::string* DrawnTilesRead[], TileHash* GlobalTileHash, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
 		//if they end up being stored on seperate files, just assign a null to ensure all variables have something and not garbage.
 		AddTiles(DrawnTilesRead);
@@ -41,14 +41,8 @@ public:
 		SDL_SetColorKey(SelfHiddenSurface, SDL_TRUE, SDL_MapRGB(SelfHiddenSurface->format, r, g, b)); // taking the black background (0x000000) and making it transparent
 	}
 
+	// adds collision to the layer
 	void AddCollision(TileHash* GlobalTileHash) {
-
-		//Use the drawnTilesRead to find the pointers to the proper tile through TileHash (THIS REQUIRES A NEW MEMBER std::string*** DrawnTiles Matrix
-		//two arrays one with just collision data, the other copy constructed tiles 
-		//make sure the array looks like int ** = new int [height] //requires new member int ** CollisionDataMatrix
-		//each pointer in that pointer pointer array has =new int [width]
-
-
 		for (int i = 0; i < LEVEL_WIDTH * LEVEL_HEIGHT; i++) {
 			if (0 == DrawnTiles[i]->compare("")) { //AA##, or "" empty string (\0)
 				CollisionData[i] = 0; //2 is reserved for the 'no tile' information. This could then be dynamicallys tated to be collision or none in the override stage.
@@ -59,9 +53,9 @@ public:
 			}
 
 		}
-		// printf("Collision properly read for the Layer\n");
 	}
 
+	// adds the tiles to the layer
 	void AddTiles(std::string* DrawnTilesRead[]) {
 		DrawnTiles = new std::string * [(LEVEL_WIDTH * LEVEL_HEIGHT)];
 		for (int i = 0; i < (LEVEL_WIDTH * LEVEL_HEIGHT); i++) {
@@ -72,6 +66,7 @@ public:
 		}
 	}
 
+	// writes all the tiles to the layer
 	void BlitMatrixLayer(TileHash* GlobalTileHash, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
 		Arr = new int* [LEVEL_HEIGHT];
 		int pos = 0;
@@ -91,18 +86,8 @@ public:
 		}
 	}
 
+	// makes the texture for the layer -- this way we can actually render it
 	void MakeSelfTexture() {
 		SelfHiddenTexture = SDL_CreateTextureFromSurface(gRenderer, SelfHiddenSurface);
-	}
-
-	void MapThis() {
-		//This isn't really a 'map' this, but it should take a global amt of it's layer #, and then add it to a level class
-		//this level class then at the end of gathering all collision data and graphic data should handle rendering the textures on screen in proper order
-		//As well as handling the scrolling/collision for that level.
-		//add to level
-
-		//NOTE Layer is added to the level upon reading. This function still might be used in some capacity but otherwise an artifact to be kept until file management is finished.
-		//Insert is usually reserved for when you want more control over the position of objects. LEAVE HERE - for reading multiple files may want to use this.
-			//gLevel1->RenderOrder.insert(gLevel1->RenderOrder.end(), new Layer(savedTiles));
 	}
 };
