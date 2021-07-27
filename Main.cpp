@@ -230,7 +230,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//RANDOM SPRITES END
 				 */
 
-
+				/*
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				Object3 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -244,6 +244,43 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//TEST TELEPORT OBJECTS END
 
 				//IF objects do not appear on screen, they have not been mapped.
+				*/
+
+
+				//RANDOM SPRITES BEGIN
+				//kept Object1 because it's global, don't want to mess anything up.
+				Object1 = new Sprite(16, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
+
+
+
+				std::vector<Sprite*> RandomMoveSprites;
+
+				//0-20 (width wise, don't have gaurd for going over edge of spawn area).
+				RandomMoveSprites.resize(10); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
+				int xPosTemp = 0;
+				int yPosTemp = 0;
+
+				for (int j = 0; j < RandomMoveSprites.size(); j++) {
+
+					//they will all start on the first row, but three colomns apart (each occupying the 'third' column.
+					RandomMoveSprites[j] = new Sprite(xPosTemp, yPosTemp, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomMove");
+					printf("Object%d, created order = %d, Position={%d, %d}\n", j + 2, Object1->OrderCreation, xPosTemp, yPosTemp);
+					gLevel1->SpriteLayer->MapSprite(RandomMoveSprites[j]); //NEW 
+
+					if (xPosTemp > (LEVEL_WIDTH - 2) * TILE_WIDTH) {
+						xPosTemp = 0;
+						yPosTemp += 32;
+					}
+					else {
+						xPosTemp += 32;
+					}
+
+				}
+				//RANDOM SPRITES END
+
 
 
 

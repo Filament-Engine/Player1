@@ -517,7 +517,38 @@ public:
 		TargetTile->h = TILE_HEIGHT;
 		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TargetSurface, TargetTile);
 	}
-	
+	bool ChangeSource(std::string l) { // takes a string such as "AA65" and then reassigns the sprite image to this
+		label = l;
+		IMGName = label.substr(0, 2);
+
+		std::string temp; // this temp is used to get the position of the source tile
+		int i = 0;
+		while (label[i + 2] != '\0') {
+			temp += label[i + 2];
+			i++;
+		}
+		int SourcePos = stoi(temp); // this is the number part of label-- the number
+		int SourceX;
+		int SourceY = 0;
+
+		int pos = SourcePos;
+		int width = SurfacePropertyMap[IMGName]->width / TILE_WIDTH;
+		while (pos >= width) {
+			pos -= width;
+			SourceY++;  // adds one to the y sourceY position
+		}
+		SourceX = pos; // makes the sourceX is remainder
+
+		SourceTile = new SDL_Rect();
+
+		SourceTile->x = SourceX * TILE_WIDTH;
+		SourceTile->y = SourceY * TILE_HEIGHT;
+		SourceTile->w = TILE_WIDTH;
+		SourceTile->h = TILE_HEIGHT;
+
+		return true;
+
+	}
 
 };
 
@@ -886,7 +917,6 @@ public:
 
 		// printf("CheckFutureSpritePosition\n");
 		int x1, x2, y1, y2;
-		bool failx1 = false, failx2 = false, faily1 = false, faily2 = false;
 
 		int TempX2, TempY2;
 
@@ -2642,6 +2672,201 @@ public:
 		printf("3.4\n"); //arrray to return is created
 		}
 	}
+
+	int CheckOverlap(Sprite* ObjectSprite) {
+		RemoveSpriteFromMap(ObjectSprite); //Temporary, this is just for the testing for collision and the strange overlap. In the future it won't remove and then readd, but instead ignore itself when checking.
+		bool Debug = false;
+		if (Debug) {
+			printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation);
+		}
+		if (ObjectSprite->OrderCreation == 1 || ObjectSprite->OrderCreation == 0) {
+			Debug = true;
+		}
+		else {
+			Debug = false;
+		}
+		Debug = false;
+
+
+		// printf("CheckFutureSpritePosition\n");
+		int x1, x2, y1, y2;
+
+		int TempX2, TempY2;
+
+		x1 = ObjectSprite->xPos;
+		x2 = ObjectSprite->xPos + TILE_WIDTH;
+		y1 = ObjectSprite->yPos;
+		y2 = ObjectSprite->yPos + TILE_HEIGHT;
+
+		TempX2 = x2 % TILE_WIDTH;
+		TempY2 = y1 % TILE_HEIGHT;
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		// printf("TempY2Math = y2 -16*(y2/16) = %d, from %d, %d\n", TempY2Math, TILE_HEIGHT, y2);
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
+		y1 = y1 / TILE_HEIGHT;
+		y2 = y2 / TILE_HEIGHT;
+		x1 = x1 / TILE_WIDTH;
+		x2 = x2 / TILE_WIDTH;
+		//gaurds from map/matrix overflow
+		if (true) {
+			if (y1 > LEVEL_HEIGHT - 1) {
+				y1 = LEVEL_HEIGHT - 1;
+				y2 = y1;
+			}
+			if (y1 < 0) {
+				y1 = 0;
+				y2 = y1;
+			}
+			if (x1 > LEVEL_WIDTH - 1) {
+				x1 = LEVEL_WIDTH - 1;
+				x2 = x1;
+			}
+			if (x1 < 0) {
+				x1 = 0;
+				x2 = x1;
+			}
+		}
+		//So we don't check further than we want to, and when we don't need to. In these cases, it doens't matter now if we use x1, or x2. For consistency, we use whatever appears the most as appropriate. 
+		if (true) {
+			if (TempX2Math == 0) {
+				x2 = x1;
+			}
+			if (TempY2Math == 0) {
+				y2 = y1;
+			}
+		}
+
+		int yOverlapped = 0;
+		int xOverlapped = 0;
+		if (true) {
+			for (int i = 0; i < LM[y1][x1].size(); i++) {
+				//Figureout if the overlapX is at least 1
+				if (true) {
+					if (LM[y1][x1][i]->yPos > ObjectSprite->yPos) {
+						yOverlapped = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
+					}
+					else { //if (Spos =< Posy 
+						yOverlapped = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+					}
+				}
+
+				//Figureout if the overlap is at least 1
+				if (true) {
+					if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
+						xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+					}
+					else { //if (Spos =< Posx 
+						xOverlapped = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+					}
+				}
+
+				if ((xOverlapped > 0 && xOverlapped < 17) && (yOverlapped > 0 && yOverlapped < 17)) {
+					printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y1][x1][i]->OrderCreation + 1);
+					ReMapSprite(ObjectSprite);
+					return 1; //you have overlapped 
+				}
+				yOverlapped = 0;
+				xOverlapped = 0;
+			}
+			if (x1 != x2) {
+				for (int i = 0; i < LM[y1][x2].size(); i++) {
+					//Figureout if the overlap is at least 1
+					if (true) {
+						if (LM[y1][x2][i]->yPos > ObjectSprite->yPos) {
+							yOverlapped = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
+						}
+						else { //if (Spos =< Posy   
+							yOverlapped = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+						}
+					}
+
+					//Figureout if the overlap is at least 1
+					if (true) {
+						if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+							xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+						}
+						else { //if (Spos =< Posx
+							xOverlapped = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+					}
+
+					if ((xOverlapped > 0 && xOverlapped < 17) && (yOverlapped > 0 && yOverlapped < 17)) {
+						printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y1][x2][i]->OrderCreation + 1);
+						ReMapSprite(ObjectSprite);
+						return 1; //you have overlapped 
+					}
+					yOverlapped = 0;
+					xOverlapped = 0;
+				}
+			}
+			if (y1 != y2) {
+				for (int i = 0; i < LM[y2][x1].size(); i++) {
+					//Figureout if the overlap is at least 1
+					if (true) {
+						if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
+							xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+						}
+						else { //if (Spos =< Posx 
+							xOverlapped = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+						}
+					}
+
+					//Figureout if the overlap is at least 1
+					if (true) {
+						if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
+							yOverlapped = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
+						}
+						else { //if (Spos =< Posy  
+							yOverlapped = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+						}
+					}
+
+					if ((xOverlapped > 0 && xOverlapped < 17) && (yOverlapped > 0 && yOverlapped < 17)) {
+						printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y2][x1][i]->OrderCreation + 1);
+						ReMapSprite(ObjectSprite);
+						return 1; //you have overlapped 
+					}
+					yOverlapped = 0;
+					xOverlapped = 0;
+				}
+				if (x1 != x2) {
+					for (int i = 0; i < LM[y2][x2].size(); i++) {
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y2][x2][i]->yPos > ObjectSprite->yPos) {
+								yOverlapped = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x2][i]->yPos;
+							}
+							else { //if (Spos =< Posy
+								yOverlapped = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+							}
+						}
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {
+								xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
+							}
+							else { //if (Spos =< Posx
+								xOverlapped = LM[y2][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							}
+						}
+
+						if ((xOverlapped > 0 && xOverlapped < 17) && (yOverlapped > 0 && yOverlapped < 17)) {
+							printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y2][x2][i]->OrderCreation + 1);
+							ReMapSprite(ObjectSprite);
+							return 1; //you have overlapped 
+						}
+						yOverlapped = 0;
+						xOverlapped = 0;
+					}
+				}
+			
+			}
+		}
+		ReMapSprite(ObjectSprite);
+		return 0;
+
+	}
 	
 	//You may test this by just testing integers in a seperate file.
 	void MergeSortSpriteCollision(std::vector<Sprite*> & SpriteOverlap, std::vector<int>& SpriteArea) { //we will be editing directly onto it
@@ -2919,27 +3144,93 @@ public:
 		if (Debug) {
 			printf("9 	 HANDLED REST OF STACK	 \n");
 		}
+
+		
+
 		//For Random Sprites
-		/* 
+		int xAxis = 0;
+		int yAxis = 0;
+	
+		
+		int Direction = 10;
+	
+		
 		if (TIME < 18) {
 			printf("Check all positions at the end of movement:\n");
 			for (int i = 0; i < AllSprites.size(); i++) {
-				printf("Object%d, {%d, %d}, Velocities= {%d, %d}\n", AllSprites[i]->OrderCreation+1, AllSprites[i]->xPos, AllSprites[i]->yPos, AllSprites[i]->xVec, AllSprites[i]->yVec);
+				if (true) {
+					//Get direction (diagnonal, or 
+					if (AllSprites[i]->xVec > 0) {
+						//going right
+						xAxis = 1;
+					}
+					else if (AllSprites[i]->xVec < 0) {
+						//going left
+						xAxis = -1;
+					}
+					else {
+						xAxis = 0;
+					}
+					if (AllSprites[i]->yVec > 0) {
+						//going down
+						yAxis = 1;
+					}
+					else if (AllSprites[i]->yVec < 0) {
+						//going up
+						yAxis = -1;
+					}
+					else {
+						yAxis = 0;
+					}
+
+					//can be improved by nesting. for now ignore.
+					if (yAxis < 0 && xAxis < 0) { //diag UL
+						Direction = 1 + 4; //5
+					}
+					else if (yAxis > 0 && xAxis > 0) { //diag LR
+						Direction = 3 + 12; //15
+					}
+					else if (yAxis < 0 && xAxis > 0) { //diag UR
+						Direction = 1 + 12;//13
+					}
+					else if (yAxis > 0 && xAxis < 0) { //diag LL
+						Direction = 3 + 4; //7
+					}
+					else if (xAxis > 0) { //Right
+						Direction = 12 + 2;//14
+					}
+					else if (xAxis < 0) { //Left
+						Direction = 4 + 2; //6
+					}
+					else if (yAxis > 0) { //Down
+						Direction = 3 + 8; //11
+					}
+					else if (yAxis < 0) { //Up
+						Direction = 1 + 8; //9
+					}
+					else { //still
+						Direction = 2 + 8; //10
+					}
+				
+					
+				} 		
+
+				printf("Object%d, {%d, %d}, Velocities= {%d, %d}, Direction = %d\n", AllSprites[i]->OrderCreation+1, AllSprites[i]->xPos, AllSprites[i]->yPos, AllSprites[i]->xVec, AllSprites[i]->yVec, Direction);
 			} 
 		}
+		/* 
 		if (TIME == 15) {
 			printf("TIME==15\n");
 			SDL_Delay(5000);
 		}
 		if (TIME == 16) {
 			printf("TIME==16\n");
-			SDL_Delay(5000);
-		}
-		if (TIME == 17) {
-			printf("TIME==17\n");
-			SDL_Delay(5000);
 		}
 		*/
+		if (TIME == 17) {
+			printf("TIME==17\n");
+		}
+		
 		//For Test Sprites
 		/* 
 		printf("Check all positions at the end of movement:\n");
@@ -2948,6 +3239,19 @@ public:
 		}
 		SDL_Delay(500);
 		*/
+
+		if (Debug) {
+			printf("Flag overlaps\n");
+		}
+
+		for (int i = 0; i < AllSprites.size(); i++) {
+			if (CheckOverlap(AllSprites[i])) {
+				SDL_Delay(5000);
+			}
+		}
+
+
+
 
 	}
 	
