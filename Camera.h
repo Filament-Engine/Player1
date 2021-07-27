@@ -11,7 +11,9 @@ public:
 		x = xPos;
 		y = yPos;
 		w = SCREEN_WIDTH * TILE_WIDTH;
-		h = SCREEN_HEIGHT * TILE_HEIGHT;
+		h = SCREEN_HEIGHT * TILE_HEIGHT; 
+
+		
 		Cam = new SDL_Rect;
 		Cam->x = x;
 		Cam->y = y;
