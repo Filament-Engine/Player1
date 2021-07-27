@@ -33,7 +33,8 @@ void GenerateTiles(std::map<std::string, SurfaceProperty*> SurfacePropertyMap, T
 // The Layer should have a mapthis() function to put into either a level (likely) or a map (unlikely)
 //This should be improved.
 bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, Level* level, TileHash* GlobalTileHash) {
-	printf("working now\n");
+	printf("Draw Saved Tiles\n");
+	//If it fails here be sure the level width and height match the expected saved tiles.
 	int TotalExpected = LEVEL_HEIGHT * LEVEL_WIDTH;
 	std::string** savedTiles = new std::string * [TotalExpected];
 	char temp = 'a';

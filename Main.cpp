@@ -29,6 +29,10 @@ std::map<std::string, SurfaceProperty*> SurfacePropertyMap;
 #include "Text.h"
 Text* fpsText;
 Sprite* Object1; // we can create this sprite now so that it can be used in level/player/objectlayer
+//two more for testing
+Sprite* Object2;
+Sprite* Object3;
+
 #include "Level+.h"
 #include "CreatePlayer.h"
 #include "TileCreation.h"
@@ -188,18 +192,22 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//TEST SPRITES END
 				*/
 				 
+
+
+				/* 
 				//RANDOM SPRITES BEGIN
 				//kept Object1 because it's global, don't want to mess anything up.
-				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomeMove"); // TEMP
+				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				//check to see if distance is working as expected.
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
 
 
+				
 				std::vector<Sprite*> RandomMoveSprites;
 
 				//0-20 (width wise, don't have gaurd for going over edge of spawn area).
-				RandomMoveSprites.resize(60); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
+				RandomMoveSprites.resize(120); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
 				int xPosTemp =0;
 				int yPosTemp =0;
 
@@ -220,8 +228,22 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				}
 				//RANDOM SPRITES END
-				 
+				 */
 
+
+				//TEST TELEPORT OBJECTS BEGIN
+				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object2 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				Object3 = new Sprite(80, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
+				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
+				printf("Object%d, created order = %d\n", 3, Object3->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object3); //NEW 
+				//TEST TELEPORT OBJECTS END
+
+				//IF objects do not appear on screen, they have not been mapped.
 
 
 
@@ -291,6 +313,7 @@ void handleLoop() {
 	bool quit = false; // handles the loop; whether we want to quit, or continue
 	SDL_Event e; // event handler
 
+	bool Object2or3Moved = false;
 
 	// begin loop
 	while (!quit) {
@@ -328,6 +351,46 @@ void handleLoop() {
 				case SDLK_UP: // if the user presses up arrow key
 					Object1->yVec += -yVec;
 					break;
+
+
+				//Test Object 2
+				case SDLK_l: // if the user presses right arrow key
+					Object2->xVec += xVec;
+					Object2or3Moved = true;
+					break;
+				case SDLK_k: // if the user presses up arrow key
+					Object2->yVec += yVec;
+					Object2or3Moved = true;
+					break;
+				case SDLK_j: // if the user presses right arrow key
+					Object2->xVec += -xVec;
+					Object2or3Moved = true;
+					break;
+				case SDLK_i: // if the user presses up arrow key
+					Object2->yVec += -yVec;
+					Object2or3Moved = true;
+					break;
+
+				//Test Object 3
+				case SDLK_h: // if the user presses right arrow key
+					Object3->xVec += xVec;
+					Object2or3Moved = true;
+					break;
+				case SDLK_g: // if the user presses up arrow key
+					Object3->yVec += yVec;
+					Object2or3Moved = true;
+					break;
+				case SDLK_f: // if the user presses right arrow key
+					Object3->xVec += -xVec;
+					Object2or3Moved = true;
+					break;
+				case SDLK_t: // if the user presses up arrow key
+					Object3->yVec += -yVec;
+					Object2or3Moved = true;
+					break;
+
+
+
 				case SDLK_u: // if the user presses 'u' -- this will be utility for now, and will change if fps is displayed or not
 					if (displayFPS) {
 						displayFPS = false;
@@ -366,6 +429,35 @@ void handleLoop() {
 					break;
 				case SDLK_UP: // if the user presses up arrow key
 					Object1->yVec += yVec;
+					break;
+
+
+					//Test Object 2
+				case SDLK_l: // if the user presses right arrow key
+					Object2->xVec += -xVec;
+					break;
+				case SDLK_k: // if the user presses up arrow key
+					Object2->yVec += -yVec;
+					break;
+				case SDLK_j: // if the user presses right arrow key
+					Object2->xVec += xVec;
+					break;
+				case SDLK_i: // if the user presses up arrow key
+					Object2->yVec += yVec;
+					break;
+
+					//Test Object 3
+				case SDLK_h: // if the user presses right arrow key
+					Object3->xVec += -xVec;
+					break;
+				case SDLK_g: // if the user presses up arrow key
+					Object3->yVec += -yVec;
+					break;
+				case SDLK_f: // if the user presses right arrow key
+					Object3->xVec += xVec;
+					break;
+				case SDLK_t: // if the user presses up arrow key
+					Object3->yVec += yVec;
 					break;
 
 				}
@@ -407,6 +499,15 @@ void handleLoop() {
 			TIME = 0;
 		}
 
+
+		if (Object2or3Moved) {
+			printf("Adjusted positions - OB1 OB2 OB3 = {%d, %d}, {%d, %d}, {%d, %d}\n", Object1->xPos, Object1->yPos, Object2->xPos, Object2->yPos, Object3->xPos, Object3->yPos);
+			printf("Giving you time to lift the key up\n");
+			SDL_Delay(500);
+			Object2or3Moved = false;
+		}
+
+
 		// calculating fps
 		float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.f); // calculates fps
 		if (avgFPS > 2000000) { // this is an extremely large fps that may occur at startup; this is not correct, though, so we are putting the avgFPS as 0, instead
@@ -434,7 +535,7 @@ int wmain(int argc, char* args[]) {
 	long int TotalTilesOfSurface;
 	//FileHandler assumed ot be 'load file'
 	//std::string MapRepo = UserDirectory() + "72,000.txt"; //CHANGE ME - Requires knowing Repo from Save Files
-	std::string MapRepo = UserDirectory() + "Checkers.txt"; //CHANGE ME - Requires knowing Repo from Save Files
+	std::string MapRepo = UserDirectory() + "Checkers2.txt"; //CHANGE ME - Requires knowing Repo from Save Files
 
 
 		//Load media

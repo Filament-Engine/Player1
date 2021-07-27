@@ -417,7 +417,7 @@ public:
 
 	}
 	void UndoBehavior() {
-		printf("UndoBehavior\n"); 
+		//printf("UndoBehavior\n"); 
 		if (DoAutoX) {
 			UndoAutoX();
 		}
@@ -709,6 +709,7 @@ public:
 
 	}
 	void ReMapSprite(Sprite* ObjectSprite) {
+		bool Debug = false;
 		// printf("ReMapSprite\n");
 		//Put into matrix -ONLY DO ONCE PER SPRITE. 
 		int x1 = NULL;
@@ -724,8 +725,9 @@ public:
 
 		// printf("Remap Object%d, x1=%d, y1=%d\n", ObjectSprite->OrderCreation + 1, x1, y1);
 		//NOTE - replace pushbacks with inserts - unless empty vector
-		printf("Begin Remapping Object%d\n", ObjectSprite->OrderCreation+1);
-
+		if (Debug) {
+			printf("Begin Remapping Object%d\n", ObjectSprite->OrderCreation + 1);
+		}
 		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
 		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH); //A = C - B * (C/B)
 		if (TempX2Math== 0) {
@@ -763,12 +765,16 @@ public:
 
 
 		if (LM[y1][x1].size() == 0) {
-			printf("a\n");
+			if (Debug) {
+				printf("a\n");
+			}
 			LM[y1][x1].push_back(ObjectSprite);
 
 		}
 		else {
-			printf("b\n");
+			if (Debug) {
+				printf("b\n");
+			}
 			while (OrderedPosition < LM[y1][x1].size() && LM[y1][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
 				OrderedPosition++;
 			}
@@ -780,11 +786,15 @@ public:
 		if (x1 != x2) {
 			
 			if (LM[y1][x2].size() == 0) {
-				printf("c\n");
+				if (Debug) {
+					printf("c\n");
+				}
 				LM[y1][x2].push_back(ObjectSprite);
 			}
 			else {
-				printf("d\n");
+				if (Debug) {
+					printf("d\n");
+				}
 				while (OrderedPosition<LM[y1][x2].size() && LM[y1][x2][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
 					OrderedPosition++;
 				}
@@ -794,11 +804,15 @@ public:
 		}
 		if (y1 != y2) {
 			if (LM[y2][x1].size() == 0) {
-				printf("e\n");
+				if (Debug) {
+					printf("e\n");
+				}
 				LM[y2][x1].push_back(ObjectSprite);
 			}
 			else {
-				printf("f\n");
+				if (Debug) {
+					printf("f\n");
+				}
 				while (OrderedPosition < LM[y2][x1].size() && LM[y2][x1][OrderedPosition]->OrderCreation < ObjectSprite->OrderCreation) {
 					OrderedPosition++;
 				}
@@ -807,7 +821,9 @@ public:
 			}
 
 			if (x1 != x2) {
-				printf("g\n");
+				if (Debug) {
+					printf("g\n");
+				}
 				if (LM[y2][x2].size() == 0) {
 					LM[y2][x2].push_back(ObjectSprite);
 				}
@@ -820,9 +836,9 @@ public:
 			}
 		}
 
-
-		printf("Done reMapping\n");
-
+		if (Debug) {
+			printf("Done reMapping\n");
+		}
 	}
 	void DisplayTileBasedArray() {
 
@@ -851,16 +867,21 @@ public:
 	
 
 
+
+
+
 	void CheckFutureSpritePosition2(Sprite* ObjectSprite, XYArr* TempStackable) {
-		bool BugTest;
-		printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation);
+		bool Debug =false;
+		if (Debug) {
+			printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation);
+		}
 		if (ObjectSprite->OrderCreation == 1 || ObjectSprite->OrderCreation == 0) {
-			BugTest = true;
+			Debug = true;
 		}
 		else {
-			BugTest = false;
+			Debug = false;
 		}
-		BugTest = false;
+		Debug = false;
 
 
 		// printf("CheckFutureSpritePosition\n");
@@ -920,8 +941,10 @@ public:
 		int xAxis = 0;
 		int yAxis = 0;
 		if (true) {
-			printf("3.0\n"); //initalized all variables
-			//Get direction (diagnonal, or 
+			if (Debug) {
+				printf("3.0\n"); //initalized all variables
+			}
+			 //Get direction (diagnonal, or 
 			if (ObjectSprite->xVec > 0) {
 				//going right
 				xAxis = 1;
@@ -939,7 +962,9 @@ public:
 				yAxis = -1;
 			}
 		} //get the Y and X direction, for Measure
-		printf("3.1\n"); //General Direction found
+		if (Debug) {
+			printf("3.1\n"); //General Direction found
+		}
 		int Measure; //Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
 		if (true) {
 			//can be improved by nesting. for now ignore.
@@ -973,8 +998,10 @@ public:
 		}//Find Measure's value
 		int TempXOverlap;
 		int TempYOverlap;
-		printf("3.2\n"); //Measure found
-		//figure out what your hitting, and how far overlapped.
+		if (Debug) {
+			printf("3.2\n"); //Measure found
+		}
+		 //figure out what your hitting, and how far overlapped.
 		if (true) {
 			//2) NOTE IF THERE IS A BUG, WHERE ITS COLLIDIG OT ITS RIGHT OR BELOW EXTRA, MAKE A CHECK THAT IF x2%16=0 IT IS NOW EQUAL TO x1, THUS IT DOESNT MATTER IF WE DO x2 OR x1 IN THE X CHECK, so long as they are the same, TAHT IS ALL. - a bug from previous, but the naming convention should be based on hte edge that is 'leading'
 
@@ -997,7 +1024,7 @@ public:
 				//edges are [x1][y1], [y2][x1], [x2][y1], each of these three are 'points' that form 2 edges.
 				//Depending on how perfectly inligned with the grid you are, you can skip checking some edges/points.
 				if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
-					if (BugTest) {
+					if (Debug) {
 						printf("a\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
@@ -1028,7 +1055,7 @@ public:
 				else {
 					if (TempX2Math == 0) { //you are perfectly in line with an x axis'
 						//2) Don't worry about pushing back more than one pointer to the same object. At the end of hte loop we will ensure that only one ptr remains, along with it sorted by overlap.
-						if (BugTest) {
+						if (Debug) {
 							printf("b\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) {//UL
@@ -1054,7 +1081,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("c\n");
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) {//LL
@@ -1083,7 +1110,7 @@ public:
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
-						if (BugTest) {
+						if (Debug) {
 							printf("d\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { //UL
@@ -1108,7 +1135,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("e\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { //UR
@@ -1127,7 +1154,7 @@ public:
 							else {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
 							}
-							if (BugTest) {
+							if (Debug) {
 								printf("%d %d Overlap X and Y\n", TempXOverlap, TempYOverlap);
 							}
 							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) { 
@@ -1145,7 +1172,7 @@ public:
 					}
 					//2) these are always the points we're interested in.
 					else { //you are not perfectly aligned with anything, every 'point' matters.
-						if (BugTest) {
+						if (Debug) {
 							printf("f\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { //UL
@@ -1171,7 +1198,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("g\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { //UR
@@ -1199,7 +1226,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("h\n");
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { //LL
@@ -1236,7 +1263,7 @@ public:
 				//Depending on how perfectly inligned with the grid you are, you can skip checking some edges/points.
 
 				if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
-					if (BugTest) {
+					if (Debug) {
 						printf("i\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) { // first
@@ -1266,7 +1293,7 @@ public:
 				}
 				else {
 					if (TempX2Math == 0) { //you are perfectly in line with an x axis'
-						if (BugTest) {
+						if (Debug) {
 							printf("j\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
@@ -1294,7 +1321,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("k\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
@@ -1324,7 +1351,7 @@ public:
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
-						if (BugTest) {
+						if (Debug) {
 							printf("l\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
@@ -1350,7 +1377,7 @@ public:
 								TempYOverlap = 0;
 							}
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("m\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
@@ -1381,7 +1408,7 @@ public:
 
 					}
 					else { //you are not perfectly aligned with anything, every 'point' matters.
-						if (BugTest) {
+						if (Debug) {
 							printf("n\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
@@ -1407,7 +1434,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("o\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
@@ -1434,7 +1461,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("p\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
@@ -1474,7 +1501,7 @@ public:
 				//Depending on how perfectly inligned with the grid you are, you can skip checking some edges/points.
 
 				if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
-					if (BugTest) {
+					if (Debug) {
 						printf("q\n");
 					}
 					for (int i = 0; i < LM[y2][x1].size(); i++) { // first
@@ -1504,7 +1531,7 @@ public:
 				}
 				else {
 					if (TempX2Math == 0) { //you are perfectly in line with an x axis'
-						if (BugTest) {
+						if (Debug) {
 							printf("r\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
@@ -1530,7 +1557,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("s\n");
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
@@ -1581,7 +1608,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("t\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
@@ -1611,7 +1638,7 @@ public:
 
 					}
 					else { //you are not perfectly aligned with anything, every 'point' matters.
-						if (BugTest) {
+						if (Debug) {
 							printf("u\n");
 						}
 						for (int i = 0; i < LM[y1][x1].size(); i++) { // UL
@@ -1638,7 +1665,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("v\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
@@ -1665,7 +1692,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("w\n");
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
@@ -1704,7 +1731,7 @@ public:
 
 				if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
 
-					if (BugTest) {
+					if (Debug) {
 						printf("x\n");
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) { // LL
@@ -1733,7 +1760,7 @@ public:
 				}
 				else {
 					if (TempX2Math == 0) { //you are perfectly in line with an x axis'
-						if (BugTest) {
+						if (Debug) {
 							printf("y\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
@@ -1761,7 +1788,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("z\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR 
@@ -1775,13 +1802,11 @@ public:
 							}
 							if (LM[y2][x2][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x2][i]->yPos;
-
-								printf("LINK\n");
+								 
 							}
 							else {
 								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
-
-								printf("LISTEN\n");
+								 
 							} 
 
 							if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
@@ -1795,7 +1820,7 @@ public:
 						}
 					}
 					else if (TempY2Math == 0) { //you are perfectly in line with an y axis'
-						if (BugTest) {
+						if (Debug) {
 							printf("aa\n");
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LR
@@ -1822,7 +1847,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("ab\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
@@ -1852,7 +1877,7 @@ public:
 
 					}
 					else { //you are not perfectly aligned with anything, every 'point' matters.
-						if (BugTest) {
+						if (Debug) {
 							printf("ac\n");
 						}
 						for (int i = 0; i < LM[y2][x1].size(); i++) { // LL
@@ -1879,7 +1904,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("ad\n");
 						}
 						for (int i = 0; i < LM[y2][x2].size(); i++) { // LR
@@ -1906,7 +1931,7 @@ public:
 								TempYOverlap = 0;
 							} 
 						}
-						if (BugTest) {
+						if (Debug) {
 							printf("ae\n");
 						}
 						for (int i = 0; i < LM[y1][x2].size(); i++) { // UR
@@ -1945,7 +1970,7 @@ public:
 			else if (Measure == 6) {//L
 			//edges are [x1][y1] and [x1][y2]
 				if (TempY2Math == 0) {
-					if (BugTest) {
+					if (Debug) {
 						printf("af\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
@@ -1983,7 +2008,7 @@ public:
 					}
 				}
 				else {
-					if (BugTest) {
+					if (Debug) {
 						printf("ag\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
@@ -2016,7 +2041,7 @@ public:
 
 						}
 					}
-					if (BugTest) {
+					if (Debug) {
 						printf("ah\n");
 					}
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
@@ -2057,7 +2082,7 @@ public:
 			else if (Measure == 14) {//R
 				//edges are [x2][y1] and [x2][y2]
 				if (TempY2Math == 0) {
-					if (BugTest) {
+					if (Debug) {
 						printf("ai\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
@@ -2071,7 +2096,9 @@ public:
 								yOverlapped = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
 							}
 							if (yOverlapped > 0 && yOverlapped < 17) {
-								printf("Truely overalpped with something (Going Right, at least one x pixel overlap UR)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going Right, at least one x pixel overlap UR)\n");
+								}
 							}
 						}
 
@@ -2097,7 +2124,7 @@ public:
 					}
 				}
 				else {
-					if (BugTest) {
+					if (Debug) {
 						printf("aj\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
@@ -2110,7 +2137,9 @@ public:
 
 
 							if (yOverlapped > 0 && yOverlapped < 17) {
-								printf("Truely overalpped with something (Going Right, at least one x pixel overlap UR)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going Right, at least one x pixel overlap UR)\n");
+								}
 							}
 						}
 						
@@ -2134,7 +2163,7 @@ public:
 							TempXOverlap = 0;
 						}
 					}
-					if (BugTest) {
+					if (Debug) {
 						printf("ak\n");
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
@@ -2148,7 +2177,9 @@ public:
 								yOverlapped = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos; 
 							}
 							if (yOverlapped > 0 && yOverlapped < 17) {
-								printf("Truely overalpped with something (Going Right, at least one x pixel overlap LR)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going Right, at least one x pixel overlap LR)\n");
+								}
 							}
 						}
 
@@ -2178,21 +2209,23 @@ public:
 
 
 				if (TempX2Math == 0) {
-					if (BugTest) {
+					if (Debug) {
 						printf("al\n");
 					}
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
 
 						//Figureout if the overlap is at least 1
-						if (true) { 
+						if (true) {
 							if (LM[y2][x1][i]->xPos > ObjectSprite->xPos) {
-								xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos; 
+								xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
 							}
 							else { //if (Spos =< Posx 
 								xOverlapped = LM[y2][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (xOverlapped > 0 && xOverlapped < 17) {
-								printf("Truely overalpped with something (Going Down, at least one x pixel overlap LL)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going Down, at least one x pixel overlap LL)\n");
+								}
 							}
 						}
 
@@ -2216,7 +2249,7 @@ public:
 					}
 				}
 				else {
-					if (BugTest) {
+					if (Debug) {
 						printf("am\n");
 					}
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
@@ -2228,7 +2261,9 @@ public:
 	
 							
 							if (xOverlapped > 0 && xOverlapped < 17) {
-								printf("Truely overalpped with something (Going Down, at least one x pixel overlap LL)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going Down, at least one x pixel overlap LL)\n");
+								}
 							}
 						}
 
@@ -2251,7 +2286,7 @@ public:
 						}
 
 					}
-					if (BugTest) {
+					if (Debug) {
 						printf("an\n");
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
@@ -2265,7 +2300,9 @@ public:
 								xOverlapped = LM[y2][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (xOverlapped > 0 && xOverlapped < 17) {
-								printf("Truely overalpped with something (Going Down, at least one x pixel overlap LR)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going Down, at least one x pixel overlap LR)\n");
+								}
 							}
 						}
 
@@ -2294,7 +2331,7 @@ public:
 			else if (Measure == 9) {//U
 				//edges are [x1][y1] and [x2][x1]
 				if (TempX2Math == 0) {
-					if (BugTest) {
+					if (Debug) {
 						printf("ao\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
@@ -2308,7 +2345,9 @@ public:
 								xOverlapped = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (xOverlapped > 0 && xOverlapped < 17) {
-								printf("Truely overalpped with something (Going UP, at least one x pixel overlap UL)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going UP, at least one x pixel overlap UL)\n");
+								}
 							}
 						}
 
@@ -2332,7 +2371,7 @@ public:
 					}
 				}
 				else {
-					if (BugTest) {
+					if (Debug) {
 						printf("ap\n");
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
@@ -2343,7 +2382,9 @@ public:
 							xOverlapped = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							
 							if (xOverlapped > 0 && xOverlapped < 17) {
-								printf("Truely overalpped with something (Going UP, at least one x pixel overlap UL)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going UP, at least one x pixel overlap UL)\n");
+								}
 							}
 						}
 
@@ -2365,7 +2406,7 @@ public:
 							TempYOverlap = 0;
 						}
 					}
-					if (BugTest) {
+					if (Debug) {
 						printf("aq\n");
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
@@ -2379,7 +2420,9 @@ public:
 								xOverlapped = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
 							}
 							if (xOverlapped > 0 && xOverlapped < 17) {
-								printf("Truely overalpped with something (Going UP, at least one x pixel overlap UR)\n");
+								if (Debug) {
+									printf("Truely overalpped with something (Going UP, at least one x pixel overlap UR)\n");
+								}
 							}
 						}
 
@@ -2407,7 +2450,7 @@ public:
 			}
 			//still
 			else if (Measure == 10) {//0
-				if (BugTest) {
+				if (Debug) {
 					printf("ar\n");
 				}
 			}
@@ -2506,75 +2549,87 @@ public:
 
 		//end of Jacks insertion. I should check this later.
 
-
-		if (Measure != 10) {
-			printf("Direction for the moving sprite is = %d\n", Measure);
-			printf("Moving Sprite positions = {xPos= %d, yPos= %d}\n", ObjectSprite->xPos, ObjectSprite->yPos);
-		}
-		if (SpriteOverlapX.size() > 0) {
-			printf("Every item in the SpriteOverlapX =");
-			for (int i = 0; i < SpriteOverlapX.size(); i++) {
-				printf("{Object%d, ", SpriteOverlapX[i]->OrderCreation + 1);
-				printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteX[i], SpriteOverlapX[i]->xPos, SpriteOverlapX[i]->yPos);
-				if (SpriteX[i] > 0) {
-
-				}
+		if (Debug) {
+			if (Measure != 10) {
+				printf("Direction for the moving sprite is = %d\n", Measure);
+				printf("Moving Sprite positions = {xPos= %d, yPos= %d}\n", ObjectSprite->xPos, ObjectSprite->yPos);
 			}
-			printf("\n");
-		}
-		if (SpriteOverlapY.size() > 0) {
-			printf("Every item in the SpriteOverlapY =");
-			for (int i = 0; i < SpriteOverlapY.size(); i++) {
-				printf("{Object%d, ", SpriteOverlapY[i]->OrderCreation+1);
-				printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteY[i], SpriteOverlapY[i]->xPos, SpriteOverlapY[i]->yPos);
-				if (SpriteY[i] > 0) {
+			if (SpriteOverlapX.size() > 0) {
+				printf("Every item in the SpriteOverlapX =");
+				for (int i = 0; i < SpriteOverlapX.size(); i++) {
+					printf("{Object%d, ", SpriteOverlapX[i]->OrderCreation + 1);
+					printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteX[i], SpriteOverlapX[i]->xPos, SpriteOverlapX[i]->yPos);
+					if (SpriteX[i] > 0) {
 
+					}
 				}
+				printf("\n");
 			}
-			printf("\n");
-		}
-		if (BugTest && (SpriteOverlapY.size()> 0 || SpriteOverlapX.size()>0) ) {
-			printf("Take Time to ensure the above looks correct for Object%d.\n", ObjectSprite->OrderCreation + 1);
+			if (SpriteOverlapY.size() > 0) {
+				printf("Every item in the SpriteOverlapY =");
+				for (int i = 0; i < SpriteOverlapY.size(); i++) {
+					printf("{Object%d, ", SpriteOverlapY[i]->OrderCreation + 1);
+					printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteY[i], SpriteOverlapY[i]->xPos, SpriteOverlapY[i]->yPos);
+					if (SpriteY[i] > 0) {
 
+					}
+				}
+				printf("\n");
+			}
 		}
-	
+		if (Debug) {
+			if ( (SpriteOverlapY.size() > 0 || SpriteOverlapX.size() > 0)) {
+				printf("Take Time to ensure the above looks correct for Object%d.\n", ObjectSprite->OrderCreation + 1);
+
+			}
+		}
 		
 		
 		
 		
 		//return the vector
 		if (SpriteOverlapX.size() < 1) {
-			printf("no X collisions. empty vector pushed\n");
+			if (Debug) {
+				printf("no X collisions. empty vector pushed\n");
+			}
 			TempStackable->SpriteXCollision = {};
 		}
 		else {
-			printf("Collidied on X, something's pushed!\n");
-
+			if (Debug) {
+				printf("Collidied on X, something's pushed!\n");
+			}
 			TempStackable->SpriteXCollision = {};
 			for (int i = 0; i < SpriteOverlapX.size(); i++) {
 				TempStackable->SpriteXCollision.push_back(SpriteOverlapX[i]);
 			}
 		}
 		if (SpriteOverlapY.size() < 1) {
-			printf("no Y collisions. empty vector pushed\n");
+			if (Debug) {
+				printf("no Y collisions. empty vector pushed\n");
+			}
 			TempStackable->SpriteYCollision = {};
 		}
 		else {
-			printf("Collidied on Y, something's pushed!\n");
-
+			if (Debug) {
+				printf("Collidied on Y, something's pushed!\n");
+			}
 			TempStackable->SpriteYCollision = {};
 			for (int i = 0; i < SpriteOverlapY.size(); i++) {
 				TempStackable->SpriteYCollision.push_back(SpriteOverlapY[i]);
 			}
 		}
 		//Trying to figure out how to store then 'return' these values as readable.
-		if (TempStackable->SpriteXCollision.size() > 0) {
-			printf("I've got an X collision with Object%d\n", TempStackable->SpriteXCollision[0]->OrderCreation + 1);
+		if (Debug) {
+			if (TempStackable->SpriteXCollision.size() > 0) {
 
-		}
-		if (TempStackable->SpriteYCollision.size() > 0) {
-			printf("I've got an Y collision with Object%d\n", TempStackable->SpriteYCollision[0]->OrderCreation + 1);
+				printf("I've got an X collision with Object%d\n", TempStackable->SpriteXCollision[0]->OrderCreation + 1);
 
+			}
+			if (TempStackable->SpriteYCollision.size() > 0) {
+
+				printf("I've got an Y collision with Object%d\n", TempStackable->SpriteYCollision[0]->OrderCreation + 1);
+
+			}
 		}
 		if (TempStackable->SpriteYCollision.size() > 0 || TempStackable->SpriteXCollision.size() > 0) {
 			TempStackable->Victim = ObjectSprite; //Our sprite is a 'victim', it can't move.
@@ -2583,14 +2638,17 @@ public:
 			TempStackable->Victim = NULL; //it moved, so there is no 'victim'.
 		}
 		//= [{SpriteOverlapX}, {SpriteOverlapY}];
+		if (Debug) {
 		printf("3.4\n"); //arrray to return is created
+		}
 	}
-
 	
 	//You may test this by just testing integers in a seperate file.
 	void MergeSortSpriteCollision(std::vector<Sprite*> & SpriteOverlap, std::vector<int>& SpriteArea) { //we will be editing directly onto it
-		printf("MergeSort\n");
-
+		bool Debug = false;
+		if (Debug) {
+			printf("MergeSort\n");
+		}
 		if (SpriteArea.size() > 1) {
 			int M = SpriteArea.size() / 2;
 			std::vector<int> LeftHalfArea(SpriteArea.begin(), SpriteArea.begin() + M);
@@ -2641,13 +2699,14 @@ public:
 
 
 
-
-		printf("Try Merging\n");
+		if (Debug) {
+			printf("Try Merging\n");
+		}
 
 	}
 
 	void MoveAllSprites2() {
-
+		bool Debug = false;
 
 		ReCreateQue2();
 		/**/
@@ -2670,11 +2729,17 @@ public:
 
 			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
 			if (Queue2[i] != NULL) { //redudant, archaic
-					printf("1\n");
+					if (Debug) {
+						printf("1\n");
+					}
 					RemoveSpriteFromMap(Queue2[i]);
-					printf("2\n");
+					if (Debug) {
+						printf("2\n");
+					}
 					Queue2[i]->Behavior();
-					printf("3\n");
+					if (Debug) {
+						printf("3\n");
+					}
 					TempStackable = new XYArr; //will delete if emptied, otherwise we'll push the object to the stack.
 				   //Question, if I make a new XYArr, without deleting this one, will it change pointers automatically without overwritting? Yes it does :D!
 					CheckFutureSpritePosition2(Queue2[i], TempStackable);
@@ -2685,15 +2750,22 @@ public:
 					//success
 					if (TempStackable->Victim == NULL || (TempStackable->SpriteXCollision.size() < 1 && TempStackable->SpriteYCollision.size() < 1)) { //victim reduces the checks
 						delete TempStackable;
-
-						printf("4\n");
+						if (Debug) {
+							printf("4\n");
+						}
 						Queue2[i]->MoveTargetTileX();
-						printf("5\n");
+						if (Debug) {
+							printf("5\n");
+						}
 						Queue2[i]->MoveTargetTileY();
-						printf("6\n");
+						if (Debug) {
+							printf("6\n");
+						}
 						ReMapSprite(Queue2[i]);
 						CompletedSprites[i] = 1; //the Sprite with creation order 'i' has successfully completed it's movement
-						printf("Object%d is marked as completed, begin the Stack Check\n", Queue2[i]->OrderCreation + 1);
+						if (Debug) {
+							printf("Object%d is marked as completed, begin the Stack Check\n", Queue2[i]->OrderCreation + 1);
+						}
 
 						std::vector<int> InvestigateIndexsX = {};
 						std::vector<int> InvestigateIndexsY = {};
@@ -2719,23 +2791,32 @@ public:
 								}
 							} 
 						}
-						printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
-
-						if (InvestigateIndexsY.size() > 0 || InvestigateIndexsX.size() > 0) {
-							printf("Start Handle\n");
-							HandleCollision2(InvestigateIndexsX, InvestigateIndexsY, SpriteStacks, CompletedSprites, i);
-							printf("Finished Handle\n");
+						if (Debug) {
+							printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
 						}
-						//should check for empty stacks, or pass them together to check as a pair.
+						if (InvestigateIndexsY.size() > 0 || InvestigateIndexsX.size() > 0) {
+							if (Debug) {
+								printf("Start Handle\n");
+							}
+							HandleCollision2(InvestigateIndexsX, InvestigateIndexsY, SpriteStacks, CompletedSprites, i);
+							if (Debug) {
+								printf("Finished Handle\n");
+
+							}
+						}
+							//should check for empty stacks, or pass them together to check as a pair.
 
 						
-						
-						printf("Null in Que Object%d\n", Queue2[i]->OrderCreation + 1);
+						if (Debug) {
+							printf("Null in Que Object%d\n", Queue2[i]->OrderCreation + 1);
+						}
 						Queue2[i] = NULL;
 
 					}
 					else {
-						printf("Push back the temp stack\n");
+						if (Debug) {
+							printf("Push back the temp stack\n");
+						}
 						SpriteStacks.push_back(TempStackable); //do not delete until it is handled. Just overwrite Tempstackable poitner with new XYArr
 
 						//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
@@ -2771,7 +2852,9 @@ public:
 			//satisfy the Stack
 			
 		}
-		printf("8	 HANLE THE REST OF STACK	\n");
+		if (Debug) {
+			printf("8	 HANLE THE REST OF STACK	\n");
+		}
 		/* 
 		while (SpriteStacks.size() > 0) {
 			TempStackable = new XYArr; //besure to delete before leaving function.
@@ -2833,8 +2916,9 @@ public:
 
 		//NEW
 		SpriteStacks.clear();
-		printf("9 	 HANDLED REST OF STACK	 \n");
-
+		if (Debug) {
+			printf("9 	 HANDLED REST OF STACK	 \n");
+		}
 		//For Random Sprites
 		/* 
 		if (TIME < 18) {
@@ -2876,10 +2960,12 @@ public:
 		bool IsTempSpriteVictim;
 		std::vector<int> EraseableX = {};
 		std::vector<int> EraseableY = {};
-		bool Debug = true;
+		bool Debug = false;
 		//xs
 
-		printf("Remove Sprite we found at the end of the stack (I believe already done in the main)\n");
+		if (Debug) {
+			printf("Remove Sprite we found at the end of the stack (I believe already done in the main)\n");
+		}
 		//SDL_Delay(250);
 		/*
 		for (int i = 0; i < InvestigateX.size(); i++) {
@@ -2906,9 +2992,9 @@ public:
 		//the above comment is what we'd do if we didn't in main.
 
 		//Okay, now we actually want to investigate those changed positions. 
-
-		printf("Now investigate those edited, see if we can get rid of any\n");
-
+		if (Debug) {
+			printf("Now investigate those edited, see if we can get rid of any\n");
+		}
 		if (Debug) {
 			printf("Displaying InvestigateX = {");
 			for (int i = 0; i < InvestigateX.size(); i++) {
@@ -2934,8 +3020,9 @@ public:
 				EraseableY.push_back(InvestigateY[i]); //we're going to erase backwards, so the larger index of x and Y
 			}
 		}
-		printf("Now that we've looked at them, EraseableV should have stacks whose victims are ready to be checked\n");
-
+		if (Debug) {
+			printf("Now that we've looked at them, EraseableV should have stacks whose victims are ready to be checked\n");
+		}
 		if (Debug) {
 			if (EraseableX.size() > 0) {
 				printf("EraseableX={");
@@ -2958,60 +3045,52 @@ public:
 		//step 2, investigate those popped, see if any victims are left fully-alone
 		//BREAKS SOMEWHERE BELOW HERE! 
 		int Total = EraseableX.size() + EraseableY.size() - 1;
-		printf("%d\n", Total);
+		 
 		for (int i = Total; i > -1; i--) {
-			printf("a\n");
+			 
 			//if one of the sizes is empty, but the other is full
 			if (EraseableX.size() > 0 && EraseableY.size() > 0) {
-				printf("b\n");
+				 
 				//We have these three calls because if it's in ErasableX, it's from the InestigateX, likewise for Y, thus if it appeared in both of them somehow, we want to popit back from both of them
 				//we also check the size of each, because we want to maintain some order (Earlier Sprites move before Later created Sprites)
 
 				if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
-					printf("c\n");
+					 
 
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
-					printf("d\n");
+					 
 				}
 				else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
-					printf("e\n");
+					 
 					VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 					EraseableY.pop_back();
-					printf("f\n");
+					 
 				}
 				else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
-					printf("g\n");
+					 
 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
 					EraseableY.pop_back();
-					printf("h\n");
+				 
 					i--;//popped twice, so go down an extra step in the loop.
 				}
 			}
 			//If one or the other ran out of items to add to the vector.
 			else if (EraseableX.size() > 0) {
-				printf("i\n");
-				printf("EraseableX Size = %d\n", EraseableX.size());
-				printf("EraseableX Last Value = %d\n", EraseableX[EraseableX.size() - 1]);
-				printf("object%d\n", SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim->OrderCreation + 1);
 				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim); // error here
-				printf("i1\n");
 				SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
-				printf("i2\n");
 				EraseableX.pop_back();
-				printf("j\n");
+
 			}
 			else if (EraseableY.size() > 0) { //this should be a definite, but just for now
-				printf("k\n");
-				VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
+				 VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 				SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 				EraseableY.pop_back();
-				printf("l\n");
-			}
+				 }
 			//note on how this operation works.
 			//EraseableX = {0, 5, 9, 12}, where these numbers are the index's on SpriteStacks that we last popped from, organized from least to greatest, Y is same.
 			// Eraseable, also are those who's XYArr has empty X,Y collisions (as in those have been moved at some point). 
@@ -3023,9 +3102,9 @@ public:
 			//don't flag for overlap, since that happens after everythings been moved properly. 
 
 		}
-
-
-		printf("Now handle the victims no longer\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
+		if (Debug) {
+			printf("Now handle the victims no longer\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
+		}
 		if (Debug) {
 			printf("VictimsNoLonger = {");
 			for (int i = 0; i < VictimsNoLonger.size(); i++) {
@@ -3041,61 +3120,76 @@ public:
 
 		//step 5 - exit
 			//if you no longer find any stacks with pop able elements, return  to the que
-
-		printf("Take care of victims\n");
+		if (Debug) {
+			printf("Take care of victims\n");
+		}
 		while (VictimsNoLonger.size() != 0) {
-			printf("Top of VictimsNoLonger while loop\n");
-			printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
-			HandleVictims(VictimsNoLonger[VictimsNoLonger.size()-1], SpriteStacks, CompletedSprites, QueLocation, VictimsNoLonger); //new
-			printf("Finished HandleVictims\n");
+			if (Debug) {
+				printf("Top of VictimsNoLonger while loop\n");
+				printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
+			}
+			HandleVictims(VictimsNoLonger[VictimsNoLonger.size() - 1], SpriteStacks, CompletedSprites, QueLocation, VictimsNoLonger); //new
+			if (Debug) {
+				printf("Finished HandleVictims\n");
+			}
 			VictimsNoLonger.pop_back(); //no matter what, either it moves or it doesn't, but it won't be part of the sprites stack anymore, thus there will never be another check for it
-			printf("Popped the victim from the stack\n");
-			
+			if (Debug) {
+				printf("Popped the victim from the stack\n");
+			}
 		}
 		//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
 
 	}
 
-
-
-
-
-
 	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*> & VictimsNoLongerOrigin) {
-		bool Debug = true;
+		bool Debug = false;
 		//move victim,
-		printf("Try to move Object%d [handlevictim]\n", CurrentVictim->OrderCreation + 1);
+		if (Debug) {
+			printf("Try to move Object%d [handlevictim]\n", CurrentVictim->OrderCreation + 1);
+		}
 		RemoveSpriteFromMap(CurrentVictim);
 		CurrentVictim->Behavior();
 		XYArr* TempStackable; //used to just see if it's empty or not
 		TempStackable = new XYArr; //besure to delete before leaving function.
 		CheckFutureSpritePosition2(CurrentVictim, TempStackable);
-		printf("Finished checking Object%d's future\n", CurrentVictim->OrderCreation + 1);
-		
+		if (Debug) {
+			printf("Finished checking Object%d's future\n", CurrentVictim->OrderCreation + 1);
+		}
 		//disiabled simply so that I can test the other statement
 		
 		if (TempStackable->SpriteXCollision.size() > 0 || TempStackable->SpriteYCollision.size() > 0) {
-			printf("Collided at the end of it's movement\n"); 
+			if (Debug) {
+				printf("Collided at the end of it's movement\n");
+			}
 			//undo the behavior, or teleport it to the most appropriate position,
 			//undo the behavior, or teleport it to the most appropriate position,
 			// CurrentVictim->UndoBehavior(); //temporary, what will have ot happen is a teleport to appropriate collision location.
-
-			printf("%d %d, %d %d\n", CurrentVictim->xPos, CurrentVictim->yPos, CurrentVictim->TargetTile->x, CurrentVictim->TargetTile->y);
+			if (Debug) {
+				printf("%d %d, %d %d\n", CurrentVictim->xPos, CurrentVictim->yPos, CurrentVictim->TargetTile->x, CurrentVictim->TargetTile->y);
+			}
 			int xChange = CurrentVictim->xPos - CurrentVictim->TargetTile->x; // +1 means moved right, -1 means moved left
 			int yChange = CurrentVictim->yPos - CurrentVictim->TargetTile->y; // +1 means moved down, -1 means moved up
-			printf("%d %d\n", xChange, yChange);
-			printf("%d\n", TempStackable->SpriteXCollision.size());
+			if (Debug) {
+				printf("%d %d\n", xChange, yChange);
+				printf("Size of Temp Stackable = %d\n", TempStackable->SpriteXCollision.size());
+				printf("Size of Temp Stackable Y%d\n", TempStackable->SpriteYCollision.size());
 
-			int x = TempStackable->SpriteXCollision.size(); // this is done so the same function is not called multiple times
+			}
+ 			int x = TempStackable->SpriteXCollision.size(); // this is done so the same function is not called multiple times
 			int y = TempStackable->SpriteYCollision.size(); // this is done so the same function is not called multiple times
-
+		
+			if (Debug) {
+				printf("Teleport!\n");
+			}
 			if (x > 0) { // this is a check just to make sure the spriteXCollision is not empty
 				if (xChange > 0) { // if moving right
+					printf("Sprite was moving Right\n");
 					if (CurrentVictim->TargetTile->x + TILE_WIDTH <= TempStackable->SpriteXCollision[x - 1]->TargetTile->x) { // this is just making sure that the x position of Current Victim is more left than the TempStackable one
 						CurrentVictim->TeleportX(TempStackable->SpriteXCollision[x - 1]->xPos - TILE_WIDTH);
 					}
 				}
 				else { // if moving left
+					printf("Sprite was moving Left\n");
 					if (CurrentVictim->TargetTile->x >= TempStackable->SpriteXCollision[x - 1]->TargetTile->x + TILE_WIDTH) { // this checks to make sure the x position of the victim is more right than the sprite it's collidiing with
 						CurrentVictim->TeleportX(TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH);
 					}
@@ -3104,34 +3198,44 @@ public:
 
 			if (y > 0) { // this is a check just to make sure the spriteYCollision is not empty
 				if (yChange > 0) { // if moving down
+					printf("Sprite was moving down\n");
 					if (CurrentVictim->TargetTile->y + TILE_HEIGHT <= TempStackable->SpriteYCollision[y - 1]->TargetTile->y) { // this is just making sure that the y position of Current Victim is above than the TempStackable one
 						CurrentVictim->TeleportY(TempStackable->SpriteYCollision[y - 1]->yPos - TILE_HEIGHT);
 					}
 				}
 				else { // if moving up
+					printf("Sprite was moving up\n");
 					if (CurrentVictim->TargetTile->y >= TempStackable->SpriteYCollision[y - 1]->TargetTile->y + TILE_HEIGHT) { // this checks to make sure the y position of the victim is lower than the sprite it's collidiing with
 						CurrentVictim->TeleportY(TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT);
 					}
 				}
 			}//flag it for collision 
+			if (Debug) {
+				printf("Teleport Complete!\n");
+			}
+
 			ReMapSprite(CurrentVictim); //quesiton, if I have two objects taht odn't oved on top of one another, this collision shoudl go off, and the undo, does that just keep it in the same space, no matter what? I feel like kif it doesn't move I shouldn't even allow it to enter the que in the first place... questions for later, might be less worth while the less object collision stacks that are possible. I should make some ratio of level to sprites to control how 'involved' the stack process is. for now lets go as deep as possible with the computation aspect, and trim down for other cases where the user doesn't care for such exact detections.
-			printf("Remap Object%d [Current Victim]\n", CurrentVictim->OrderCreation + 1);
+			if (Debug) {
+				printf("Remap Object%d [Current Victim]\n", CurrentVictim->OrderCreation + 1);
+			}
 			//no need ot pop from SpriteStacks
 			//no need to insert to spritestacks
 			CompletedSprites[CurrentVictim->OrderCreation] = 1; //it's completed, won't move anymore. This way when we try to move the victims at the end of que2 to appropriate spaces, if they would collide with obj1 then that's what they'll do
 
 		}
 		else { //it moved!
-			printf("It moved! Now to recheck the stack!\n");
-			
+			if (Debug) {
+				printf("It moved! Now to recheck the stack!\n");
+			}
 			//move target tile
 			CurrentVictim->MoveTargetTileX();
 			CurrentVictim->MoveTargetTileY();
 			//remap it, 
 			ReMapSprite(CurrentVictim);
 			CompletedSprites[CurrentVictim->OrderCreation] = 1;
-			printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
-			 
+			if (Debug) {
+				printf("Successfully moved Object%d, marked as completed and remapped it.\n", CurrentVictim->OrderCreation + 1);
+			}
 
 
 			//Code below these comments are what was done in antoher function, so perhaps export it to a seperate function all together?
@@ -3151,7 +3255,7 @@ public:
 					//we may just need the while statement
 
 					if (Debug) {
-						printf("Check SpriteXCollsion for dobules, there should be none if Jack properly pruned\n");
+						printf("Check SpriteXCollsion for dobules, there should be none if properly pruned\n");
 						printf("SpriteXCollsion = {");
 						for (int j = 0; j < SpriteStacks[d]->SpriteXCollision.size(); j++) {
 							printf("%d, ", SpriteStacks[d]->SpriteXCollision[j]->OrderCreation);
@@ -3162,7 +3266,7 @@ public:
 					while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d]==1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 						SpriteStacks[d]->SpriteXCollision.pop_back();
 						if (!AlreadyPushedIndex) { //NEW
-							printf("Pushbacked on the X index d = %d\n", d);
+							 
 							InvestigateIndexsX.push_back(d); //do this after the while we insert.
 							AlreadyPushedIndex = true;
 						}
@@ -3173,8 +3277,8 @@ public:
 					while (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[d] == 1) {
 						SpriteStacks[d]->SpriteYCollision.pop_back();
 						if (!AlreadyPushedIndex) { //NEW
-							printf("Pushbacked on the Y index d = %d\n", d);
-							InvestigateIndexsY.push_back(d);
+							 
+								InvestigateIndexsY.push_back(d);
 							AlreadyPushedIndex = true;
 						}
 					}
@@ -3220,8 +3324,10 @@ public:
 		 
 		
 			//step 2, investigate those popped, see if any victims are left fully-alone
-			printf("Start Erasing [HandleVictims]\n");
+			if (Debug) {
 
+				printf("Start Erasing [HandleVictims]\n");
+			}
 
 			if (Debug) {
 				printf("EraseableX = {");
@@ -3240,16 +3346,16 @@ public:
 
 			//BREAKS SOMEWHERE BELOW HERE! 
 			int Total = EraseableX.size() + EraseableY.size() -1;
-			printf("Total = %d\n", Total);
+			if (Debug) {
 
+				printf("Total = %d\n", Total);
+			}
 			std::vector<Sprite*> VictimsNoLonger = {};
-			for (int i = Total; i >-1; i--) {
-				printf("i = %d\n", i);
+			for (int i = Total; i >-1; i--) { 
 				//if one of the sizes is empty, but the other is full
-				if (EraseableX.size() > 0 && EraseableY.size() > 0) {
-					printf("Neither X or Y are emptied...\n");
+				if (EraseableX.size() > 0 && EraseableY.size() > 0) { 
 					if (EraseableX[EraseableX.size() - 1] > EraseableY[EraseableY.size() - 1]) {
-						printf("Y < X\n");
+						 
 						VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 						SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 						EraseableX.pop_back();
@@ -3268,8 +3374,7 @@ public:
 						}
 					}
 					else if (EraseableY[EraseableY.size() - 1] > EraseableX[EraseableX.size() - 1]) {
-						printf("X < Y\n");
-						VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
+						 VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 						SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 						EraseableY.pop_back();
 						if (Debug) {
@@ -3287,18 +3392,11 @@ public:
 						}
 					}
 					else if (EraseableY[EraseableY.size() - 1] == EraseableX[EraseableX.size() - 1]) {
-						printf("Y == X (Pop both back, lower i additional amount\n");
-
-						printf("SpriteStack[%d] to be reased\n", EraseableX[EraseableX.size() - 1]);
-						printf("Lucky VictimNoLonger Sprite = Object%d\n", SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim->OrderCreation + 1);
-						VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
-						printf("Pushed back into VictimsNoLonger\n");
-						SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
-						printf("Removed it from SpriteStacks\n");
-						EraseableX.pop_back();
+	 					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+	 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
+	 					EraseableX.pop_back();
 						EraseableY.pop_back();
-						printf("Popped back both\n");
-						i--;//popped twice, so go down an extra step in he loop.
+	 					i--;//popped twice, so go down an extra step in he loop.
 						if (Debug) {
 							printf("EraseableX = {");
 							for (int j = 0; j < EraseableX.size(); j++) {
@@ -3315,8 +3413,7 @@ public:
 					}
 				}
 				else if (EraseableX.size() > 0) {
-					printf("Only X Left\n");
-					VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
+	 				VictimsNoLonger.push_back(SpriteStacks[EraseableX[EraseableX.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableX[EraseableX.size() - 1]);
 					EraseableX.pop_back();
 					if (Debug) {
@@ -3334,8 +3431,7 @@ public:
 					}
 				}
 				else if (EraseableY.size() > 0) { //this should be a definite, but just for now
-					printf("Only Y Left\n");
-					VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
+	 				VictimsNoLonger.push_back(SpriteStacks[EraseableY[EraseableY.size() - 1]]->Victim);
 					SpriteStacks.erase(SpriteStacks.begin() + EraseableY[EraseableY.size() - 1]);
 					EraseableY.pop_back();
 					if (Debug) {
@@ -3363,8 +3459,7 @@ public:
 				//don't flag for overlap, since that happens after everythings been moved properly.
 
 			}
-			printf("Oh dear,\n");
-
+	 
 		
 			if (Debug) {
 				printf("Now show off which new victims to test/insert\n"); //so edit htevictims no longer so it goes once for the youngest, and then checks the indexs edited, and inserts properly new victims that are checkable. That way we can just run until victimsnolonger runs out.
@@ -3386,8 +3481,10 @@ public:
 
 			//This now inserts newly uncovered victims into the victimsNoLonger vector appropriately. This is so when this function returns, you can then try moving it again. 
 			while (VictimsNoLonger.size() > 0) {
-				printf("Top of VictimsNoLonger BinSearch Loop\n");
-				printf("Victims No Longer Size = %d, Origin Size = %d\n", VictimsNoLonger.size(), VictimsNoLongerOrigin.size());
+				if (Debug) {
+					printf("Top of VictimsNoLonger BinSearch Loop\n");
+					printf("Victims No Longer Size = %d, Origin Size = %d\n", VictimsNoLonger.size(), VictimsNoLongerOrigin.size());
+				}
 				BinSearchInsert(VictimsNoLongerOrigin, VictimsNoLonger, 0, VictimsNoLongerOrigin.size() - 1);
 				if (Debug) {
 					printf("Inserted VictimsNoLonger = {");
@@ -3396,13 +3493,13 @@ public:
 					}
 					printf("}\n");
 				}
-				printf("This is rare, so give your self a minute to get some photos or look at it\n");
+				if (Debug) {
+					printf("This is rare, so give your self a minute to get some photos or look at it\n");
+				}
 				//SDL_Delay(5000);
 			}
-			printf("Hmm?\n");
-		}
-		printf("Still in HandleVictims?\n");
-		//add those new victims into the appropraite posiiton on the current victim que.  
+		 }
+		 //add those new victims into the appropraite posiiton on the current victim que.  
 			//Mark CompletedSprites as successful
 		//so this will just run one at a time. So it is fine for just to insert because I'm not trying to do the items right as they are revealed, rather I just want to add any new eraseable items, 
 		//This SHOULD work if I'm doing what I think I am - which is anything amrked as compeltedsprites[x]==1 is removed from the stack, thus we should be able to remove everything up to the currentQue location
@@ -3411,26 +3508,39 @@ public:
 	
 	//recursive
 	void BinSearchInsert(std::vector<Sprite*>& Origin, std::vector<Sprite*>& Insertable, int Left, int Right) {
-
+		bool Debug = false;
 		int Middle;
 		Middle = (Left - (Right - Left) / 2);
-		printf("BinSearch, L = %d, R = %d, M = %d\n", Left, Right, Middle);
+		if (Debug) {
+			printf("BinSearch, L = %d, R = %d, M = %d\n", Left, Right, Middle);
+		}
 
 
 		if (Middle < 0) {
 			if (Origin[0]->OrderCreation > Insertable.back()->OrderCreation) {
-				printf("I thinK the position your looking for is %d\n", 1);
-				Origin.insert(Origin.begin() + 1, Insertable.back());
-				printf("Inserted the new Victim into the Original list\n");
-				Insertable.pop_back(); //this hsould keep it from being infinite.
-				printf("Pop backed from the new victims\n");
+				if (Debug) {
+					printf("I thinK the position your looking for is %d\n", 1);
+				}Origin.insert(Origin.begin() + 1, Insertable.back());
+				if (Debug) {
+					printf("Inserted the new Victim into the Original list\n");
+				}Insertable.pop_back(); //this hsould keep it from being infinite.
+				if (Debug) {
+					printf("Pop backed from the new victims\n");
+				}
 			}
 			else {
-				printf("I thinK the position your looking for is %d\n", 0);
+				if (Debug) {
+					printf("I thinK the position your looking for is %d\n", 0);
+				}
 				Origin.insert(Origin.begin() + 0, Insertable.back());
-				printf("Inserted the new Victim into the Original list\n");
+				if (Debug) {
+					printf("Inserted the new Victim into the Original list\n");
+				}
 				Insertable.pop_back(); //this hsould keep it from being infinite.
-				printf("Pop backed from the new victims\n");
+				
+				if (Debug) {
+					printf("Pop backed from the new victims\n");
+				}
 			}
 		}
 		else {
@@ -3439,40 +3549,48 @@ public:
 				if (Middle + 1 < Origin.size()) {
 					if (Origin[Middle]->OrderCreation > Insertable.back()->OrderCreation) {
 						//if the item to your right is greater than yourself, you want to move forward because your younger
-						printf("Move the middle!\n");
+						if (Debug) {
+							printf("Move the middle!\n");
+						}
 						Middle += 1;
 					}
 				}
-				printf("I thinK the position your looking for is %d\n", Middle);
+				if (Debug) {
+					printf("I thinK the position your looking for is %d\n", Middle);
+				}
 				Origin.insert(Origin.begin() + Middle, Insertable.back());
-				printf("Inserted the new Victim into the Original list\n");
+				if (Debug) {
+					printf("Inserted the new Victim into the Original list\n");
+				}	
 				Insertable.pop_back(); //this hsould keep it from being infinite.
-				printf("Pop backed from the new victims\n");
+				if (Debug) {
+					printf("Pop backed from the new victims\n");
+				}
 			}
 			else {
 				//it is somewhere in the left half of the array (begining, if odd, round down the half)
 				if (Insertable.back()->OrderCreation > Origin[Middle]->OrderCreation) {
 					BinSearchInsert(Origin, Insertable, Left, Middle);
-					printf("Item we're trying to insert is greater than the middle's order creation\n");
+					if (Debug) {
+						printf("Item we're trying to insert is greater than the middle's order creation\n");
+					}
 				}
 				//it is somewhere in the rihg thalf of hte array (if odd, round up, to end)
 				else if (Insertable.back()->OrderCreation < Origin[Middle]->OrderCreation) {
 					BinSearchInsert(Origin, Insertable, Middle + 1, Right);
-					printf("Item we're trying to insert is less than the middle's order creation\n");
+					if (Debug) {
+						printf("Item we're trying to insert is less than the middle's order creation\n");
+					}
 				}
 				//you found an equivalent position (should be impossible!)
 				else {
-					printf("Impossible insertion?");
-
+					if (Debug) {
+						printf("Impossible insertion?");
+					}
 				}
 			}
 		}
 	}
-
-
-
-
-
 
 	void RemoveSpriteFromMap(Sprite* ObjectSprite) {
 		// printf("RemoveSpriteFromMap\n");
@@ -3540,7 +3658,14 @@ public:
 		// printf("Erased all\n");
 	}
 
-	
+
+
+
+
+
+
+
+
 
 	//archaic
 	void CheckFutureSpritePosition(Sprite* ObjectSprite, int FutureCode[8]) {
