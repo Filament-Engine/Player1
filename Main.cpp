@@ -1,4 +1,5 @@
 //Using SDL and all include statements
+bool pause = false;
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -230,7 +231,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//RANDOM SPRITES END
 				 */
 
-				/*
+				
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				Object3 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -244,9 +245,9 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//TEST TELEPORT OBJECTS END
 
 				//IF objects do not appear on screen, they have not been mapped.
-				*/
+				
 
-
+				/* 
 				//RANDOM SPRITES BEGIN
 				//kept Object1 because it's global, don't want to mess anything up.
 				Object1 = new Sprite(16, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -270,7 +271,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 					printf("Object%d, created order = %d, Position={%d, %d}\n", j + 2, Object1->OrderCreation, xPosTemp, yPosTemp);
 					gLevel1->SpriteLayer->MapSprite(RandomMoveSprites[j]); //NEW 
 
-					if (xPosTemp > (LEVEL_WIDTH - 2) * TILE_WIDTH) {
+					if (xPosTemp > (LEVEL_WIDTH - 3) * TILE_WIDTH) {
 						xPosTemp = 0;
 						yPosTemp += 32;
 					}
@@ -280,13 +281,13 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				}
 				//RANDOM SPRITES END
-
+				*/
 
 
 
 				//After pushing back all the objects -DONE ONCE
 				gLevel1->SpriteLayer->AllocateQue2(); //New - so it is now ready for taking on the order of which to mvoe the sprites.
-
+				
 
 
 				//Where are they relative to the tiles on the map when they firest spawn (shoudl be on top of each other)
@@ -430,9 +431,13 @@ void handleLoop() {
 				case SDLK_u: // if the user presses 'u' -- this will be utility for now, and will change if fps is displayed or not
 					if (displayFPS) {
 						displayFPS = false;
+						gLevel1->SpriteLayer->AllSprites[7]->ChangeSource("AA29");
+						gLevel1->SpriteLayer->AllSprites[8]->ChangeSource("AA50");
 					}
 					else {
 						displayFPS = true;
+						gLevel1->SpriteLayer->AllSprites[7]->ChangeSource("AA29");
+						gLevel1->SpriteLayer->AllSprites[8]->ChangeSource("AA50");
 					}
 					break;
 				}
@@ -541,6 +546,10 @@ void handleLoop() {
 			printf("Giving you time to lift the key up\n");
 			SDL_Delay(500);
 			Object2or3Moved = false;
+		}
+		if (pause) {
+			SDL_Delay(1000);
+			pause = false;
 		}
 
 

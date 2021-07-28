@@ -2318,6 +2318,9 @@ public:
 						if (true) {
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
+								if (ObjectSprite->OrderCreation == 1) {
+									printf("[yPos+16 - Spos] : %d + 16 - %d\n", ObjectSprite->yPos, LM[y2][x1][i]->yPos);
+								}
 							}
 							else {
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -2326,6 +2329,9 @@ public:
 
 						//Pushback
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							if (ObjectSprite->OrderCreation == 1) {
+								printf("Pushback the D stack\n");
+							}
 							SpriteOverlapY.push_back(LM[y2][x1][i]);
 							SpriteY.push_back(TempYOverlap);
 							xOverlapped = 0;
@@ -3327,11 +3333,11 @@ public:
 		if (Debug) {
 			printf("Flag overlaps\n");
 		}
-		if (CheckOverlap(AllSprites[7])) { //interested in object 8 rn
+		if (true){ //CheckOverlap(AllSprites[7])) { //interested in object 8 rn
 			if (TIME < 17) {
 				for (int i = 0; i < AllSprites.size(); i++) {
 					if (CheckOverlap(AllSprites[i])) {
-						SDL_Delay(5000);
+						SDL_Delay(600000);
 					}
 				}
 			}
@@ -3571,35 +3577,443 @@ public:
 				printf("Teleport! Object%d\n", CurrentVictim->OrderCreation + 1);
 			}
 
+
+
+
+
+
+
+
+
+
+
+			bool wait = false;
+
+
+			/*
+			XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+						printf("Attempt 1: XC = %d\n", XC);
+						XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+						printf("Attempt 2: XC = %d\n", XC);
+						if (XC > 16 || XC< 0) {
+							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+							printf("Attempt 3: XC = %d\n", XC);
+						}
+		*/
+
+			if (x > 0 && y > 0) { 
+				if (xChange != 0 && yChange != 0) {
+					int XC;
+					int YC;
+					//calculate overlap according to direction
+					if (xChange > 0) { // if moving right
+						printf("Sprite was moving Right\n");
+						 
+						if (TempStackable->SpriteXCollision[x - 1]->xPos > CurrentVictim->xPos) {
+							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+							printf("Attempt 1: XC = %d\n", XC);
+						}
+						else {
+							XC = TempStackable->SpriteXCollision[x - 1]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+							printf("Attempt 2: XC = %d\n", XC);
+						}
+
+						if (XC > 16 || XC < 0) {
+							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+							printf("Attempt 3: XC = %d\n", XC);
+						}
+
+						if (XC == 16) {
+							XC = 0;
+						}
+						printf("1 TempOverlapX=%d\n", XC);
+						pause = true;
+						 
+					}
+					else { // if moving left
+						printf("Sprite was moving Left\n");
+						XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+						printf("Attempt 1: XC = %d\n", XC);
+						XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+						printf("Attempt 2: XC = %d\n", XC);
+						if (XC > 16 || XC < 0) {
+							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+							printf("Attempt 3: XC = %d\n", XC);
+						}
+						if (XC == 16) {
+							XC = 0;
+						}
+						printf("2 TempOverlapX=%d\n", XC);
+						pause = true;
+						 
+					}
+					if (yChange > 0) { // if moving down
+						printf("Sprite was moving down\n"); 
+						YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("Attempt 1: YC = %d\n", YC);
+						YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("Attempt 2: YC = %d\n", YC);
+						if (YC > 16 || YC < 0) {
+							YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+							printf("Attempt 3: YC = %d\n", YC);
+						}
+						if (YC == 16) {
+							YC = 0;
+						}
+						printf("3 TempOverlapY=%d\n", YC);
+						pause = true;
+						 
+					} 
+					else { // if moving up
+						printf("Sprite was moving up\n");
+						YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("Attempt 1: YC = %d\n", YC);
+						YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("Attempt 2: YC = %d\n", YC);
+						if (YC > 16 || YC < 0) {
+							YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+							printf("Attempt 3: YC = %d\n", YC);
+						}
+						if (YC == 16) {
+							YC = 0;
+						}
+						//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("4 TempOverlapY=%d\n", YC);
+						pause = true;
+						 
+					}
+
+
+
+					//using that overlap, determine one of three cases
+					if (XC == 1 && YC == 1) { //base it off of the vVec of the object in question. If it just overlapped according to one movement or less, then we can be relatively certain that the mroe meaningful overlap should be taken.
+						//teleport both appropriately
+						if (xChange > 0) { //right
+							CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+						}
+						else { //left
+							CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+						}
+						if (yChange > 0) { //down
+							CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+						}
+						else { //up
+							CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+						}
+
+					}
+					else if (XC == 1) { //if it is not less, or is the vec, then we should move accordingly
+						printf("Diag x, checkfuture 2\n");
+						if (xChange > 0) { //right
+							CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+						}
+						else {//left
+							CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+						} 
+						//temporary, just to get updates x and y overlaps of interest, to prevent the 8 9 glitcch detailed in notebook
+						CheckFutureSpritePosition2(CurrentVictim, TempStackable);
+						y = TempStackable->SpriteYCollision.size();
+						if (y > 0) {
+							if (yChange > 0) { // if moving down
+								printf("Sprite was moving down\n");
+								YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+								printf("Attempt 1: YC = %d\n", YC);
+								YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+								printf("Attempt 2: YC = %d\n", YC);
+								if (YC > 16 || YC < 0) {
+									YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+									printf("Attempt 3: YC = %d\n", YC);
+								}
+								if (YC == 16) {
+									YC = 0;
+								}
+								printf("3 TempOverlapY=%d\n", YC);
+								pause = true;
+
+							}
+							else { // if moving up
+								printf("Sprite was moving up\n");
+								YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+								printf("Attempt 1: YC = %d\n", YC);
+								YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+								printf("Attempt 2: YC = %d\n", YC);
+								if (YC > 16 || YC < 0) {
+									YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+									printf("Attempt 3: YC = %d\n", YC);
+								}
+								if (YC == 16) {
+									YC = 0;
+								}
+								//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+								printf("4 TempOverlapY=%d\n", YC);
+								pause = true;
+
+							}
+							if (yChange > 0) { //down
+								printf("Current y=%d\n", CurrentVictim->yPos);
+								printf("Down, = %d\n", CurrentVictim->yPos - YC);
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else {//up
+								printf("Current y=%d\n", CurrentVictim->yPos);
+								printf("Up, = %d\n", CurrentVictim->yPos + YC);
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+					}
+					else if (YC == 1) {
+						printf("Diag y, checkfuture 2\n");
+						if (yChange > 0) { //down
+							printf("Current y=%d\n", CurrentVictim->yPos);
+							printf("Down, = %d\n", CurrentVictim->yPos - YC);
+							CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+						}
+						else {//up
+							printf("Current y=%d\n", CurrentVictim->yPos);
+							printf("Up, = %d\n", CurrentVictim->yPos + YC);
+							CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+						}
+						CheckFutureSpritePosition2(CurrentVictim, TempStackable);
+						x = TempStackable->SpriteXCollision.size();
+						if (x > 0) {
+							if (xChange > 0) { // if moving right
+								printf("Sprite was moving Right\n");
+								if (TempStackable->SpriteXCollision[x - 1]->xPos > CurrentVictim->xPos) {
+									XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+									printf("Attempt 1: XC = %d\n", XC);
+								}
+								else {
+									XC = TempStackable->SpriteXCollision[x - 1]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+									printf("Attempt 2: XC = %d\n", XC);
+								}
+
+								if (XC > 16 || XC < 0) {
+									XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+									printf("Attempt 3: XC = %d\n", XC);
+								}
+
+								if (XC == 16) {
+									XC = 0;
+								}
+								printf("1 TempOverlapX=%d\n", XC);
+								pause = true;
+
+							}
+							else { // if moving left
+								printf("Sprite was moving Left\n");
+								XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+								printf("Attempt 1: XC = %d\n", XC);
+								XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+								printf("Attempt 2: XC = %d\n", XC);
+								if (XC > 16 || XC < 0) {
+									XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+									printf("Attempt 3: XC = %d\n", XC);
+								}
+								if (XC == 16) {
+									XC = 0;
+								}
+								printf("2 TempOverlapX=%d\n", XC);
+								pause = true;
+
+							}
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else {//left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+						}
+					}
+
+					else {
+						//should be able to handle things ^ up there where it's not quiet a full vec move too. for now lets just get one pixel at a time movement working.
+						printf("Are you sure that the vec is 1?\n"); 
+					}
+
+					if (YC > 15 || YC < 0) {
+						printf("We've got a problem sir!\n");
+						wait = true;
+					}
+					if (XC > 15 || XC < 0) {
+						printf("We've got a problem sir!\n");
+						wait = true;
+					}
+
+				}
+			}
+
+
+			else if (x > 0) {
+				int XC;
+				if (xChange > 0) { // if moving right
+					printf("Sprite was moving Right\n");
+
+					XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+					printf("5 TempOverlapX=%d\n", XC);
+					pause = true;
+
+				}
+				else { // if moving left
+					printf("Sprite was moving Left\n");
+
+					XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+					printf("6 TempOverlapX=%d\n", XC);
+					pause = true;
+
+				}
+				
+				if (xChange > 0) { //right
+					CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+				}
+				else {//left
+					CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+				}
+				
+				if (XC > 16 || XC < 0) {
+					printf("We've got a problem sir!\n");
+					wait = true;
+				}
+			} //don't have ot worry about diag considerations, where inline map could be a problem.
+
+
+			else if (y > 0) {
+				int YC;
+				if (yChange > 0) { // if moving down
+					printf("Sprite was moving down\n");
+
+					YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+					printf("7 TempOverlapY=%d\n", YC);
+					pause = true;
+
+				}
+				else { // if moving up
+					printf("Sprite was moving up\n");
+					YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+					printf("8 TempOverlapY=%d\n", YC);
+					pause = true;
+
+				}
+			 
+				if (yChange > 0) { //down
+					CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+				}
+				else {//up
+					CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+				}
+					 
+				if (YC > 16 || YC < 0) {
+					printf("We've got a problem sir!\n");
+					wait = true;
+				}
+			}
+
+			if (wait) {
+				SDL_Delay(600000);
+				wait = false;
+			}
+
+
+
+			/* 
 			if (x > 0) { // this is a check just to make sure the spriteXCollision is not empty
 				if (xChange > 0) { // if moving right
 					printf("Sprite was moving Right\n");
 					if (CurrentVictim->TargetTile->x + TILE_WIDTH <= TempStackable->SpriteXCollision[x - 1]->TargetTile->x) { // this is just making sure that the x position of Current Victim is more left than the TempStackable one
-						CurrentVictim->TeleportX(TempStackable->SpriteXCollision[x - 1]->xPos - TILE_WIDTH);
+						//CurrentVictim->TeleportX(TempStackable->SpriteXCollision[x - 1]->xPos - TILE_WIDTH);
+						int TempOverlapX = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+						printf("1 TempOverlapX=%d\n", TempOverlapX);
+						CurrentVictim->TeleportX(CurrentVictim->xPos + TempOverlapX);
+						pause = true;
+					}
+					else {
+						int TempOverlapX =   CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+						printf("2 TempOverlapX=%d\n", TempOverlapX);				
+						CurrentVictim->TeleportX(CurrentVictim->xPos + TempOverlapX);
+						pause = true;
 					}
 				}
+
+
 				else { // if moving left
 					printf("Sprite was moving Left\n");
 					if (CurrentVictim->TargetTile->x >= TempStackable->SpriteXCollision[x - 1]->TargetTile->x + TILE_WIDTH) { // this checks to make sure the x position of the victim is more right than the sprite it's collidiing with
-						CurrentVictim->TeleportX(TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH);
+						//CurrentVictim->TeleportX(TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH);
+						int TempOverlapX = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("3 TempOverlapX=%d\n", TempOverlapX);
+						CurrentVictim->TeleportX(CurrentVictim->xPos + TempOverlapX);
+						pause = true;
+					}
+					else {
+						int TempOverlapX = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("4 TempOverlapX=%d\n", TempOverlapX);				
+						CurrentVictim->TeleportX(CurrentVictim->xPos + TempOverlapX);
+						pause = true;
 					}
 				}
 			}
-
+			 
 			if (y > 0) { // this is a check just to make sure the spriteYCollision is not empty
 				if (yChange > 0) { // if moving down
 					printf("Sprite was moving down\n");
+					//The check below seems to be erroneous :/
 					if (CurrentVictim->TargetTile->y + TILE_HEIGHT <= TempStackable->SpriteYCollision[y - 1]->TargetTile->y) { // this is just making sure that the y position of Current Victim is above than the TempStackable one
-						CurrentVictim->TeleportY(TempStackable->SpriteYCollision[y - 1]->yPos - TILE_HEIGHT);
+						//CurrentVictim->TeleportY(TempStackable->SpriteYCollision[y - 1]->yPos - TILE_HEIGHT);
+						int TempOverlapY = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("5 TempOverlapY=%d\n", TempOverlapY);
+						CurrentVictim->TeleportY(CurrentVictim->yPos - TempOverlapY);
+						pause = true;
+					}
+					//inserted because above is eroneous
+					else {
+						int TempOverlapY = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("6 TempOverlapY=%d\n", TempOverlapY);
+						CurrentVictim->TeleportY(CurrentVictim->yPos - TempOverlapY);
+						pause = true;
 					}
 				}
+
+
+
 				else { // if moving up
 					printf("Sprite was moving up\n");
 					if (CurrentVictim->TargetTile->y >= TempStackable->SpriteYCollision[y - 1]->TargetTile->y + TILE_HEIGHT) { // this checks to make sure the y position of the victim is lower than the sprite it's collidiing with
-						CurrentVictim->TeleportY(TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT);
+						//CurrentVictim->TeleportY(TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT);
+						int TempOverlapY = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("7 TempOverlapY=%d\n", TempOverlapY);
+						CurrentVictim->TeleportY(CurrentVictim->yPos + TempOverlapY);
+						pause = true;
+					}
+					else {
+						int TempOverlapY = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+						printf("8 TempOverlapY=%d\n", TempOverlapY);
+						CurrentVictim->TeleportY(CurrentVictim->yPos + TempOverlapY);
+						pause = true;
 					}
 				}
 			}//flag it for collision 
+			*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			if (Debug) {
 				printf("Teleport Complete!\n");
 			}
