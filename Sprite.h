@@ -3688,6 +3688,12 @@ public:
 					//using that overlap, determine one of three cases
 					if (XC == 1 && YC == 1) { //base it off of the vVec of the object in question. If it just overlapped according to one movement or less, then we can be relatively certain that the mroe meaningful overlap should be taken.
 						//teleport both appropriately
+						//are you going directional, or diagonal.
+					
+						//if diagonal,  
+						
+
+						//if directional, undo just the direction you came from
 						if (xChange > 0) { //right
 							CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
 						}
