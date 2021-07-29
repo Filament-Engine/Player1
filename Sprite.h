@@ -954,7 +954,69 @@ public:
 
 
 
+	void Hopper(XYArr* Sorter) {
+		printf("The last two overlaps were not from the same item. We'll figure out which is greater\n"); //if neither is greater, lets go with x.
 
+		//get the x overlap
+		printf("Sprite was moving Left\n");
+		int x = Sorter ->SpriteXCollision.size();
+		int y = Sorter->SpriteYCollision.size();
+		int XC;
+		XC = Sorter->Victim->xPos + TILE_WIDTH - Sorter->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+		printf("Attempt 1: XC = %d + %d - %d = %d\n", Sorter->Victim->xPos, TILE_WIDTH, Sorter->SpriteXCollision[x - 1]->xPos, XC);
+		XC = Sorter->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - Sorter->Victim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+		printf("Attempt 2: XC = %d\n", XC);
+		if (XC > 16 || XC < 0) {
+			XC = Sorter->Victim->xPos + TILE_WIDTH - Sorter->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+			printf("Attempt 3: XC = %d\n", XC);
+		}
+		if (XC == 16) {
+			XC = 0;
+		}
+		int YC;
+		YC = Sorter->Victim->yPos + TILE_WIDTH - Sorter->SpriteYCollision[y - 1]->yPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+		printf("Attempt 1: YC = %d + %d - %d = %d\n", Sorter->Victim->yPos, TILE_HEIGHT, Sorter->SpriteYCollision[y - 1]->yPos, YC);
+		YC = Sorter->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - Sorter->Victim->yPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+		printf("Attempt 2: YC = %d\n", YC);
+		if (YC > 16 || YC < 0) {
+			YC = Sorter->Victim->yPos + TILE_HEIGHT - Sorter->SpriteYCollision[y - 1]->yPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+			printf("Attempt 3: YC = %d\n", YC);
+		}
+		if (YC == 16) {
+			YC = 0;
+		}
+
+		//if th eobject can't be found in the other list, theres an error. All objects in either list should also be found in the other.
+		 
+		if (XC < YC) {
+			//We'll look for YC's object, and emplace it on the back. 
+			//we can't use swap, instead we'll pop it's found loaction, and emplace it on the back. this won't screw up the order of the other elements that way, in the event it matters. 
+			printf("YC had larger overlap\n");
+			//Search through XC for the object of YC
+			for (int i = 0; i < x; i++) {
+				if (Sorter->SpriteXCollision[i] == Sorter->SpriteYCollision.back()) {
+					Sorter->SpriteXCollision.erase(Sorter->SpriteXCollision.begin()+i); //IF WE NEVER HAVE TO KNOW THE REST OF THESE COLLISIONS, DO NOT BOTHER ERASING. IT IS TIMELY FOR LARGE VECTORS
+					Sorter->SpriteXCollision.push_back(Sorter->SpriteYCollision.back());
+					break;
+				}
+			} 
+		}
+
+		else {
+			//We'll look for XC's object, and emplace it on the back. 
+			//we can't use swap, instead we'll pop it's found loaction, and emplace it on the back. this won't screw up the order of the other elements that way, in the event it matters. 
+			printf("XC had larger overlap\n");
+			//Search through YC for the object of XC
+			for (int i = 0; i < y; i++) {
+				if (Sorter->SpriteYCollision[i] == Sorter->SpriteXCollision.back()) {
+					Sorter->SpriteYCollision.erase(Sorter->SpriteYCollision.begin() + i); //IF WE NEVER HAVE TO KNOW THE REST OF THESE COLLISIONS, DO NOT BOTHER ERASING. IT IS TIMELY FOR LARGE VECTORS
+					Sorter->SpriteYCollision.push_back(Sorter->SpriteXCollision.back());
+					break;
+				}
+			}
+		}
+
+	}
 
 	void CheckFutureSpritePosition2(Sprite* ObjectSprite, XYArr* TempStackable) {
 		bool Debug =false;
@@ -3600,6 +3662,42 @@ public:
 							printf("Attempt 3: XC = %d\n", XC);
 						}
 		*/
+			 
+			if (CurrentVictim->OrderCreation == 1) {
+				printf("SpriteXC = {");
+				for (int d = 0; d < x; d++) {
+					printf("Object%d, ", TempStackable->SpriteXCollision[d]->OrderCreation + 1);
+				}
+				printf("}\n");
+				printf("SpriteYC = {");
+				for (int d = 0; d < y; d++) {
+					printf("Object%d, ", TempStackable->SpriteYCollision[d]->OrderCreation + 1);
+				}
+				printf("}\n");
+			}
+			if (x > 0 && y > 0) {
+				if (TempStackable->SpriteXCollision.back() != TempStackable->SpriteYCollision.back()) {
+					printf("The ends of these two  vectors are not the same!\n Attempt to grab the one with the highest collision on a given axis, then make them both match for appropriate undo movements!\n");
+					printf("Hopper init\n");
+					Hopper(TempStackable);
+					printf("Hopper end\n");
+					if (CurrentVictim->OrderCreation == 1) {
+						printf("SpriteXC = {");
+						for (int d = 0; d < x; d++) {
+							printf("Object%d, ", TempStackable->SpriteXCollision[d]->OrderCreation + 1);
+						}
+						printf("}\n");
+						printf("SpriteYC = {");
+						for (int d = 0; d < y; d++) {
+							printf("Object%d, ", TempStackable->SpriteYCollision[d]->OrderCreation + 1);
+						}
+						printf("}\n");
+					}
+				}
+			}
+
+
+
 
 			if (x > 0 && y > 0) { 
 				if (xChange != 0 && yChange != 0) {
@@ -3614,7 +3712,7 @@ public:
 							printf("Attempt 1: XC = %d\n", XC);
 						}
 						else {
-							XC = TempStackable->SpriteXCollision[x - 1]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+							XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
 							printf("Attempt 2: XC = %d\n", XC);
 						}
 
@@ -3633,7 +3731,7 @@ public:
 					else { // if moving left
 						printf("Sprite was moving Left\n");
 						XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-						printf("Attempt 1: XC = %d\n", XC);
+						printf("Attempt 1: XC = %d + %d - %d = %d\n", CurrentVictim->xPos, TILE_WIDTH, TempStackable->SpriteXCollision[x-1]->xPos, XC);
 						XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
 						printf("Attempt 2: XC = %d\n", XC);
 						if (XC > 16 || XC < 0) {
@@ -3691,7 +3789,35 @@ public:
 						//are you going directional, or diagonal.
 					
 						//if diagonal,  
-						
+						if (TempStackable->SpriteXCollision[x - 1] == TempStackable->SpriteYCollision[y - 1]) { //the overlap is the same object, same distance
+							//thus we need to figure out which to back out of, and which to move forward thorugh.
+							
+							//figure out the relative position of the object in question
+								//first we will find the 'travel path', then we will check each of the three possible locations (using the 'old' position 
+								//finally, using find to go thorugh the vectors of the map, and if we do not find it, it will make a boolean false.
+							//where the object collided with resides.
+							bool up = false;
+							bool down = false;
+							bool left = false;
+							bool right = false;
+							int oldx = CurrentVictim->xPos - CurrentVictim->xVec;
+							int oldy = CurrentVictim->yPos - CurrentVictim->yVec;
+							int TempY2Math = oldy +16 - TILE_HEIGHT * ((oldy +16) / TILE_HEIGHT); //A = C - B * (C/B) 
+							int TempX2Math = oldx+16 - TILE_WIDTH * ((oldx+16) / TILE_WIDTH);
+							if (TempX2Math == 0) {
+
+							}
+							if (TempY2Math == 0) {
+
+							}
+							if (CurrentVictim->xVec > 0 && CurrentVictim->yVec > 0) { //Right, Down
+								
+								
+
+
+							}
+
+						}
 
 						//if directional, undo just the direction you came from
 						if (xChange > 0) { //right

@@ -231,7 +231,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//RANDOM SPRITES END
 				 */
 
-				
+				/* 
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				Object3 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -243,11 +243,11 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 3, Object3->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object3); //NEW 
 				//TEST TELEPORT OBJECTS END
-
+				*/
 				//IF objects do not appear on screen, they have not been mapped.
 				
 
-				/* 
+				
 				//RANDOM SPRITES BEGIN
 				//kept Object1 because it's global, don't want to mess anything up.
 				Object1 = new Sprite(16, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -281,7 +281,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				}
 				//RANDOM SPRITES END
-				*/
+				
 
 
 
