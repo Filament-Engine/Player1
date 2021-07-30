@@ -953,6 +953,109 @@ public:
 	
 
 
+	void FigureOverlap(Sprite* CurrentVictim, Sprite* Xptr[2], Sprite* Yptr[2], int OverlapX[2], int OverlapY[2], bool & wait) {
+		//will have to test that the arrays are edited back in the MoveAllSprites 
+		//NOTE, we should change each of these to resemble the logic in xChange>0
+		int XC;
+		int YC;
+		int xChange = CurrentVictim->xVec;
+		int yChange = CurrentVictim->yVec;
+		//calculate overlap according to direction
+		if (xChange > 0) { // if moving right
+			printf("Sprite was moving Right\n");
+
+			if (Xptr[0]->xPos > CurrentVictim->xPos) {
+				XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+				printf("Attempt 1: XC = %d\n", XC);
+			}
+			else {
+				XC = Xptr[0]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+				printf("Attempt 2: XC = %d\n", XC);
+			}
+
+			if (XC > 16 || XC < 0) {
+				XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+				printf("Attempt 3: XC = %d\n", XC);
+			}
+
+			if (XC == 16) {
+				XC = 0;
+			}
+			printf("1 TempOverlapX=%d\n", XC);
+			pause = true;
+
+		}
+		else { // if moving left
+			printf("Sprite was moving Left\n");
+			XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+			printf("Attempt 1: XC = %d\n", XC);
+			XC = Xptr[0]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+			printf("Attempt 2: XC = %d\n", XC);
+			if (XC > 16 || XC < 0) {
+				XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+				printf("Attempt 3: XC = %d\n", XC);
+			}
+			if (XC == 16) {
+				XC = 0;
+			}
+			printf("2 TempOverlapX=%d\n", XC);
+			pause = true;
+
+		}
+		if (yChange > 0) { // if moving down
+			printf("Sprite was moving down\n");
+			YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+			printf("Attempt 1: YC = %d\n", YC);
+			YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+			printf("Attempt 2: YC = %d\n", YC);
+			if (YC > 16 || YC < 0) {
+				YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+				printf("Attempt 3: YC = %d\n", YC);
+			}
+			if (YC == 16) {
+				YC = 0;
+			}
+			printf("3 TempOverlapY=%d\n", YC);
+			pause = true;
+
+		}
+		else { // if moving up
+			printf("Sprite was moving up\n");
+			YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+			printf("Attempt 1: YC = %d\n", YC);
+			YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+			printf("Attempt 2: YC = %d\n", YC);
+			if (YC > 16 || YC < 0) {
+				YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+				printf("Attempt 3: YC = %d\n", YC);
+			}
+			if (YC == 16) {
+				YC = 0;
+			}
+			//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+			printf("4 TempOverlapY=%d\n", YC);
+			pause = true;
+
+		}
+
+		OverlapX[0] = XC;
+		OverlapY[1] = YC;
+		//make sure each overlap is appropriate....
+		if (YC > 15 || YC < 0) {
+			printf("We've got a problem sir!\n");
+			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
+			wait = true;
+		}
+		if (XC > 15 || XC < 0) {
+			printf("We've got a problem sir!\n"); 
+			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]); 
+			wait = true;
+		}
+
+
+	}
+
+
 
 	void Hopper(XYArr* Sorter) {
 		printf("The last two overlaps were not from the same item. We'll figure out which is greater\n"); //if neither is greater, lets go with x.
@@ -3685,6 +3788,7 @@ public:
 
 			if (x > 0 && y > 0) {
 				if (xChange != 0 && yChange != 0) {
+					/* 
 					int XC;
 					int YC;
 					//calculate overlap according to direction
@@ -3764,7 +3868,7 @@ public:
 						pause = true;
 
 					}
-
+					*/
 					//hopper called before - so that we have the same object. 
 						//this may cause errors, consider theres a 1 by 1 overlap with an object above you, to the right, and one to your left. obviously you want to stop in that case, but if we just loook at one, it'll have us keep going left for hte sliding. in that case, we should adjust to be at the proper location, pop_back, and then adjust again on the other axis.
 
@@ -3773,635 +3877,754 @@ public:
 
 
 
-						//if diagonal,  
-					if (TempStackable->SpriteXCollision[x - 1] == TempStackable->SpriteYCollision[y - 1]) { //the overlap is the same object, same distance
-						//thus we need to figure out which to back out of, and which to move forward thorugh.
+					//if diagonal,  AND there are things that we hit?
 
 						//figure out the relative position of the object in question
 							//first we will find the 'travel path', then we will check each of the three possible locations (using the 'old' position 
 							//finally, using find to go thorugh the vectors of the map, and if we do not find it, it will make a boolean false.
 						//where the object collided with resides.
-						bool up = false;
-						bool down = false;
-						bool left = false;
-						bool right = false;
-						int oldx = CurrentVictim->xPos - CurrentVictim->xVec;
-						int oldy = CurrentVictim->yPos - CurrentVictim->yVec;
-						int TempY2MathOld = oldy + 16 - TILE_HEIGHT * ((oldy + 16) / TILE_HEIGHT); //A = C - B * (C/B) 
-						int TempX2MathOld = oldx + 16 - TILE_WIDTH * ((oldx + 16) / TILE_WIDTH);
-						int TempX2Math = CurrentVictim->xPos - TILE_WIDTH * (CurrentVictim->xPos / TILE_WIDTH);
-						int TempY2Math = CurrentVictim->yPos - TILE_HEIGHT * (CurrentVictim->yPos / TILE_HEIGHT);
-						int x1 = CurrentVictim->xPos;
-						int x2 = CurrentVictim->xPos + TILE_WIDTH;
-						int y1 = CurrentVictim->yPos;
-						int y2 = CurrentVictim->yPos + TILE_HEIGHT;
-						if (TempX2Math == 0) {
-							x2 = x1;
+					bool up = false;
+					bool down = false;
+					bool left = false;
+					bool right = false;
+					int oldx = CurrentVictim->xPos - CurrentVictim->xVec;
+					int oldy = CurrentVictim->yPos - CurrentVictim->yVec;
+					int TempY2MathOld = oldy + 16 - TILE_HEIGHT * ((oldy + 16) / TILE_HEIGHT); //A = C - B * (C/B) 
+					int TempX2MathOld = oldx + 16 - TILE_WIDTH * ((oldx + 16) / TILE_WIDTH);
+					int TempX2Math = CurrentVictim->xPos - TILE_WIDTH * (CurrentVictim->xPos / TILE_WIDTH);
+					int TempY2Math = CurrentVictim->yPos - TILE_HEIGHT * (CurrentVictim->yPos / TILE_HEIGHT);
+					int x1 = CurrentVictim->xPos;
+					int x2 = CurrentVictim->xPos + TILE_WIDTH;
+					int y1 = CurrentVictim->yPos;
+					int y2 = CurrentVictim->yPos + TILE_HEIGHT;
+					if (TempX2Math == 0) {
+						x2 = x1;
+					}
+					if (TempY2Math == 0) {
+						y2 = y1;
+					}
+					x1 = x1 / TILE_WIDTH;
+					x2 = x2 / TILE_WIDTH;
+					y1 = y1 / TILE_HEIGHT;
+					y2 = y2 / TILE_HEIGHT;
+
+
+					//Okay, so thinking this through, we want to calculate our overlap independently of what is doing above. 
+					//CHANGE - make hte loops work if x2=x1, but only run the necessary ones.
+					//INSERT - insert temporary x and y overlaps to set the arrays equal to
+					//INSERT - at the end of all the corner fangaling, figure out the proper teleport, if you can compare them.
+					//INSERT - teleport the two 'edge' cases, then figure out the overlap of the diagonal. 
+
+
+					int UL[2] = { -1000, -1000 }; //holds, for this corner, the upper left quadrent, the first index in both {xc, yc}, of which the first item of overlap appears (whether that be in the x or y)?
+					int LL[2] = { -1000, -1000 };
+					int UR[2] = { -1000, -1000 };
+					int LR[2] = { -1000, -1000 };
+
+					Sprite* ULptr[2] = { nullptr, nullptr };
+					Sprite* LLptr[2] = { nullptr,nullptr };
+					Sprite* URptr[2] = { nullptr,nullptr };
+					Sprite* LRptr[2] = { nullptr,nullptr };
+
+
+					/*
+					if (x1 == x2 && y1 == y2) {
+							//just the diagonal
 						}
-						if (TempY2Math == 0) {
-							y2 = y1;
+						else if (x1 == x2) {
+							//just test the y axis edge
 						}
-						x1 = x1 / TILE_WIDTH;
-						x2 = x2 / TILE_WIDTH;
-						y1 = y1 / TILE_HEIGHT;
-						y2 = y2 / TILE_HEIGHT;
-
-
-						//Okay, so thinking this through, we want to calculate our overlap independently of what is doing above. 
-						//CHANGE - make hte loops work if x2=x1, but only run the necessary ones.
-						//INSERT - insert temporary x and y overlaps to set the arrays equal to
-						//INSERT - at the end of all the corner fangaling, figure out the proper teleport, if you can compare them.
-						//INSERT - teleport the two 'edge' cases, then figure out the overlap of the diagonal. 
-
-
-						int UL[2] = {-1000, -1000}; //holds, for this corner, the upper left quadrent, the first index in both {xc, yc}, of which the first item of overlap appears (whether that be in the x or y)?
-						int LL[2] = { -1000, -1000 };
-						int UR[2] = { -1000, -1000 };
-						int LR[2] = { -1000, -1000 };
-
-						Sprite* ULptr[2] = { nullptr, nullptr};
-						Sprite* LLptr[2] = { nullptr,nullptr };
-						Sprite* URptr[2] = { nullptr,nullptr };
-						Sprite* LRptr[2] = { nullptr,nullptr };
-
-
-						/*
-						if (x1 == x2 && y1 == y2) {
-								//just the diagonal
-							}
-							else if (x1 == x2) {
-								//just test the y axis edge
-							}
-							else if (y1 == y2) {
-								//just test the x axis edge
-							}
-							else {
-								//test all three
-							}
-						*/
-
-						if (CurrentVictim->xVec < 0 && CurrentVictim->yVec < 0) { //left up
-
-							if (x1 == x2 && y1 == y2) {
-								//just the diagonal
-								
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (x1 == x2) {
-								//just test the y axis edge
-								
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-
-								//Serch for first xc taht appears, only hte X overlap will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-
-							}
-							else if (y1 == y2) {
-								//just test the x axis edge
-								
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else {
-								//test all three
-								
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											ULptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											ULptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											URptr[1] = TempStackable->SpriteYCollision[j];
-											URptr[0] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-								
-								//Serch for first xc taht appears, only hte X overlap will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											LLptr[0] = TempStackable->SpriteXCollision[j];
-											LLptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-
-							}
-
+						else if (y1 == y2) {
+							//just test the x axis edge
 						}
-						else if (CurrentVictim->xVec > 0 && CurrentVictim->yVec > 0) { //right, down 
-							 
-							if (x1 == x2 && y1 == y2) {
-								//just the diagonal
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (x1 == x2) {
-								//just test the y axis edge
-							
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-								//Serch for first xc taht appears, only hte X overlap will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (y1 == y2) {
-								//just test the x axis edge
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else {
-								//test all three
-
-								//search both x and y for the first that appears.  both overlap values will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											LRptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											LRptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											LLptr[1] = TempStackable->SpriteYCollision[j];
-											LLptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-								//Serch for first xc taht appears, only hte X overlap will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											URptr[0] = TempStackable->SpriteXCollision[j];
-											URptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-
-							}
-
+						else {
+							//test all three
 						}
-						else if (CurrentVictim->xVec < 0 && CurrentVictim->yVec >0) { //left down
+					*/
 
-							if (x1 == x2 && y1 == y2) {
-								//just the diagonal
-							
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (x1 == x2) {
-								//just test the y axis edge
-							
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-
-								//Serch for first xc taht appears, only hte X overlap will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (y1 == y2) {
-								//just test the x axis edge
-							
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else {
-								//test all three
-							
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											LLptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x1].size(); i++) {
-										if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											LLptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-								//Serch for first xc taht appears, only hte X overlap will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											ULptr[0] = TempStackable->SpriteXCollision[j];
-											ULptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											LRptr[1] = TempStackable->SpriteYCollision[j];
-											LRptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-							}
-
-						}
-						else if (CurrentVictim->xVec > 0 && CurrentVictim->yVec < 0) { //right up 
-
-							if (x1 == x2 && y1 == y2) {
-								//just the diagonal
-							
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (x1 == x2) {
-								//just test the y axis edge
-								
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-
-								//Serch for first xc taht appears, only hte X overlap will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else if (y1 == y2) {
-								//just test the x axis edge
-	
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-										}
-									}
-								}
-							}
-							else {
-								//test all three
-
-								//search both x and y for the first that appears.  both overlap values will be important. 
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											URptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x2].size(); i++) {
-										if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											URptr[1] = TempStackable->SpriteYCollision[j];
-											break;
-										}
-									}
-								}
-
-								//search for the first yc that appears, only the Y overlap will be important
-								for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-									for (int i = 0; i < LM[y1][x1].size(); i++) {
-										if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
-											//calcualte the overlap 
-											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-											ULptr[1] = TempStackable->SpriteYCollision[j];
-											ULptr[0] = TempStackable->SpriteXCollision[j];
-											break;
-										}
-									}
-								}
-
-								//Serch for first xc taht appears, only hte X overlap will be important.
-								for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-									for (int i = 0; i < LM[y2][x2].size(); i++) {
-										if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
-											//calcualte the overlap 
-											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
-											LLptr[0] = TempStackable->SpriteXCollision[j];
-											LLptr[1] = TempStackable->SpriteYCollision[j];
-										}
-									}
-								}
-							}
-
-						}
-						SDL_Delay(5000);
+					//what direction are you heading?
+					if (CurrentVictim->xVec < 0) {
+						left = true;
+					}
+					else {
+						right = true;
+					}
+					if (CurrentVictim->yVec < 0) {
+						up = true;
+					}
+					else {
+						down = true;
 					}
 
+					//Great, now what sprites are you potentially hitting? (Relys on XYArr right now)
+					if (left && up) { //left up
 
+						if (x1 == x2 && y1 == y2) {
+							//just the diagonal
 
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else if (x1 == x2) {
+							//just test the y axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//Serch for first xc taht appears, only hte X overlap will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+						}
+						else if (y1 == y2) {
+							//just test the x axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										URptr[0] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else {
+							//test all three
+
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										URptr[0] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//Serch for first xc taht appears, only hte X overlap will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+						}
+
+					}
+					else if (right && down) { //right, down 
+
+						if (x1 == x2 && y1 == y2) {
+							//just the diagonal
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LRptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LRptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else if (x1 == x2) {
+							//just test the y axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LRptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LRptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+							//Serch for first xc taht appears, only hte X overlap will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										URptr[0] = TempStackable->SpriteXCollision[j];
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else if (y1 == y2) {
+							//just test the x axis edge
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LRptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LRptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else {
+							//test all three
+
+							//search both x and y for the first that appears.  both overlap values will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LRptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LRptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							//Serch for first xc taht appears, only hte X overlap will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										URptr[0] = TempStackable->SpriteXCollision[j];
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+						}
+
+					}
+					else if (left && down) { //left down
+
+						if (x1 == x2 && y1 == y2) {
+							//just the diagonal
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else if (x1 == x2) {
+							//just test the y axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//Serch for first xc taht appears, only hte X overlap will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else if (y1 == y2) {
+							//just test the x axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LRptr[1] = TempStackable->SpriteYCollision[j];
+										LRptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else {
+							//test all three
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x1].size(); i++) {
+									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+							//Serch for first xc taht appears, only hte X overlap will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										LRptr[1] = TempStackable->SpriteYCollision[j];
+										LRptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+						}
+
+					}
+					else if (right && up) { //right up 
+
+						if (x1 == x2 && y1 == y2) {
+							//just the diagonal
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										URptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else if (x1 == x2) {
+							//just test the y axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										URptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//Serch for first xc taht appears, only hte X overlap will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+									}
+								}
+							}
+						}
+						else if (y1 == y2) {
+							//just test the x axis edge
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										URptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+						}
+						else {
+							//test all three
+
+							//search both x and y for the first that appears.  both overlap values will be important. 
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										URptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x2].size(); i++) {
+									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										URptr[1] = TempStackable->SpriteYCollision[j];
+										break;
+									}
+								}
+							}
+
+							//search for the first yc that appears, only the Y overlap will be important
+							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
+								for (int i = 0; i < LM[y1][x1].size(); i++) {
+									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
+										//calcualte the overlap 
+										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										ULptr[1] = TempStackable->SpriteYCollision[j];
+										ULptr[0] = TempStackable->SpriteXCollision[j];
+										break;
+									}
+								}
+							}
+
+							//Serch for first xc taht appears, only hte X overlap will be important.
+							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
+								for (int i = 0; i < LM[y2][x2].size(); i++) {
+									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
+										//calcualte the overlap 
+										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										LLptr[0] = TempStackable->SpriteXCollision[j];
+										LLptr[1] = TempStackable->SpriteYCollision[j];
+									}
+								}
+							}
+						}
+
+					}
+					SDL_Delay(5000);
+
+					//Awesome, now figure out the overlap on the two directional sprites. (so not the sprite hit by your directions corner, but the edges)
+					if (left && up) {
+						//figure out overlap on x and y
+						//LL = x, UR = y
+						FigureOverlap(CurrentVictim, LLptr, URptr, LL, UR, wait);
+					}
+					else if (right && down) {
+						//figure out overlap on x and y
+						//UR = x, LL = y
+						FigureOverlap(CurrentVictim, URptr, LLptr, UR, LL, wait);
+					}
+					else if (left && down) {
+						//figure out overlap on x and y
+						//UL = x, LR = y
+						FigureOverlap(CurrentVictim, ULptr, LRptr, UL, LR, wait);
+					}
+					else if (right && up) {
+						//figure out overlap on x and y
+						//LR = x, UL = y
+						FigureOverlap(CurrentVictim, LRptr, ULptr, LR, UL, wait);
+					}
+
+					//Great, now lets see if we got them edited back in hte original array.
+					printf("UL = {%d, %d}\n", UL[0], UL[1]);
+					printf("UR = {%d, %d}\n", UR[0], UR[1]);
+					printf("LL = {%d, %d}\n", LL[0], LL[1]);
+					printf("LR = {%d, %d}\n", LR[0], LR[1]);
+					SDL_Delay(500);
+
+					int XC;
+					int YC;
+					if (left && up) {
+						XC = LL[0];
+						YC = UR[1];
+					}
+					else if (right && down) {
+						XC = UR[0];
+						YC = LL[1];
+					}
+					else if (left && down) {
+						XC = UL[0];
+						YC = LR[1];
+					}
+					else if (right && up) {
+						XC = LR[0];
+						YC = UL[1];
+					}
+
+					//Now I'd like you to teleport based solely on the two directionals we got. 
 
 					//if directional, undo just the direction you came from
 					if (xChange > 0) { //right
@@ -4417,145 +4640,30 @@ public:
 						CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
 					}
 
-					/*
-					else if (XC == 1) { //if it is not less, or is the vec, then we should move accordingly
-						printf("Diag x, checkfuture 2\n");
-						if (xChange > 0) { //right
-							CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
-						}
-						else {//left
-							CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
-						}
-						//temporary, just to get updates x and y overlaps of interest, to prevent the 8 9 glitcch detailed in notebook
-						CheckFutureSpritePosition2(CurrentVictim, TempStackable);
-						y = TempStackable->SpriteYCollision.size();
-						if (y > 0) {
-							if (yChange > 0) { // if moving down
-								printf("Sprite was moving down\n");
-								YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-								printf("Attempt 1: YC = %d\n", YC);
-								YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-								printf("Attempt 2: YC = %d\n", YC);
-								if (YC > 16 || YC < 0) {
-									YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-									printf("Attempt 3: YC = %d\n", YC);
-								}
-								if (YC == 16) {
-									YC = 0;
-								}
-								printf("3 TempOverlapY=%d\n", YC);
-								pause = true;
 
-							}
-							else { // if moving up
-								printf("Sprite was moving up\n");
-								YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-								printf("Attempt 1: YC = %d\n", YC);
-								YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-								printf("Attempt 2: YC = %d\n", YC);
-								if (YC > 16 || YC < 0) {
-									YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-									printf("Attempt 3: YC = %d\n", YC);
-								}
-								if (YC == 16) {
-									YC = 0;
-								}
-								//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-								printf("4 TempOverlapY=%d\n", YC);
-								pause = true;
+					//NOW calculate if theres any overlap on the diagonal
 
-							}
-							if (yChange > 0) { //down
-								printf("Current y=%d\n", CurrentVictim->yPos);
-								printf("Down, = %d\n", CurrentVictim->yPos - YC);
-								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
-							}
-							else {//up
-								printf("Current y=%d\n", CurrentVictim->yPos);
-								printf("Up, = %d\n", CurrentVictim->yPos + YC);
-								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
-							}
-						}
-					}
-					else if (YC == 1) {
-						printf("Diag y, checkfuture 2\n");
-						if (yChange > 0) { //down
-							printf("Current y=%d\n", CurrentVictim->yPos);
-							printf("Down, = %d\n", CurrentVictim->yPos - YC);
-							CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
-						}
-						else {//up
-							printf("Current y=%d\n", CurrentVictim->yPos);
-							printf("Up, = %d\n", CurrentVictim->yPos + YC);
-							CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
-						}
-						CheckFutureSpritePosition2(CurrentVictim, TempStackable);
-						x = TempStackable->SpriteXCollision.size();
-						if (x > 0) {
-							if (xChange > 0) { // if moving right
-								printf("Sprite was moving Right\n");
-								if (TempStackable->SpriteXCollision[x - 1]->xPos > CurrentVictim->xPos) {
-									XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-									printf("Attempt 1: XC = %d\n", XC);
-								}
-								else {
-									XC = TempStackable->SpriteXCollision[x - 1]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-									printf("Attempt 2: XC = %d\n", XC);
-								}
+					//If even, teleport equal to both axis
+					//If X>Y, teleport only on the X axis
+					//if Y>X, teleport only on the Y axis
 
-								if (XC > 16 || XC < 0) {
-									XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-									printf("Attempt 3: XC = %d\n", XC);
-								}
 
-								if (XC == 16) {
-									XC = 0;
-								}
-								printf("1 TempOverlapX=%d\n", XC);
-								pause = true;
 
-							}
-							else { // if moving left
-								printf("Sprite was moving Left\n");
-								XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-								printf("Attempt 1: XC = %d\n", XC);
-								XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-								printf("Attempt 2: XC = %d\n", XC);
-								if (XC > 16 || XC < 0) {
-									XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-									printf("Attempt 3: XC = %d\n", XC);
-								}
-								if (XC == 16) {
-									XC = 0;
-								}
-								printf("2 TempOverlapX=%d\n", XC);
-								pause = true;
 
-							}
-							if (xChange > 0) { //right
-								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
-							}
-							else {//left
-								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
-							}
-						}
-					}
 
-					else {
-						//should be able to handle things ^ up there where it's not quiet a full vec move too. for now lets just get one pixel at a time movement working.
-						printf("Are you sure that the vec is 1?\n");
-					}
-					*/
-					if (YC > 15 || YC < 0) {
-						printf("We've got a problem sir!\n");
-						wait = true;
-					}
-					if (XC > 15 || XC < 0) {
-						printf("We've got a problem sir!\n");
-						wait = true;
-					}
+
 
 				}
+
+
+
+
+				 
+
+
+				 
+
+
 			}
 
 
