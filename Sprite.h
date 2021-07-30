@@ -958,101 +958,121 @@ public:
 		//NOTE, we should change each of these to resemble the logic in xChange>0
 
 		printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
-		printf("Object%d, Object%d\n", Xptr[0]->OrderCreation + 1, Yptr[1]->OrderCreation + 1);
+		
+		if (Xptr[0] != nullptr && Yptr[1] != nullptr) {
+			printf("Object%d, Object%d\n", Xptr[0]->OrderCreation + 1, Yptr[1]->OrderCreation + 1);
+		}
+		else if (Xptr[0]!=nullptr) {
+			printf("X = Object%d\n", Xptr[0]->OrderCreation + 1);
+		}
+		else if (Yptr[1] != nullptr) {
+			printf("Y = Object%d\n", Yptr[1]->OrderCreation + 1);
+		}
 
 		int XC;
 		int YC;
 		int xChange = CurrentVictim->xVec;
 		int yChange = CurrentVictim->yVec;
 		//calculate overlap according to direction
-		if (xChange > 0) { // if moving right
-			printf("Sprite was moving Right\n");
 
-			if (Xptr[0]->xPos > CurrentVictim->xPos) {
+		if (Xptr[0] != nullptr) {
+			if (xChange > 0) { // if moving right
+				printf("Sprite was moving Right\n");
+
+				if (Xptr[0]->xPos > CurrentVictim->xPos) {
+					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+					printf("Attempt 1: XC = %d\n", XC);
+				}
+				else {
+					XC = Xptr[0]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+					printf("Attempt 2: XC = %d\n", XC);
+				}
+
+				if (XC > 16 || XC < 0) {
+					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+					printf("Attempt 3: XC = %d\n", XC);
+				}
+
+				if (XC == 16) {
+					XC = 0;
+				}
+				printf("1 TempOverlapX=%d\n", XC);
+				pause = true;
+
+			}
+			else { // if moving left
+				printf("Sprite was moving Left\n");
 				XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
 				printf("Attempt 1: XC = %d\n", XC);
-			}
-			else {
-				XC = Xptr[0]->xPos - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+				XC = Xptr[0]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
 				printf("Attempt 2: XC = %d\n", XC);
-			}
+				if (XC > 16 || XC < 0) {
+					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
+					printf("Attempt 3: XC = %d\n", XC);
+				}
+				if (XC == 16) {
+					XC = 0;
+				}
+				printf("2 TempOverlapX=%d\n", XC);
+				pause = true;
 
-			if (XC > 16 || XC < 0) {
-				XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-				printf("Attempt 3: XC = %d\n", XC);
 			}
-
-			if (XC == 16) {
-				XC = 0;
-			}
-			printf("1 TempOverlapX=%d\n", XC);
-			pause = true;
-
 		}
-		else { // if moving left
-			printf("Sprite was moving Left\n");
-			XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-			printf("Attempt 1: XC = %d\n", XC);
-			XC = Xptr[0]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-			printf("Attempt 2: XC = %d\n", XC);
-			if (XC > 16 || XC < 0) {
-				XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-				printf("Attempt 3: XC = %d\n", XC);
-			}
-			if (XC == 16) {
-				XC = 0;
-			}
-			printf("2 TempOverlapX=%d\n", XC);
-			pause = true;
-
+		else {
+			XC = 0;
 		}
-		if (yChange > 0) { // if moving down
-			printf("Sprite was moving down\n");
-			YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-			printf("Attempt 1: YC = %d\n", YC);
-			YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-			printf("Attempt 2: YC = %d\n", YC);
-			if (YC > 16 || YC < 0) {
+		if (Yptr[1] != nullptr) {
+			if (yChange > 0) { // if moving down
+				printf("Sprite was moving down\n");
 				YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("Attempt 3: YC = %d\n", YC);
-			}
-			if (YC == 16) {
-				YC = 0;
-			}
-			printf("3 TempOverlapY=%d\n", YC);
-			pause = true;
+				printf("Attempt 1: YC = %d\n", YC);
+				YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+				printf("Attempt 2: YC = %d\n", YC);
+				if (YC > 16 || YC < 0) {
+					YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+					printf("Attempt 3: YC = %d\n", YC);
+				}
+				if (YC == 16) {
+					YC = 0;
+				}
+				printf("3 TempOverlapY=%d\n", YC);
+				pause = true;
 
-		}
-		else { // if moving up
-			printf("Sprite was moving up\n");
-			YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-			printf("Attempt 1: YC = %d\n", YC);
-			YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-			printf("Attempt 2: YC = %d\n", YC);
-			if (YC > 16 || YC < 0) {
+			}
+			else { // if moving up
+				printf("Sprite was moving up\n");
 				YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("Attempt 3: YC = %d\n", YC);
-			}
-			if (YC == 16) {
-				YC = 0;
-			}
-			//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-			printf("4 TempOverlapY=%d\n", YC);
-			pause = true;
+				printf("Attempt 1: YC = %d\n", YC);
+				YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+				printf("Attempt 2: YC = %d\n", YC);
+				if (YC > 16 || YC < 0) {
+					YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+					printf("Attempt 3: YC = %d\n", YC);
+				}
+				if (YC == 16) {
+					YC = 0;
+				}
+				//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
+				printf("4 TempOverlapY=%d\n", YC);
+				pause = true;
 
+			}
 		}
+		else {
+			YC = 0;
+		}
+
+		printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
 
 		OverlapX[0] = XC;
 		OverlapY[1] = YC;
 		//make sure each overlap is appropriate....
 		if (YC > 15 || YC < 0) {
-			printf("We've got a problem sir!\n");
-			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
+			printf("We've got a problem sir!\n"); 
 			wait = true;
 		}
 		if (XC > 15 || XC < 0) {
-			printf("We've got a problem sir!\n"); 
-			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]); 
+			printf("We've got a problem sir!\n");  
 			wait = true;
 		}
 
