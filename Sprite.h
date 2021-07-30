@@ -992,10 +992,11 @@ public:
 					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
 					printf("Attempt 3: XC = %d\n", XC);
 				}
-
+				/* 
 				if (XC == 16) {
 					XC = 0;
 				}
+				*/
 				printf("1 TempOverlapX=%d\n", XC);
 				pause = true;
 
@@ -1010,9 +1011,11 @@ public:
 					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
 					printf("Attempt 3: XC = %d\n", XC);
 				}
+				/* 
 				if (XC == 16) {
 					XC = 0;
 				}
+				*/
 				printf("2 TempOverlapX=%d\n", XC);
 				pause = true;
 
@@ -1032,9 +1035,11 @@ public:
 					YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
 					printf("Attempt 3: YC = %d\n", YC);
 				}
+				/* 
 				if (YC == 16) {
 					YC = 0;
 				}
+				*/
 				printf("3 TempOverlapY=%d\n", YC);
 				pause = true;
 
@@ -1049,9 +1054,11 @@ public:
 					YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
 					printf("Attempt 3: YC = %d\n", YC);
 				}
+				/* 
 				if (YC == 16) {
 					YC = 0;
 				}
+				*/
 				//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
 				printf("4 TempOverlapY=%d\n", YC);
 				pause = true;
@@ -1067,11 +1074,11 @@ public:
 		OverlapX[0] = XC;
 		OverlapY[1] = YC;
 		//make sure each overlap is appropriate....
-		if (YC > 15 || YC < 0) {
+		if (YC > 16 || YC < 0) {
 			printf("We've got a problem sir!\n"); 
 			wait = true;
 		}
-		if (XC > 15 || XC < 0) {
+		if (XC > 16 || XC < 0) {
 			printf("We've got a problem sir!\n");  
 			wait = true;
 		}
@@ -4959,6 +4966,7 @@ public:
 						FigureOverlap(CurrentVictim, LRptr, LRptr, LR, LR, wait);
 						printf("Diagonal, R-D, %d, %d\n", LR[0], LR[1]);
 						if (LR[0] < LR[1]) { //X>Y
+							printf("X<Y\n");
 							XC = LR[0];
 							if (xChange > 0) { //right
 								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
@@ -4968,6 +4976,7 @@ public:
 							}
 						}
 						else if (LR[1] < LR[0]) { //Y>X
+							printf("Y<X\n");
 							YC = LR[1];
 							if (yChange > 0) { //down
 								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
@@ -4977,6 +4986,7 @@ public:
 							}
 						}
 						else { //Y=X
+							printf("Y=X\n");
 							XC = LR[0];
 							YC = LR[1];
 							if (xChange > 0) { //right
@@ -5075,7 +5085,7 @@ public:
 					 
 
 					//Now, if this works, there should be no jumping, no overlap, and most importantly, no stopping when sliding.
-
+					//okay so the overlap = 0 when it should be 16 is a problem... so I'll make it able to be 16, BUT if thats an issue, I'll check for if it's 0 in the statements above.
 
 
 
