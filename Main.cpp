@@ -33,6 +33,7 @@ Sprite* Object1; // we can create this sprite now so that it can be used in leve
 //two more for testing
 Sprite* Object2;
 Sprite* Object3;
+Sprite* Object4;
 
 #include "Level+.h"
 #include "CreatePlayer.h"
@@ -231,23 +232,30 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//RANDOM SPRITES END
 				 */
 
-				/* 
+				
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
-				Object3 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
-				Object2 = new Sprite(80, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object1); //NEW 
-				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
-				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
+				Object3 = new Sprite(48, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				printf("Object%d, created order = %d\n", 3, Object3->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object3); //NEW 
+				Object2 = new Sprite(80, 96, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				printf("Object%d, created order = %d\n", 2, Object2->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object2); //NEW 
+				Object4 = new Sprite(16, 16, "AA150", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object4); //NEW  
+				//NOTE YOU MUST MAP SPRITE BEFORE DECLARING THE REST, OTHERWISE THE ORDER IS THE SAME!!! (may be useful but might not be, who knows....)
+				 
+				 
+				 
 				//TEST TELEPORT OBJECTS END
-				*/
+				
 				//IF objects do not appear on screen, they have not been mapped.
 				
 
-				
+				/* 
 				//RANDOM SPRITES BEGIN
 				//kept Object1 because it's global, don't want to mess anything up.
 				Object1 = new Sprite(16, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -281,8 +289,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 				}
 				//RANDOM SPRITES END
-				
-
+				*/
 
 
 				//After pushing back all the objects -DONE ONCE
