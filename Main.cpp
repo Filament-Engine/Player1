@@ -555,7 +555,7 @@ void handleLoop() {
 			Object2or3Moved = false;
 		}
 		if (pause) {
-			SDL_Delay(1000);
+			SDL_Delay(0);
 			pause = false;
 		}
 
