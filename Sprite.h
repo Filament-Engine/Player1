@@ -956,6 +956,10 @@ public:
 	void FigureOverlap(Sprite* CurrentVictim, Sprite* Xptr[2], Sprite* Yptr[2], int OverlapX[2], int OverlapY[2], bool & wait) {
 		//will have to test that the arrays are edited back in the MoveAllSprites 
 		//NOTE, we should change each of these to resemble the logic in xChange>0
+
+		printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
+		printf("Object%d, Object%d\n", Xptr[0]->OrderCreation + 1, Yptr[1]->OrderCreation + 1);
+
 		int XC;
 		int YC;
 		int xChange = CurrentVictim->xVec;
@@ -4590,6 +4594,7 @@ public:
 					else if (left && down) {
 						//figure out overlap on x and y
 						//UL = x, LR = y
+						printf("Left, down, figure overlap\n");
 						FigureOverlap(CurrentVictim, ULptr, LRptr, UL, LR, wait);
 					}
 					else if (right && up) {
@@ -4605,6 +4610,9 @@ public:
 					printf("LR = {%d, %d}\n", LR[0], LR[1]);
 					SDL_Delay(500);
 
+					
+
+					//Now I'd like you to teleport based solely on the two directionals we got. 
 					int XC;
 					int YC;
 					if (left && up) {
@@ -4623,9 +4631,6 @@ public:
 						XC = LR[0];
 						YC = UL[1];
 					}
-
-					//Now I'd like you to teleport based solely on the two directionals we got. 
-
 					//if directional, undo just the direction you came from
 					if (xChange > 0) { //right
 						CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
@@ -4640,14 +4645,164 @@ public:
 						CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
 					}
 
-
+					//NOTE - try to make the teleport a seperate function to reduce repetitiveness.
 					//NOW calculate if theres any overlap on the diagonal
+						//If even, teleport equal to both axis
+						//If X>Y, teleport only on the X axis
+						//if Y>X, teleport only on the Y axis
+					if (left && up) { 
+						FigureOverlap(CurrentVictim, ULptr, ULptr, UL, UL, wait);
+						if (UL[0] > UL[1]) { //X>Y
+							XC = UL[0];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+						}
+						else if (UL[1] > UL[0]) { //Y>X
+							YC = UL[1];
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+						else { //Y=X
+							XC = UL[0];
+							YC = UL[1];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+					}
+					else if (right && down) { 
+						FigureOverlap(CurrentVictim, LRptr, LRptr, LR, LR, wait);
+						if (LR[0] > LR[1]) { //X>Y
+							XC = LR[0];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+						}
+						else if (LR[1] > LR[0]) { //Y>X
+							YC = LR[1];
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+						else { //Y=X
+							XC = LR[0];
+							YC = LR[1];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+					}
+					else if (left && down) { 
+						FigureOverlap(CurrentVictim, LLptr, LLptr, LL, LL, wait);
+						if (LL[0] > LL[1]) { //X>Y
+							XC = LL[0];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+						}
+						else if (LL[1] > LL[0]) { //Y>X
+							YC = LL[1];
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+						else { //Y=X
+							XC = LL[0];
+							YC = LL[1];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+					}
+					else if (right && up) { 
+						FigureOverlap(CurrentVictim, URptr, URptr, UR, UR, wait);
+						if (UR[0] > UR[1]) { //X>Y
+							XC = UR[0];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+						}
+						else if (UR[1] > UR[0]) { //Y>X
+							YC = UR[1];
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+						else { //Y=X
+							XC = UR[0];
+							YC = UR[1];
+							if (xChange > 0) { //right
+								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							}
+							else { //left
+								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							}
+							if (yChange > 0) { //down
+								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							}
+							else { //up
+								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							}
+						}
+					}
 
-					//If even, teleport equal to both axis
-					//If X>Y, teleport only on the X axis
-					//if Y>X, teleport only on the Y axis
 
+					 
 
+					//Now, if this works, there should be no jumping, no overlap, and most importantly, no stopping when sliding.
 
 
 
