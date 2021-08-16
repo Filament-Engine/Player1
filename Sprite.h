@@ -960,6 +960,9 @@ public:
 		printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
 		
 		if (Xptr[0] != nullptr && Yptr[1] != nullptr) {
+			if (Xptr[0] != Yptr[1]) {
+				printf("DIAGONAL COLLISION: ");
+			}
 			printf("Object%d, Object%d\n", Xptr[0]->OrderCreation + 1, Yptr[1]->OrderCreation + 1);
 		}
 		else if (Xptr[0]!=nullptr) {
@@ -1001,9 +1004,9 @@ public:
 				*/
 				printf("1 TempOverlapX=%d\n", XC);
 				pause = true;
-				if (XC == 0) {
+				/* if (XC == 0) {
 					XC = 16;
-				}
+				}*/
 			}
 			else { // if moving left
 				printf("Sprite was moving Left\n");
@@ -1023,9 +1026,9 @@ public:
 				*/
 				printf("2 TempOverlapX=%d\n", XC);
 				pause = true;
-				if (XC == 0) {
+				/* if (XC == 0) {
 					XC = 16;
-				}
+				}*/
 
 			}
 		}
@@ -1052,9 +1055,9 @@ public:
 				*/
 				printf("3 TempOverlapY=%d\n", YC);
 				pause = true;
-				if (YC == 0) {
+				/* if (YC == 0) {
 					YC = 16;
-				}
+				}*/
 
 			}
 			else { // if moving up
@@ -1075,9 +1078,9 @@ public:
 				//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
 				printf("4 TempOverlapY=%d\n", YC);
 				pause = true;
-				if (YC == 0) {
+				/* if (YC == 0) {
 					YC = 16;
-				}
+				}*/
 
 			}
 		}
@@ -3562,6 +3565,8 @@ public:
 	}
 	
 	void HandleCollision2(std::vector<int>InvestigateX, std::vector<int>InvestigateY, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation) {
+
+		printf("-2) Please Handle the Collision\n\n");
 		//already popped back the first we found. Now investigate those idnexes
 		//1) Are you already completed <-pop back, add to our list
 		//2) are you less than the current que location? And are you not a victim? pop back (this may be unlikely or mpossible)
@@ -3734,6 +3739,7 @@ public:
 			printf("Take care of victims\n");
 		}
 		while (VictimsNoLonger.size() != 0) {
+			printf("-1) Please Handle the Victims\n\n");
 			if (Debug) {
 				printf("Top of VictimsNoLonger while loop\n");
 				printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
@@ -3791,13 +3797,6 @@ public:
 			if (true) {
 				printf("Teleport! Object%d\n", CurrentVictim->OrderCreation + 1);
 			}
-
-
-
-
-
-
-
 
 
 
@@ -3927,6 +3926,7 @@ public:
 
 
 
+					printf("1) Moving Diagonally\n"); SDL_Delay(2000);
 					//if diagonal,  AND there are things that we hit?
 
 						//figure out the relative position of the object in question
@@ -4873,6 +4873,7 @@ public:
 
 					//SDL_Delay(5000);
 
+					printf("2) Moving Diagonally\n"); SDL_Delay(2000);
 					//Awesome, now figure out the overlap on the two directional sprites. (so not the sprite hit by your directions corner, but the edges)
 					if (left && up) {
 						//figure out overlap on x and y
@@ -4984,7 +4985,13 @@ public:
 						printf("Calcualte the diagonal (LR) overlap\n");
 						FigureOverlap(CurrentVictim, LRptr, LRptr, LR, LR, wait);
 						printf("Diagonal, R-D, %d, %d\n", LR[0], LR[1]);
-						if (LR[0] < LR[1]) { //X>Y
+						
+						if (LR[0] == 0 || LR[1] == 0) { //new, attempt to fix sliding. This is because the diagonal even though the overlap became 0 on one of the axis', it didn't slide because one or the other wasn't 0.
+							printf("NEW : Try to just ignore the overlap since one of the two is 0.\n");
+							CurrentVictim->TeleportX(CurrentVictim->xPos);
+							CurrentVictim->TeleportY(CurrentVictim->yPos);
+						}
+						else if (LR[0] < LR[1]) { //X>Y
 							printf("X<Y\n");
 							XC = LR[0];
 							if (xChange > 0) { //right
@@ -5026,9 +5033,13 @@ public:
 
 					}
 					else if (left && down) { 
+						printf("TELEPORT DIAGONAL X\n");
 						FigureOverlap(CurrentVictim, LLptr, LLptr, LL, LL, wait);
 						if (LL[0] < LL[1]) { //X>Y
 							XC = LL[0];
+							if (XC == 16) {
+								XC = 0;
+							}
 							if (xChange > 0) { //right
 								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
 							}
@@ -5037,7 +5048,11 @@ public:
 							}
 						}
 						else if (LL[1] < LL[0]) { //Y>X
+							printf("TELEPORT DIAGONAL Y\n");
 							YC = LL[1];
+							if (YC == 16) { //didn't work :/
+								YC = 0;
+							}
 							if (yChange > 0) { //down
 								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
 							}
@@ -5048,6 +5063,12 @@ public:
 						else { //Y=X
 							XC = LL[0];
 							YC = LL[1];
+							if (XC == 16) {
+								XC = 0;
+							}
+							if (YC == 16) {
+								YC = 0;
+							}
 							if (xChange > 0) { //right
 								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
 							}
@@ -5063,6 +5084,7 @@ public:
 						}
 					}
 					else if (right && up) { 
+						printf("TELEPORT DIAGONAL XY\n");
 						FigureOverlap(CurrentVictim, URptr, URptr, UR, UR, wait);
 						if (UR[0] < UR[1]) { //X>Y
 							XC = UR[0];
@@ -5100,8 +5122,8 @@ public:
 						}
 					}
 					//CHANGE - flip the less than, and swap between the two the insides of each if else.
-
-					 
+					printf("Time to pause\n");
+					SDL_Delay(500);
 
 					//Now, if this works, there should be no jumping, no overlap, and most importantly, no stopping when sliding.
 					//okay so the overlap = 0 when it should be 16 is a problem... so I'll make it able to be 16, BUT if thats an issue, I'll check for if it's 0 in the statements above.
@@ -5116,14 +5138,16 @@ public:
 
 				 
 
+				printf("3) Moving Diagonally\n"); SDL_Delay(2000);
 
 				 
 
 
 			}
 
-
+			 
 			else if (x > 0) {
+			printf("Moving X direction only\n"); SDL_Delay(2000);
 				int XC;
 				if (xChange > 0) { // if moving right
 					printf("Sprite was moving Right\n");
@@ -5154,9 +5178,10 @@ public:
 					wait = true;
 				}
 			} //don't have ot worry about diag considerations, where inline map could be a problem.
-
+			 
 
 			else if (y > 0) {
+			printf("Moving Y direction only\n"); SDL_Delay(2000);
 				int YC;
 				if (yChange > 0) { // if moving down
 					printf("Sprite was moving down\n");
@@ -5192,6 +5217,7 @@ public:
 				wait = false;
 			}
 
+			printf("4) Moving Diagonally\n"); SDL_Delay(2000);
 
 
 			/* 
@@ -5272,18 +5298,6 @@ public:
 				}
 			}//flag it for collision 
 			*/
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -5588,6 +5602,9 @@ public:
 		//so this will just run one at a time. So it is fine for just to insert because I'm not trying to do the items right as they are revealed, rather I just want to add any new eraseable items, 
 		//This SHOULD work if I'm doing what I think I am - which is anything amrked as compeltedsprites[x]==1 is removed from the stack, thus we should be able to remove everything up to the currentQue location
 		//thus we should be able to get through all of victimsnomore.
+
+
+		printf("6) Moving Diagonally\n"); SDL_Delay(2000);
 	}
 	
 	
