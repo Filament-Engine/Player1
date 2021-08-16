@@ -3921,7 +3921,7 @@ public:
 
 
 
-					printf("1) Moving Diagonally\n"); SDL_Delay(2000);
+					//Pause printf("1) Moving Diagonally\n"); SDL_Delay(2000);
 					//if diagonal,  AND there are things that we hit?
 
 						//figure out the relative position of the object in question
@@ -4868,7 +4868,7 @@ public:
 
 					//SDL_Delay(5000);
 
-					printf("2) Moving Diagonally\n"); SDL_Delay(2000);
+					//pause printf("2) Moving Diagonally\n"); SDL_Delay(2000);
 					//Awesome, now figure out the overlap on the two directional sprites. (so not the sprite hit by your directions corner, but the edges)
 					if (left && up) {
 						//figure out overlap on x and y
@@ -5133,7 +5133,7 @@ public:
 
 				 
 
-				printf("3) Moving Diagonally\n"); SDL_Delay(2000);
+				//pause printf("3) Moving Diagonally\n"); SDL_Delay(2000);
 
 				 
 
@@ -5142,7 +5142,7 @@ public:
 
 			 
 			else if (x > 0) {
-			printf("Moving X direction only\n"); SDL_Delay(2000);
+			//pause printf("Moving X direction only\n"); SDL_Delay(2000);
 				int XC;
 				if (xChange > 0) { // if moving right
 					printf("Sprite was moving Right\n");
@@ -5176,7 +5176,7 @@ public:
 			 
 
 			else if (y > 0) {
-			printf("Moving Y direction only\n"); SDL_Delay(2000);
+			//pause printf("Moving Y direction only\n"); SDL_Delay(2000);
 				int YC;
 				if (yChange > 0) { // if moving down
 					printf("Sprite was moving down\n");
@@ -5212,7 +5212,7 @@ public:
 				wait = false;
 			}
 
-			printf("4) Moving Diagonally\n"); SDL_Delay(2000);
+			//pause printf("4) Moving Diagonally\n"); SDL_Delay(2000);
 
 
 			/* 
@@ -5599,7 +5599,7 @@ public:
 		//thus we should be able to get through all of victimsnomore.
 
 
-		printf("6) Moving Diagonally\n"); SDL_Delay(2000);
+		//pause printf("6) Moving Diagonally\n"); SDL_Delay(2000);
 	}
 	
 	
