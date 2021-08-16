@@ -3239,14 +3239,8 @@ public:
 					RemoveSpriteFromMap(Queue2[i]);
 					if (Debug) {
 						printf("2\n");
-					}
-					if (Queue2[i]->OrderCreation == 7) {
-						printf("Object8 original position = {%d, %d}\n", Queue2[i]->xPos, Queue2[i]->yPos);
-					}
-					Queue2[i]->Behavior();
-					if (Queue2[i]->OrderCreation == 7) {
-						printf("Object8 attempt position = {%d, %d}\n", Queue2[i]->xPos, Queue2[i]->yPos);
-					}
+					} 
+					Queue2[i]->Behavior(); 
 					if (Debug) {
 						printf("3\n");
 					}
@@ -3308,9 +3302,9 @@ public:
 							printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
 						}
 						if (InvestigateIndexsY.size() > 0 || InvestigateIndexsX.size() > 0) {
-							if (Debug) {
-								printf("Start Handle\n");
-							}
+							
+								printf("Start Handle\n\n");
+							
 							HandleCollision2(InvestigateIndexsX, InvestigateIndexsY, SpriteStacks, CompletedSprites, i);
 							if (Debug) {
 								printf("Finished Handle\n");
@@ -3327,9 +3321,7 @@ public:
 
 					}
 					else {
-						if (Queue2[i]->OrderCreation == 7) {
-							printf("Object8 fail position = {%d, %d}\n", Queue2[i]->xPos, Queue2[i]->yPos);
-						}
+						 
 						if (TempStackable->Victim->OrderCreation == 7) {
 							printf("Object8 stack looks like :\n");
 							printf("SpriteX ={");
@@ -3350,9 +3342,7 @@ public:
 
 						//NOTE Sprite with creation order 'i' has NOT completed it's movement. If it ever does, in relation to a stack handled elsewhere, then it shall be noted in CompletedSprites
 						Queue2[i]->UndoBehavior();
-						if (Queue2[i]->OrderCreation == 7) {
-							printf("Object8 'original' [Undo] position = {%d, %d}\n", Queue2[i]->xPos, Queue2[i]->yPos);
-						}
+						 
 						ReMapSprite(Queue2[i]);
 						Queue2[i] = NULL;
 
@@ -3738,6 +3728,11 @@ public:
 		if (Debug) {
 			printf("Take care of victims\n");
 		}
+
+		if (VictimsNoLonger.size() == 0) {
+			printf("The victim list was empty\n");
+		}
+
 		while (VictimsNoLonger.size() != 0) {
 			printf("-1) Please Handle the Victims\n\n");
 			if (Debug) {
