@@ -14,16 +14,12 @@ void GenerateTiles(std::map<std::string, SurfaceProperty*> SurfacePropertyMap, T
 		YCordTotal = SurfaceHeight / TILE_HEIGHT;
 		TotalCord = XCordTotal * YCordTotal;
 		//INSERT memory management
-		//DELETED the array that took total amount of tiles expected and stored them. Instead I realized we are mapping inside the classes
 		Tile** TotalTile = new Tile * [TotalCord];
 		for (int j = 0; j < TotalCord; j++) {
 			TotalTile[j] = new Tile(p.first, j, SurfaceWidth, SurfaceHeight, SurfacePropertyMap[p.first]->GetCollision(j)); // p.first is the "AA", j is the coordinate, ###, SourceX, SourceY
 			TotalTile[j]->MapThis(GlobalTileHash);
 		}
 	}
-
-	//NEW - Placed here as now HiddenSurface should have all the tiles of a level. In the future we may make HiddenTexture a class to clear but for now this will do.
-
 }
 
 //THIS is where layers will be created, it reads in the save data, passes this string array to a layer, 
@@ -33,7 +29,6 @@ void GenerateTiles(std::map<std::string, SurfaceProperty*> SurfacePropertyMap, T
 // The Layer should have a mapthis() function to put into either a level (likely) or a map (unlikely)
 //This should be improved.
 bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, Level* level, TileHash* GlobalTileHash) {
-	printf("Draw Saved Tiles\n");
 	//If it fails here be sure the level width and height match the expected saved tiles.
 	int TotalExpected = LEVEL_HEIGHT * LEVEL_WIDTH;
 	std::string** savedTiles = new std::string * [TotalExpected];
@@ -44,13 +39,6 @@ bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::s
 	if (sourceIMG.is_open()) {
 		getline(sourceIMG, line);
 		while (!IsSameString(line.c_str(), "Collision Override") && !sourceIMG.eof()) {
-			//NEW - holds every string we have found thus far
-
-
-
-			// printf("Running tiles now - each time you see this message, expect another layer\n");
-
-			//Insert - Make seperate function
 
 			//s1 Holds total String from Line
 			std::string s1 = line;
@@ -64,20 +52,17 @@ bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::s
 			int k = 0;
 
 
-			//reads the entire string, finds the key each time. //ERROR - reading incorrectly in 5x5 with 25 tiles.
+			//reads the entire string, finds the key each time.
 			while (s1[j] != '\0') {
 				while (s1[j] != ',') {
-					//INSERT a check to say if eof is reached/s1[j]=\0, your missing stuff.
 					s2[i] = s1[j];
 					i++;
 					j++;
 				}
 
-				//if it s a comma, just null, if not it's a proper label.
+				//if s is a comma, just null, if not it's a proper label.
 				s2[i] = '\0';
 				temp = s2[0];
-				//std::cout << temp << " IS OUR 0th index of S2!!!!!!!\n";
-				//Check that s2 indeed should hold a Tile Label
 
 
 				//transfer to player (Don't take k out of here^V, but instead make another k back in layer.
@@ -93,35 +78,17 @@ bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::s
 					}
 					TargetX = x;
 
-					//Use the key - if it is found - and blit it.
-					//INSERT - check if s2.c_str IS IN THE MAP. If not, throw.
-
-					//add to array s2--- instead of global hash
-
-					//GlobalTileHash->find(s2)->BlitThis(TargetX, TargetY);
 				}
 
 				if (k < TotalExpected) {
-					//printf("%d = %s\n", k, s2.c_str());
-					//now place s2 into the savedTiles array
-
-					//i holds the actual size of s2... I think.
-
+					
 					if (temp != '\0') {
-						//printf("Adding %s to the savedTiles\n", s2);
-						// printf(".");
 						savedTiles[k] = new std::string(s2);
 
 					}
 					else {
-						//delete savedTiles[k];
 						savedTiles[k] = new std::string("");
-						//savedTiles[k] = new std::string(1, '\0');
 					}
-
-
-					// std::cout << " 2, = " << *savedTiles[k] << std::endl;
-					//now print savedTiles array Stored information
 
 				}
 
@@ -138,29 +105,11 @@ bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::s
 			//pushback -insert default to the end
 			level->RenderOrder.push_back(new Layer(savedTiles, GlobalTileHash, SurfacePropertyMap));
 			level->NumLayers++;
-			//Insert is usually reserved for when you want more control over the position of objects. LEAVE HERE - for reading multiple files may want to use this.
-			// gLevel1->RenderOrder.insert(gLevel1->RenderOrder.end(), new Layer(savedTiles));
-
+			
 
 			//Now that all tiles have been read, create a texture from the undisplayed surface. 
 
-			//CHANGE - default for now, will overwrite with level class I think
-			//gHiddenTexture = SDL_CreateTextureFromSurface(gRenderer, gHiddenSurface);
-			//INSERT - Clear hidden surface here?
-			//printf("%d\n", counter);
-			//Now make a layer before savedTiles is overwritten.
-
-
-
 			//INSERT - a way to check that there are equal collision data for each layer. Requries editing collision functino (compare against this counter at end of function before returning true.
-
-			if (k == TotalExpected) {
-				// printf("All Level Tiles are found for this layer : %d\n", counter);
-			}
-			else { //INSERT - check comes to late. See while loop.
-				printf("You are missing %d commas/labels at layer : %d\n", TotalExpected - k, counter);
-				return false;
-			}
 
 			counter++;
 			getline(sourceIMG, line); //Should hold information of tiles, going left to right, top to bottom, as  AA##,,BB##,CB#, etc. Each comma before a given label indicates the position. Example, AA## position is 0.
@@ -169,7 +118,7 @@ bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::s
 		}
 
 		if (IsSameString(line.c_str(), "Collision Override")) {
-			// printf("Found Collision Override header\n");
+			
 			return true;
 		}
 		else if (sourceIMG.eof()) {
@@ -177,15 +126,11 @@ bool DrawSavedTiles(std::ifstream& sourceIMG, std::string& line, std::map<std::s
 			return false;
 		}
 
-		/*if (sourceIMG.eof()) {
-			printf("eof reached\n");
-			return false;
-		}*/
 		return false;
 
 	}
 	else {
 		return false;
 	}
-	return false; //for warning
+	return false; 
 }

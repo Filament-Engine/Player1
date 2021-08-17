@@ -41,7 +41,6 @@ void SplitStringStream(std::string& line, int& GlobalWidth, int& GlobalHeight) {
 	//Create two substrings, to isolate the integer portion of each side of the comma.
 	tempWidth = line.substr(0, line.length() - d);
 	tempHeight = line.substr(d, line.length());
-	// printf("Dimensions are %s, %s\n", tempWidth.c_str(), tempHeight.c_str());
 
 	//Convert both substrings to integer values.
 	std::istringstream iss1(tempWidth);

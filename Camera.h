@@ -21,13 +21,13 @@ public:
 		Cam->h = h;
 	}
 
-	bool PutX(int xPos) { // put some new value into the x position -- teleports
+	bool TeleportX(int xPos) { // put some new value into the x position -- teleports
 		x = xPos;
 		Cam->x = xPos;
 		return true;
 	}
 
-	bool PutY(int yPos) { // put some new value into the y position -- teleports
+	bool TeleportY(int yPos) { // put some new value into the y position -- teleports
 		y = yPos;
 		Cam->y = yPos;
 		return true;
@@ -40,7 +40,7 @@ public:
 			x -= xVec;
 			return false;
 		}
-		else {
+		else { // if the movement does not put the camera out of bounds, move it
 			Cam->x = x;
 			return true;
 		}
@@ -52,7 +52,7 @@ public:
 			y -= yVec;
 			return false;
 		}
-		else {
+		else { // if the movement does not put the camera out of bounds, move it 
 			Cam->y = y;
 			return true;
 		}

@@ -18,8 +18,7 @@ public:
 
 	// constructor for the level
 	Level() {
-		printf("LEVEL CREATED!!!!!\n");
-
+		
 		CollisionOverride = new int* [LEVEL_HEIGHT];
 		for (int i = 0; i < LEVEL_HEIGHT; i++) {
 			CollisionOverride[i] = new int[LEVEL_WIDTH];
@@ -30,10 +29,8 @@ public:
 		CombinedTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, LEVEL_WIDTH, LEVEL_HEIGHT);
 		NumLayers = 0;
 		SpriteLayer = NULL;
-
-		//TextureBuffer= SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, LEVEL_WIDTH, LEVEL_HEIGHT);
-		//may want to make it only the window but for now who cares.
 	}
+
 	// destructor for the level
 	~Level() {
 		printf("Deconstructor called for level\n");
@@ -42,15 +39,12 @@ public:
 	// renders the level to the window
 	void RenderThis(Player* PlayerName) {
 
-		// printf(".1.");
-		// printf("number of layers is %d\n", NumLayers);
 		for (int i = 0; i < NumLayers; i++) { // instead of comparing it to NumLayers, we may want to compare it to the bottom layers -- the layers below the player
 			SDL_RenderCopy(gRenderer, RenderOrder[i]->SelfHiddenTexture, gCamera->Cam, gFullWindowRect);
 		}
-		PlayerName->RenderThis(); // renders the player here
+		PlayerName->RenderThis(); // renders the player here -- still needs to be improved a bit
 
 		SpriteLayer->BlitObjects(); // this is so we can rerender the objects -- allows them to be movable!
-		// SpriteLayer->MakeSelfTexture();
 		SDL_RenderCopy(gRenderer, SpriteLayer->CombinedObjects, gCamera->Cam, gFullWindowRect); // this renders the texture of the objectLayer
 
 
@@ -88,7 +82,7 @@ public:
 			}
 		}
 
-		printf("testing with collision override...\n");
+		// collision override
 		for (int i = 0; i < LEVEL_HEIGHT; i++) {
 			for (int j = 0; j < LEVEL_WIDTH; j++) {
 				if (CollisionOverride[i][j] != -1) {
@@ -97,7 +91,6 @@ public:
 			}
 		}
 
-		// now we will go through the collision override and override any collision points in CombinedCollision
 	}
 
 	// creates the object layer

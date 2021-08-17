@@ -9,15 +9,11 @@ public:
 
 	Player(int DefaultSpawnX, int DefaultSpawnY, int DefaultPixelH, int DefaultPixelW, std::string SourceKey, int SourceCoordx, int SourceCoordy, int SourcePixelH, int SourcePixelW, int xVelocity, int yVelocity, std::map<std::string, SurfaceProperty*> SurfacePropertyMap) {
 
-		//SurfaceProperty* DefaultSourceSurface = SurfacePropertyMap["IMGName"]->texture;
-		 //this is either atexture or a surface. 
-
 		xPos = DefaultSpawnX;
 		yPos = DefaultSpawnY;
 
 		IMGName = SourceKey; //AA
 
-		printf("Init Player\n");
 		SourceTile = new SDL_Rect();
 		SelfTile = new SDL_Rect();
 		TargetTile = new SDL_Rect();
@@ -38,10 +34,9 @@ public:
 		TargetTile->h = DefaultPixelW;
 		//Surface -> Texture
 		TempOrigin = SDL_CreateRGBSurface(0, SourceTile->w, SourceTile->h, 32, 0, 0, 0, 0);
-		printf("checking\n");
+
 		SDL_BlitSurface(SurfacePropertyMap[IMGName]->GetSelfSurface(), SourceTile, TempOrigin, SelfTile);
 
-		printf("checking2\n");
 		//case Temp Origin to a texture
 		SelfImg = SDL_CreateTextureFromSurface(gRenderer, TempOrigin);
 		xVec = xVelocity;
@@ -58,7 +53,6 @@ public:
 
 		if (yVelocity < 0) { // if moving up -- detecting collision
 			if (1 == CombinedCollision[yPos / TILE_HEIGHT][xPos / TILE_WIDTH] || 1 == CombinedCollision[(yPos / TILE_HEIGHT)][(xPos + GetWidth() - 1) / TILE_WIDTH]) {
-				// printf("cannot move up!\n");
 				yPos -= yVelocity;
 				return 0;
 			}
@@ -67,7 +61,6 @@ public:
 		else if (yVelocity > 0 && yPos < LEVEL_HEIGHT * TILE_HEIGHT - GetHeight()) { // if moving down -- detecting collision -- the second statement is so that it doesn't go through here when its at the edge
 			if (1 == CombinedCollision[(yPos + GetHeight() - 1) / TILE_HEIGHT][xPos / TILE_WIDTH] || 1 == CombinedCollision[(yPos + GetHeight() - 1) / TILE_HEIGHT][(xPos + GetWidth() - 1) / TILE_WIDTH]) { // check for right collision
 				yPos -= yVelocity; // reverts the movement change
-				// printf("cannot move down!\n");
 				return 0; // fails it
 			}
 		}
@@ -100,7 +93,6 @@ public:
 		xPos += xVelocity;
 		if (xVelocity < 0) { // if moving left
 			if (1 == CombinedCollision[yPos / TILE_HEIGHT][(xPos / TILE_WIDTH)] || 1 == CombinedCollision[(yPos + GetHeight() - 1) / TILE_HEIGHT][(xPos / TILE_WIDTH)]) { // check for left collision
-				// printf("cannot move left!\n");
 				xPos -= xVelocity; // reverts the movement change
 				return 0; // fails it
 			}
@@ -130,7 +122,6 @@ public:
 				return 0;
 			}
 			else { // if not out of bounds, move
-				// TargetTile->x += xVelocity;
 				return 1; // the player icon moved
 			}
 		}

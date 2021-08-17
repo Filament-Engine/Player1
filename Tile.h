@@ -53,10 +53,8 @@ public:
 		SourceTile.y = SourceY * TILE_HEIGHT;
 		SourceTile.w = TILE_WIDTH;
 		SourceTile.h = TILE_HEIGHT;
-
-		//After initialized, Hash this object.
-		// MapThis();
 	}
+
 	//Copy constructor. 
 	Tile(Tile& copyTile) {
 		CollisionType = copyTile.CollisionType;
@@ -70,8 +68,6 @@ public:
 		SourceTile.y = SourceY * TILE_HEIGHT;
 		SourceTile.w = TILE_WIDTH;
 		SourceTile.h = TILE_HEIGHT;
-
-		// MapThis();
 	}
 
 	//Default Constructor - For now, it is an indicator that a Tile did not get created properly, through auto-generation mapping.
@@ -154,7 +150,6 @@ void TileHash::put(Tile* TargetTile) {
 //Return the object's pointer when given a hashkey/key "AA##"
 Tile* TileHash::find(std::string label) {
 	//interpret a string
-	// printf("Interpreting String\n");
 	return data[GetInterpretation(label)];
 }
 //Used for initial obtainment of index, and to find and help return the Tile for a given label

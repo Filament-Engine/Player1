@@ -6,13 +6,12 @@ void FreeMapSurfaces(std::map<std::string, SurfaceProperty*>* SurfacePropertyMap
 
 	//INSERT call to delete tiles in the hash, then delete the hash
 
-	//DANGEROUS - delete this seemd to break it!
 	for (auto p : *SurfacePropertyMap) {
 		p.second -> ~SurfaceProperty();
 	}
 
 	SurfacePropertyMap->clear();
-	//clear all textures, and surfaces, and the global hidden's. - Unknown if this releases the memory of those objects. Assume it does not.
+	//clear all textures, and surfaces, and the global hiddens -- unknown if this releases the memory of those objects. Assume it does not.
 
 	//https://stackoverflow.com/questions/6952083/deleting-self-object-inside-class 
 	//If object made through 'new', we should be able to deconstruct with delete this* like the others

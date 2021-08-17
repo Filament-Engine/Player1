@@ -19,13 +19,9 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 		getline(sourceIMG, line); //Line holds the first Image.format,Surname - Example: Bitmap.bmp,AA.
 		//For Every following line, until Tiles is found. 
 		while (!IsSameString(line.c_str(), "Tiles") && !sourceIMG.eof()) { // go through the txt file until you reach "Tiles"
-			printf("finding tile header... \n");
-
+			
 			// grab the first element of the SurfacePropertyMap (the png in this case)
-			// make an int array = new int [SurfacePropertyMap["AA"]->w * SurfacePropertyMap["AA"]->h] 
-			// printf("line is %s\n", line.c_str());
 			s1 = line;
-			// printf("s1 is %s\n", s1.c_str());
 			s2 = new std::string[4]; // (4, '\0');  // (2 characters).
 
 			i = 0;
@@ -38,7 +34,7 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 
 			//If there is to much counter throw
 			if (counter < SurfacePropertyMap.size()) { //it's alright if it is < since we started enum at 0. 
-				// printf("%s is Enum[counter]\n", SurfacePropertyEnum[counter].c_str());
+				
 				TotalExpected = SurfacePropertyMap[SurfacePropertyEnum[counter]]->TotalTile;
 
 				//INSERT destructor
@@ -101,13 +97,12 @@ bool CollisionCreation(std::ifstream& sourceIMG, std::string& line, std::map<std
 				counter++; // iterates the counter
 			}
 
-			else { //if this triggers, you have to high a counter, more ocllision data than surfaces to give them to.
+			else { //if this triggers, you have too high a counter, more collision data than surfaces to give them to.
 				printf("YOU HAVE MORE COLLISION DEFAULTS THAN SURFACES TO APPLY THEM.\n");
 				return false;
 			}
 		}
 		if (IsSameString(line.c_str(), "Tiles")) {
-			printf("Found tile header\n");
 			return true;
 		}
 		else if (sourceIMG.eof()) {
@@ -130,7 +125,7 @@ void OverrideCollision(std::ifstream& sourceIMG, std::string& line, Level* level
 		std::string* s2; // should be declared out of the while loop
 
 		getline(sourceIMG, line); //Line holds the first Image.format,Surname - Example: Bitmap.bmp,AA.
-		// printf("line is %s\n", line.c_str());
+		
 
 		int i = 0;
 		int j = 0;
@@ -162,7 +157,7 @@ void OverrideCollision(std::ifstream& sourceIMG, std::string& line, Level* level
 				}
 			}
 
-			//printf("%d ", d);
+			
 
 
 			temp = k; // using the k value to find x and y positions
