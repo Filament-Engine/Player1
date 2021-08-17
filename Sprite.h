@@ -5349,7 +5349,7 @@ public:
 						printf("}\n");
 					}
 
-					while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[d] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
+					while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]->OrderCreation] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
 						SpriteStacks[d]->SpriteXCollision.pop_back();
 						if (!AlreadyPushedIndex) { //NEW
 
@@ -5360,7 +5360,7 @@ public:
 				}
 				AlreadyPushedIndex = false;
 				if (SpriteStacks[d]->SpriteYCollision.size() > 0) {
-					while (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[d] == 1) {
+					while (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]->OrderCreation] == 1) {
 						SpriteStacks[d]->SpriteYCollision.pop_back();
 						if (!AlreadyPushedIndex) { //NEW
 
