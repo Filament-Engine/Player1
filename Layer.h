@@ -59,9 +59,6 @@ public:
 	void AddTiles(std::string* DrawnTilesRead[]) {
 		DrawnTiles = new std::string * [(LEVEL_WIDTH * LEVEL_HEIGHT)];
 		for (int i = 0; i < (LEVEL_WIDTH * LEVEL_HEIGHT); i++) {
-			if (0 == DrawnTilesRead[i]->compare("")) {
-				// printf("Empty Tile Read? You Sure?\n");
-			}
 			DrawnTiles[i] = DrawnTilesRead[i];
 		}
 	}

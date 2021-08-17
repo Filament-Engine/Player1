@@ -26,13 +26,13 @@ public:
 		TotalTile = (width / TILE_WIDTH) * (height / TILE_HEIGHT);
 		collision = new int[TotalTile];
 		SelfSurface = surface;
-		SelfTexture = NULL; //for a warning -_-
+		SelfTexture = NULL; 
 		SourceName = tempSource;
 		Surname = tempName;
 		SourcePath = TempPath;
-		TransparentPixel = "0xff678b"; //CHANGE will need to change / remove when get more info
+		TransparentPixel = "0xff678b"; //CHANGE will need to change / remove when get this actually passed in
 
-		CreateTransparency(); //CHANGE - change / remove when get more info
+		CreateTransparency(); // creates a transparent pixel color -- will want to remove from this constructor
 		ConvertSelfSurfaceToSelfTexture();
 		MapThis(SurfacePropertyMap);
 
@@ -44,13 +44,13 @@ public:
 		TotalTile = (width / TILE_WIDTH) * (height / TILE_HEIGHT);
 		collision = new int[TotalTile];
 		SelfSurface = surface;
-		SelfTexture = NULL;  //for a warning -_-
+		SelfTexture = NULL;  
 		SourceName = tempSource;
 		Surname = tempName;
 		SourcePath = TempPath;
 		TransparentPixel = Trans;
 
-		CreateTransparency(); //CHANGE - change / remove when get more info
+		CreateTransparency(); // creates a transparent pixel color
 		ConvertSelfSurfaceToSelfTexture();
 		MapThis(SurfacePropertyMap);
 
@@ -106,7 +106,6 @@ public:
 		//This function will need some change once we get more instances of transparancy. It should be user defined from the editor, or it should have a default value that skips changing any pixel values.
 		//EDIT once Collision, Player, and Files pathing isfigured out.
 
-		// std::string str = "0xff678b"; // this will need to change
 		int r = HexToInt(TransparentPixel, 2); // instead of str, we will have transparent pixel
 		int g = HexToInt(TransparentPixel, 4);
 		int b = HexToInt(TransparentPixel, 6);
@@ -120,7 +119,7 @@ public:
 	}
 	
 
-	//call for hello (I exist)
+	//call for hello -- just proves that the surface property exists
 	void SayHello() {
 		printf("%s says hello!\n", SourcePath.c_str());
 	}
