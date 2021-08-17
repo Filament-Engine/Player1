@@ -438,13 +438,13 @@ void handleLoop() {
 				case SDLK_u: // if the user presses 'u' -- this will be utility for now, and will change if fps is displayed or not
 					if (displayFPS) {
 						displayFPS = false;
-						gLevel1->SpriteLayer->AllSprites[7]->ChangeSource("AA29");
-						gLevel1->SpriteLayer->AllSprites[8]->ChangeSource("AA50");
+					//	gLevel1->SpriteLayer->AllSprites[7]->ChangeSource("AA29");
+					//	gLevel1->SpriteLayer->AllSprites[8]->ChangeSource("AA50");
 					}
 					else {
 						displayFPS = true;
-						gLevel1->SpriteLayer->AllSprites[7]->ChangeSource("AA29");
-						gLevel1->SpriteLayer->AllSprites[8]->ChangeSource("AA50");
+					//	gLevel1->SpriteLayer->AllSprites[7]->ChangeSource("AA29");
+					//	gLevel1->SpriteLayer->AllSprites[8]->ChangeSource("AA50");
 					}
 					break;
 				}

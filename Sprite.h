@@ -3295,7 +3295,7 @@ public:
 								}
 
 							} 
-							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]->OrderCreation] == 1) {
+							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]->OrderCreation] == 1) {
 								SpriteStacks[d]->SpriteYCollision.pop_back();
 								InvestigateIndexsY.push_back(d);
 								while (SpriteStacks[d]->SpriteYCollision.size() > 0   && CompletedSprites[SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() -1]->OrderCreation] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
