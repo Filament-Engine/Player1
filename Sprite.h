@@ -3953,6 +3953,10 @@ public:
 					y1 = y1 / TILE_HEIGHT;
 					y2 = y2 / TILE_HEIGHT;
 
+					//NEW - these are to prevent the jittering when the overlap is equal on the diagonal collision, when it should only stop on one axis because of how it was sliding. Of course, if you slide against two it's another story.
+					//CHECK - IDEA - perhaps I should compare overlap of diagonal to the edges, and figure out which axis matters first, resolve those, then attempt to resolve the remaining axis' if still relavent. Implement this after getting the jitter fixed maybe.
+					bool AdjustedX = false;
+					bool AdjustedY = false;
 
 					//Okay, so thinking this through, we want to calculate our overlap independently of what is doing above. 
 					//CHANGE - make hte loops work if x2=x1, but only run the necessary ones.
@@ -4874,22 +4878,46 @@ public:
 						//figure out overlap on x and y
 						//LL = x, UR = y
 						FigureOverlap(CurrentVictim, LLptr, URptr, LL, UR, wait);
+						if (LL[0] != 0) {
+							AdjustedX = true;
+						}
+						if (UR[1] != 0) {
+							AdjustedY = true;
+						}
+
 					}
 					else if (right && down) {
 						//figure out overlap on x and y
 						//UR = x, LL = y
 						FigureOverlap(CurrentVictim, URptr, LLptr, UR, LL, wait);
+						if (UR[0] != 0) {
+							AdjustedX = true;
+						}
+						if (LL[1] != 0) {
+							AdjustedY = true;
+						}
 					}
 					else if (left && down) {
 						//figure out overlap on x and y
-						//UL = x, LR = y
-						printf("Left, down, figure overlap\n");
+						//UL = x, LR = y 
 						FigureOverlap(CurrentVictim, ULptr, LRptr, UL, LR, wait);
+						if (UL[0] != 0) {
+							AdjustedX = true;
+						}
+						if (LR[1] != 0) {
+							AdjustedY = true;
+						}
 					}
 					else if (right && up) {
 						//figure out overlap on x and y
 						//LR = x, UL = y
 						FigureOverlap(CurrentVictim, LRptr, ULptr, LR, UL, wait);
+						if (LR[0] != 0) {
+							AdjustedX = true;
+						}
+						if (UL[1] != 0) {
+							AdjustedY = true;
+						}
 					}
 
 					//Great, now lets see if we got them edited back in hte original array.
@@ -4961,25 +4989,42 @@ public:
 						}
 						else { //Y=X
 							XC = UL[0];
-							YC = UL[1];
-							if (xChange > 0) { //right
-								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							YC = UL[1]; 
+							if ((AdjustedX && AdjustedY )|| (!AdjustedX && !AdjustedY) ) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							else { //left
-								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							else if (AdjustedX) {
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							if (yChange > 0) { //down
-								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+							else if (AdjustedY) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
 							}
-							else { //up
-								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
-							}
+
 						}
 					}
-					else if (right && down) { 
-						printf("Calcualte the diagonal (LR) overlap\n");
-						FigureOverlap(CurrentVictim, LRptr, LRptr, LR, LR, wait);
-						printf("Diagonal, R-D, %d, %d\n", LR[0], LR[1]);
+					else if (right && down) {  
+						FigureOverlap(CurrentVictim, LRptr, LRptr, LR, LR, wait); 
 						
 						if (LR[0] == 0 || LR[1] == 0) { //new, attempt to fix sliding. This is because the diagonal even though the overlap became 0 on one of the axis', it didn't slide because one or the other wasn't 0.
 							printf("NEW : Try to just ignore the overlap since one of the two is 0.\n");
@@ -5006,29 +5051,45 @@ public:
 								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
 							}
 						}
-						else { //Y=X
-							printf("Y=X\n");
+						else { //Y=X 
 							XC = LR[0];
 							YC = LR[1];
-							if (xChange > 0) { //right
-								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							if ((AdjustedX && AdjustedY) || (!AdjustedX && !AdjustedY)) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							else { //left
-								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							else if (AdjustedX) {
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							if (yChange > 0) { //down
-								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
-							}
-							else { //up
-								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							else if (AdjustedY) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
 							}
 						}
 
 
 
 					}
-					else if (left && down) { 
-						printf("TELEPORT DIAGONAL X\n");
+					else if (left && down) {  
 						FigureOverlap(CurrentVictim, LLptr, LLptr, LL, LL, wait);
 						if (LL[0] < LL[1]) { //X>Y
 							XC = LL[0];
@@ -5057,29 +5118,40 @@ public:
 						}
 						else { //Y=X
 							XC = LL[0];
-							YC = LL[1];
-							if (XC == 16) {
-								XC = 0;
+							YC = LL[1]; 
+							if ((AdjustedX && AdjustedY) || (!AdjustedX && !AdjustedY)) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							if (YC == 16) {
-								YC = 0;
+							else if (AdjustedX) {
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							if (xChange > 0) { //right
-								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
-							}
-							else { //left
-								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
-							}
-							if (yChange > 0) { //down
-								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
-							}
-							else { //up
-								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							else if (AdjustedY) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
 							}
 						}
 					}
-					else if (right && up) { 
-						printf("TELEPORT DIAGONAL XY\n");
+					else if (right && up) {  
 						FigureOverlap(CurrentVictim, URptr, URptr, UR, UR, wait);
 						if (UR[0] < UR[1]) { //X>Y
 							XC = UR[0];
@@ -5102,17 +5174,35 @@ public:
 						else { //Y=X
 							XC = UR[0];
 							YC = UR[1];
-							if (xChange > 0) { //right
-								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+							if ((AdjustedX && AdjustedY) || (!AdjustedX && !AdjustedY)) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							else { //left
-								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+							else if (AdjustedX) {
+								if (yChange > 0) { //down
+									CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
+								}
+								else { //up
+									CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+								}
 							}
-							if (yChange > 0) { //down
-								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
-							}
-							else { //up
-								CurrentVictim->TeleportY(CurrentVictim->yPos + YC);
+							else if (AdjustedY) {
+								if (xChange > 0) { //right
+									CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
+								}
+								else { //left
+									CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
+								}
 							}
 						}
 					}
