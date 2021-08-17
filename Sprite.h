@@ -3228,11 +3228,17 @@ public:
 
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
 
+			if (AllSprites[i]->OrderCreation == 1) {
+				printf("1)\n"); SDL_Delay(250);
+			}
 
 			//deleted large comment here, not sure why I had it. maybe based on previous version of stack?
 
 			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
 			if (Queue2[i] != NULL) { //redudant, archaic
+					if (AllSprites[i]->OrderCreation == 1) {
+						printf("2)\n"); SDL_Delay(250);
+					}
 					if (Debug) {
 						printf("1\n");
 					}
@@ -3253,8 +3259,8 @@ public:
 
 					//success
 					if (TempStackable->Victim == NULL || (TempStackable->SpriteXCollision.size() < 1 && TempStackable->SpriteYCollision.size() < 1)) { //victim reduces the checks
-						if (Queue2[i]->OrderCreation == 7) {
-							printf("Object8 Success position = {%d, %d}\n", Queue2[i]->xPos, Queue2[i]->yPos);
+						if (AllSprites[i]->OrderCreation == 1) {
+							printf("3)\n"); SDL_Delay(250);
 						}
 						delete TempStackable;
 						if (Debug) {
@@ -3280,7 +3286,7 @@ public:
 						for (int d = 0; d < SpriteStacks.size(); d++) {
 
 							//NOTE NOTE NOTE NOTE THIS NEEDS TO WORK UP A QUE SO LONG AS I>POPPED CREATIONORDER && COMPLETEDSPRITES[ORDERCREATION]==1, SO WE'VE FOUND THE START OF IT, NOW MAKE A WHILE THAT GOES 'UP' THE STACK
-							if (SpriteStacks[d]->SpriteXCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]) {
+							if (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]->OrderCreation] == 1) {
 								SpriteStacks[d]->SpriteXCollision.pop_back();
 								InvestigateIndexsX.push_back(d);
 								while (SpriteStacks[d]->SpriteXCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteXCollision[  SpriteStacks[d]->SpriteXCollision.size() -1]->OrderCreation] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
@@ -3289,7 +3295,7 @@ public:
 								}
 
 							} 
-							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && Queue2[i] == SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() - 1]) {
+							if (SpriteStacks[d]->SpriteYCollision.size() > 0 && CompletedSprites[SpriteStacks[d]->SpriteXCollision[SpriteStacks[d]->SpriteXCollision.size() - 1]->OrderCreation] == 1) {
 								SpriteStacks[d]->SpriteYCollision.pop_back();
 								InvestigateIndexsY.push_back(d);
 								while (SpriteStacks[d]->SpriteYCollision.size() > 0   && CompletedSprites[SpriteStacks[d]->SpriteYCollision[SpriteStacks[d]->SpriteYCollision.size() -1]->OrderCreation] == 1) { //while there are things left to pop AND they have already successfully moved - will break when either your out of things to pop, or those items are ahead of the original Sprite you popped.
@@ -3302,7 +3308,9 @@ public:
 							printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
 						}
 						if (InvestigateIndexsY.size() > 0 || InvestigateIndexsX.size() > 0) {
-							
+							if (AllSprites[i]->OrderCreation == 1) {
+								printf("4)\n"); SDL_Delay(250);
+							}
 								printf("Start Handle\n\n");
 							
 							HandleCollision2(InvestigateIndexsX, InvestigateIndexsY, SpriteStacks, CompletedSprites, i);
@@ -3321,20 +3329,10 @@ public:
 
 					}
 					else {
-						 
-						if (TempStackable->Victim->OrderCreation == 7) {
-							printf("Object8 stack looks like :\n");
-							printf("SpriteX ={");
-							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
-								printf("%d, ", TempStackable->SpriteXCollision[j]->OrderCreation+1);
-							}
-							printf("}\n");
-							printf("SpriteY ={");
-							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
-								printf("%d, ", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
-							}
-							printf("}\n");
-						}
+						if (AllSprites[i]->OrderCreation == 1) {
+							printf("6)\n"); SDL_Delay(250);
+						 }
+						
 						if (Debug) {
 							printf("Push back the temp stack\n");
 						}
@@ -3555,8 +3553,7 @@ public:
 	}
 	
 	void HandleCollision2(std::vector<int>InvestigateX, std::vector<int>InvestigateY, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation) {
-
-		printf("-2) Please Handle the Collision\n\n");
+		
 		//already popped back the first we found. Now investigate those idnexes
 		//1) Are you already completed <-pop back, add to our list
 		//2) are you less than the current que location? And are you not a victim? pop back (this may be unlikely or mpossible)
@@ -3730,29 +3727,33 @@ public:
 		}
 
 		if (VictimsNoLonger.size() == 0) {
-			printf("The victim list was empty\n");
-		}
 
-		while (VictimsNoLonger.size() != 0) {
-			printf("-1) Please Handle the Victims\n\n");
-			if (Debug) {
-				printf("Top of VictimsNoLonger while loop\n");
-				printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
+			while (VictimsNoLonger.size() != 0) {
+				if (VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 1) {
+					printf("5)\n"); SDL_Delay(250);
+				}
+				if (Debug) {
+					printf("Top of VictimsNoLonger while loop\n");
+					printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
+				}
+				HandleVictims(VictimsNoLonger[VictimsNoLonger.size() - 1], SpriteStacks, CompletedSprites, QueLocation, VictimsNoLonger); //new
+				if (Debug) {
+					printf("Finished HandleVictims\n");
+				}
+				VictimsNoLonger.pop_back(); //no matter what, either it moves or it doesn't, but it won't be part of the sprites stack anymore, thus there will never be another check for it
+				if (Debug) {
+					printf("Popped the victim from the stack\n");
+				}
 			}
-			HandleVictims(VictimsNoLonger[VictimsNoLonger.size() - 1], SpriteStacks, CompletedSprites, QueLocation, VictimsNoLonger); //new
-			if (Debug) {
-				printf("Finished HandleVictims\n");
-			}
-			VictimsNoLonger.pop_back(); //no matter what, either it moves or it doesn't, but it won't be part of the sprites stack anymore, thus there will never be another check for it
-			if (Debug) {
-				printf("Popped the victim from the stack\n");
-			}
-		}
-		//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
 
+			//since we popbacked each instance of the stacked sprite, we will investigate each of these locations again. We will erase it if it could not be erased.
+		}
 	}
 
 	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*>& VictimsNoLongerOrigin) {
+		if (CurrentVictim->OrderCreation == 1) {
+			printf("8)\n"); SDL_Delay(250);
+		}
 		bool Debug = false;
 		//move victim,
 		if (Debug) {
@@ -3831,7 +3832,15 @@ public:
 
 
 			if (x > 0 && y > 0) {
+				if (CurrentVictim->OrderCreation == 1) {
+					printf("8.1)\n"); SDL_Delay(250);
+				}
 				if (xChange != 0 && yChange != 0) {
+				
+					if (CurrentVictim->OrderCreation == 1) {
+						printf("8.2)\n"); SDL_Delay(250);
+					}
+
 					/* 
 					int XC;
 					int YC;
@@ -3970,7 +3979,7 @@ public:
 					int UR[2] = { -1000, -1000 };
 					int LR[2] = { -1000, -1000 };
 
-					Sprite* ULptr[2] = { nullptr, nullptr };
+					Sprite* ULptr[2] = { nullptr,nullptr };
 					Sprite* LLptr[2] = { nullptr,nullptr };
 					Sprite* URptr[2] = { nullptr,nullptr };
 					Sprite* LRptr[2] = { nullptr,nullptr };
@@ -5209,7 +5218,9 @@ public:
 					//CHANGE - flip the less than, and swap between the two the insides of each if else.
 					printf("Time to pause\n");
 					SDL_Delay(500);
-
+					if (CurrentVictim->OrderCreation == 1) {
+						printf("8.3)\n"); SDL_Delay(250);
+					}
 					//Now, if this works, there should be no jumping, no overlap, and most importantly, no stopping when sliding.
 					//okay so the overlap = 0 when it should be 16 is a problem... so I'll make it able to be 16, BUT if thats an issue, I'll check for if it's 0 in the statements above.
 
@@ -5233,6 +5244,9 @@ public:
 			 
 			else if (x > 0) {
 			//pause printf("Moving X direction only\n"); SDL_Delay(2000);
+				if (CurrentVictim->OrderCreation == 1) {
+					printf("8.4)\n"); SDL_Delay(250);
+				}
 				int XC;
 				if (xChange > 0) { // if moving right
 					printf("Sprite was moving Right\n");
@@ -5267,6 +5281,9 @@ public:
 
 			else if (y > 0) {
 			//pause printf("Moving Y direction only\n"); SDL_Delay(2000);
+				if (CurrentVictim ->OrderCreation == 1) {
+					printf("8.5)\n"); SDL_Delay(250);
+				}
 				int YC;
 				if (yChange > 0) { // if moving down
 					printf("Sprite was moving down\n");
@@ -5389,7 +5406,9 @@ public:
 			if (Debug) {
 				printf("Teleport Complete!\n");
 			}
-
+			if (CurrentVictim->OrderCreation == 1) {
+				printf("8.6)\n"); SDL_Delay(250);
+			}
 			ReMapSprite(CurrentVictim); //quesiton, if I have two objects taht odn't oved on top of one another, this collision shoudl go off, and the undo, does that just keep it in the same space, no matter what? I feel like kif it doesn't move I shouldn't even allow it to enter the que in the first place... questions for later, might be less worth while the less object collision stacks that are possible. I should make some ratio of level to sprites to control how 'involved' the stack process is. for now lets go as deep as possible with the computation aspect, and trim down for other cases where the user doesn't care for such exact detections.
 			if (Debug) {
 				printf("Remap Object%d [Current Victim]\n", CurrentVictim->OrderCreation + 1);
@@ -5400,6 +5419,9 @@ public:
 
 		}
 		else { //it moved!
+			if (CurrentVictim->OrderCreation == 1) {
+				printf("8.7)\n"); SDL_Delay(250);
+			}
 			if (Debug) {
 				printf("It moved! Now to recheck the stack!\n");
 			}
@@ -5657,6 +5679,9 @@ public:
 
 			//This now inserts newly uncovered victims into the victimsNoLonger vector appropriately. This is so when this function returns, you can then try moving it again. 
 			while (VictimsNoLonger.size() > 0) {
+				if (CurrentVictim->OrderCreation == 1) {
+					printf("8.8)\n"); SDL_Delay(250);
+				}
 				if (Debug) {
 					printf("Top of VictimsNoLonger BinSearch Loop\n");
 					printf("Victims No Longer Size = %d, Origin Size = %d\n", VictimsNoLonger.size(), VictimsNoLongerOrigin.size());
@@ -5681,7 +5706,9 @@ public:
 		//This SHOULD work if I'm doing what I think I am - which is anything amrked as compeltedsprites[x]==1 is removed from the stack, thus we should be able to remove everything up to the currentQue location
 		//thus we should be able to get through all of victimsnomore.
 
-
+		if (CurrentVictim->OrderCreation == 1) {
+			printf("8.9)\n"); SDL_Delay(250);
+		}
 		//pause printf("6) Moving Diagonally\n"); SDL_Delay(2000);
 	}
 	
