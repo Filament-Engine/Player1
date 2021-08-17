@@ -5296,13 +5296,6 @@ public:
 
 
 
-
-
-
-
-
-
-
 			if (Debug) {
 				printf("Teleport Complete!\n");
 			}
