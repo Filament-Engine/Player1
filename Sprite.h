@@ -957,8 +957,14 @@ public:
 
 
 
-	void CheckFutureSpritePosition3(int x1, int y1, int ModDirection, int ModAxis) {
+	int CheckFutureSpritePosition3(Sprite* CurrentVictim, int x1, int y1, int ModDirection, char ModAxis) {
+		bool Debug = true;
 		//Step one, take x1, or y1, and make sure you properly 'teleported' that number for the future position
+		if (Debug) {
+			printf("Double check that these values seem appropraite for Object%d\n", CurrentVictim->OrderCreation + 1);
+			printf("Object's Current Position = {%d, %d}\n", CurrentVictim->xPos, CurrentVictim->yPos);
+			printf("Object's Proposed Position = {%d, %d}\n", x1, y1);
+		}
 		//Step two, make sure you passed in the right 'moddirection', so if your going down right, and get pushed back on the x axis, then we want to check/undo the y axis overlap.
 		//Step three, Mod Axis controls roughly how much we have to program at first. 
 
@@ -976,7 +982,10 @@ public:
 
 		//Now the code jack insterted code. forgot what it does exactly. I believe it's to sift through and only take the most collision? Or something?
 		//Step 11 - in the other one, CheckFuture 2 we woudl return the TempStackable, HOWEVER we don't, we will just take the highest, most relevant collision type overlap and adjust according to that. 
-
+		if (Debug) {
+			printf("Object's Proposed Jostled Position = {%d, %d}\n", x1, y1);
+		}
+		return 0; //default
 		
 	}
 
@@ -984,52 +993,68 @@ public:
 		//will have to test that the arrays are edited back in the MoveAllSprites 
 		//NOTE, we should change each of these to resemble the logic in xChange>0
 
-		printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
-		
-		if (Xptr[0] != nullptr && Yptr[1] != nullptr) {
-			if (Xptr[0] != Yptr[1]) {
-				printf("DIAGONAL COLLISION: ");
-			}
-			printf("Object%d, Object%d\n", Xptr[0]->OrderCreation + 1, Yptr[1]->OrderCreation + 1);
-		}
-		else if (Xptr[0]!=nullptr) {
-			printf("X = Object%d\n", Xptr[0]->OrderCreation + 1);
-		}
-		else if (Yptr[1] != nullptr) {
-			printf("Y = Object%d\n", Yptr[1]->OrderCreation + 1);
+		bool Debug = true;
+
+		if (Debug) {
+			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
 		}
 
+		if (Debug) {
+
+			if (Xptr[0] != nullptr && Yptr[1] != nullptr) {
+				if (Xptr[0] != Yptr[1]) {
+					printf("DIAGONAL COLLISION: ");
+				}
+				printf("Object%d, Object%d\n", Xptr[0]->OrderCreation + 1, Yptr[1]->OrderCreation + 1);
+			}
+			else if (Xptr[0] != nullptr) {
+				printf("X = Object%d\n", Xptr[0]->OrderCreation + 1);
+			}
+			else if (Yptr[1] != nullptr) {
+				printf("Y = Object%d\n", Yptr[1]->OrderCreation + 1);
+			}
+		}
 		int XC;
 		int YC;
 		int xChange = CurrentVictim->xVec;
 		int yChange = CurrentVictim->yVec;
 		//calculate overlap according to direction
 
-		
-		printf("CALCULATE X\n");
+		if (Debug) {
+			printf("CALCULATE X\n");
+		}		
 		if (Xptr[0] != nullptr) {
 			if (xChange > 0) { // if moving right
-				printf("Sprite was moving Right\n");
-
+				if (Debug) {
+					printf("Sprite was moving Right\n");
+				}
 				if (Xptr[0]->xPos > CurrentVictim->xPos) {
 					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-					printf("Attempt 1: XC = %d\n", XC);
+					if (Debug) {
+						printf("Attempt 1: XC = %d\n", XC);
+					}
 				}
 				else {
-					XC = Xptr[0]->xPos +TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-					printf("Attempt 2: XC = %d\n", XC);
+					XC = Xptr[0]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
+					if (Debug) {
+						printf("Attempt 2: XC = %d\n", XC);
+					}
 				}
 
 				if (XC > 16 || XC < 0) {
 					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-					printf("Attempt 3: XC = %d\n", XC);
+					if (Debug) {
+						printf("Attempt 3: XC = %d\n", XC);
+					}
 				}
 				/* 
 				if (XC == 16) {
 					XC = 0;
 				}
 				*/
-				printf("1 TempOverlapX=%d\n", XC);
+				if (Debug) {
+					printf("1 TempOverlapX=%d\n", XC);
+				}
 				pause = true;
 				/* if (XC == 0) {
 					XC = 16;
@@ -1060,27 +1085,41 @@ public:
 			}
 		}
 		else {
-			printf("nullptr passed for Xptr\n");
+			if (Debug) {
+				printf("nullptr passed for Xptr\n");
+			}
 			XC = 0;
 		}
-		printf("CALCULATE Y\n");
+		if (Debug) {
+			printf("CALCULATE Y\n");
+		}
 		if (Yptr[1] != nullptr) {
 			if (yChange > 0) { // if moving down
-				printf("Sprite was moving down\n");
+				if (Debug) {
+
+					printf("Sprite was moving down\n");
+				}
 				YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("Attempt 1: YC = %d\n", YC);
+				if (Debug) {
+					printf("Attempt 1: YC = %d\n", YC);
+				}
 				YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("Attempt 2: YC = %d\n", YC);
-				if (YC > 16 || YC < 0) {
+				if (Debug) {
+					printf("Attempt 2: YC = %d\n", YC);
+				}if (YC > 16 || YC < 0) {
 					YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-					printf("Attempt 3: YC = %d\n", YC);
+					if (Debug) {
+						printf("Attempt 3: YC = %d\n", YC);
+					}
 				}
 				/* 
 				if (YC == 16) {
 					YC = 0;
 				}
 				*/
-				printf("3 TempOverlapY=%d\n", YC);
+				if (Debug) {
+					printf("3 TempOverlapY=%d\n", YC);
+				}
 				pause = true;
 				/* if (YC == 0) {
 					YC = 16;
@@ -1088,14 +1127,22 @@ public:
 
 			}
 			else { // if moving up
-				printf("Sprite was moving up\n");
+				if (Debug) {
+					printf("Sprite was moving up\n");
+				}
 				YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("Attempt 1: YC = %d\n", YC);
+				if (Debug) {
+					printf("Attempt 1: YC = %d\n", YC);
+				}
 				YC = Yptr[1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("Attempt 2: YC = %d\n", YC);
+				if (Debug) {
+					printf("Attempt 2: YC = %d\n", YC);
+				}
 				if (YC > 16 || YC < 0) {
 					YC = CurrentVictim->yPos + TILE_HEIGHT - Yptr[1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-					printf("Attempt 3: YC = %d\n", YC);
+					if (Debug) {
+						printf("Attempt 3: YC = %d\n", YC);
+					}
 				}
 				/* 
 				if (YC == 16) {
@@ -1103,7 +1150,9 @@ public:
 				}
 				*/
 				//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-				printf("4 TempOverlapY=%d\n", YC);
+				if (Debug) {
+					printf("4 TempOverlapY=%d\n", YC);
+				}
 				pause = true;
 				/* if (YC == 0) {
 					YC = 16;
@@ -1112,16 +1161,106 @@ public:
 			}
 		}
 		else {
-			printf("nullptr passed for Yptr\n");
+			if (Debug) {
+				printf("nullptr passed for Yptr\n");
+			}
 			YC = 0;
 		}
 
-		printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
 
 		OverlapX[0] = XC;
 		OverlapY[1] = YC;
-		printf("4 TempOverlapY=%d\n", YC);
-		printf("2 TempOverlapX=%d\n", XC);
+		if (Debug) {
+			printf("4 TempOverlapY=%d\n", YC);
+			printf("2 TempOverlapX=%d\n", XC);
+			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
+		}
+
+
+		//NEW stuff, trying to jostle in this if statement
+		if (CurrentVictim->xVec != 0 && CurrentVictim->yVec != 0 && (Xptr[0] != Yptr[1])) {
+			//corners for 'teleport', so adjusted for it's future movement position (already done in ahdnlevictim), then teleport (done in this next if), then jostle, then return the jostle into the appropriate VC.
+			int x1 = CurrentVictim->xPos;
+			int y1 = CurrentVictim->yPos;
+			if (YC == 0 && XC != 0) {
+				if (Debug) {
+					printf("Y Axis needs to be checked after a 'teleport' on the X Axis\n");
+				}
+				if (CurrentVictim->xVec > 0) { //going right
+					if (CurrentVictim->yVec>0) {
+						if (Debug) {
+							printf("1\n");
+						}
+						YC=CheckFutureSpritePosition3(CurrentVictim, x1 - XC, y1, 11, 'y'); //just going down
+					} 
+					else {
+						if (Debug) {
+							printf("2\n");
+						}
+						YC=CheckFutureSpritePosition3(CurrentVictim, x1 - XC, y1, 9, 'y'); //just going up
+					}
+				}
+				else { //going left
+					if (CurrentVictim->yVec > 0) {
+						if (Debug) {
+							printf("3\n");
+						}
+						YC = CheckFutureSpritePosition3(CurrentVictim, x1 + XC, y1, 11, 'x'); //just going down
+					}
+					else {
+						if (Debug) {
+							printf("4\n");
+						}
+						YC = CheckFutureSpritePosition3(CurrentVictim, x1 + XC, y1, 9, 'x'); //just going up
+					}
+				}
+			}
+			else if (YC != 0 && XC == 0) {
+				if (Debug) {
+					printf("X Axis needs to be checked after a 'teleport' on the Y Axis\n");
+				}
+				if (CurrentVictim->yVec > 0) { //going down
+					if (CurrentVictim->xVec > 0) {
+						if (Debug) {
+							printf("5\n");
+						}
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 - (16 - YC), 14, 'y'); //just going right
+					}
+					else {
+						if (Debug) {
+							printf("6\n");
+						}
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 - YC, 6, 'y'); //just going left
+					}
+				}
+				else { //going up
+					if (CurrentVictim->xVec > 0) {
+						if (Debug) {
+							printf("7\n");
+						}
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 + YC, 9, 'y'); //just going right
+					}
+					else {
+						if (Debug) {
+							printf("8\n");
+						}
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 + YC, 9, 'y'); //just going left
+					} 
+				}
+			}
+		}
+		if (Debug) {
+			printf("After Jostling\n");
+		}
+		OverlapX[0] = XC;
+		OverlapY[1] = YC;
+		if (Debug) {
+			printf("4 TempOverlapY=%d\n", YC);
+			printf("2 TempOverlapX=%d\n", XC);
+			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
+		}
+
+
 		//make sure each overlap is appropriate....
 		if (YC > 16 || YC < 0) {
 			printf("We've got a problem sir!\n"); 
@@ -2883,7 +3022,8 @@ public:
 			}
 		}
 
-		//end of Jacks insertion. I should check this later.
+		//end of Jacks insertion. I should check this later. - I believe this gets rid of duplicates in the collision list (because multiple corners could collide, or a sprite may occupy two cells and be collided with by two different corners for hte check or something
+
 
 		if (Debug) {
 			if (Measure != 10) {
