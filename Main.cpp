@@ -128,8 +128,9 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//NEW - the order of creation gives them an 'int name' which shoudl be unchanged for the rest of the program .might make it static later.
 				//ALSO this distance function just returns its position in the que, so if it's the ifrst object then it would be begin-(past the end itter), =   0-1=|-1|=1, etc.
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
-				
-				
+			
+
+				/* 
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
@@ -144,8 +145,49 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object4);
 				//NOTE YOU MUST MAP SPRITE BEFORE DECLARING THE REST, OTHERWISE THE ORDER IS THE SAME!!! (may be useful but might not be, who knows....)
+				 */
 				 
-				 
+
+				
+				//RANDOM SPRITES BEGIN
+				//kept Object1 because it's global, don't want to mess anything up.
+				Object1 = new Sprite(16, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
+				//check to see if distance is working as expected.
+				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
+				gLevel1->SpriteLayer->MapSprite(Object1); //NEW
+				std::vector<Sprite*> RandomMoveSprites;
+				//0-20 (width wise, don't have gaurd for going over edge of spawn area).
+				RandomMoveSprites.resize(10); //now it has space for 20 objects given to it, I choose 20 because it's roughly 1/3rd of the width of level using concentric
+				int xPosTemp = 0;
+				int yPosTemp = 0;
+				for (int j = 0; j < RandomMoveSprites.size(); j++) {
+					//they will all start on the first row, but three colomns apart (each occupying the 'third' column.
+					RandomMoveSprites[j] = new Sprite(xPosTemp, yPosTemp, "AA259", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end()), "RandomMove");
+					printf("Object%d, created order = %d, Position={%d, %d}\n", j + 2, Object1->OrderCreation, xPosTemp, yPosTemp);
+					gLevel1->SpriteLayer->MapSprite(RandomMoveSprites[j]); //NEW
+					if (xPosTemp > (LEVEL_WIDTH - 3) * TILE_WIDTH) {
+						xPosTemp = 0;
+						yPosTemp += 32;
+					}
+					else {
+						xPosTemp += 32;
+					}
+				}
+				//RANDOM SPRITES END
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
 				 
 				//TEST TELEPORT OBJECTS END
 				
@@ -202,6 +244,7 @@ void handleLoop() {
 
 	// begin loop
 	while (!quit) {
+		TOTALFRAMECOUNT++;
 		capTimer.start(); // starts the max fps timer 
 		while (SDL_PollEvent(&e) != 0) {	// this is checking to see if there is an event or not 
 			if (e.type == SDL_QUIT) {	// if the user event is "QUIT" then...
@@ -375,6 +418,8 @@ void handleLoop() {
 		}
 
 
+		//FOR MANUAL TESTS
+		/* 
 		if (Object2or3Moved) {
 			printf("Adjusted positions - OB1 OB2 OB3 = {%d, %d}, {%d, %d}, {%d, %d}\n", Object1->xPos, Object1->yPos, Object2->xPos, Object2->yPos, Object3->xPos, Object3->yPos);
 			printf("Giving you time to lift the key up\n");
@@ -385,6 +430,7 @@ void handleLoop() {
 			SDL_Delay(0);
 			pause = false;
 		}
+		*/
 
 
 		// calculating fps

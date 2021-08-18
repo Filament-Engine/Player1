@@ -3228,7 +3228,12 @@ public:
 
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
 			 
-
+			if (i == 7 || i == 9 || i == 10) {
+				Debug = true;
+			}
+			else {
+				Debug = false;
+			}
 			//deleted large comment here, not sure why I had it. maybe based on previous version of stack?
 
 			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
@@ -3531,14 +3536,15 @@ public:
 			if (TIME < 17) {
 				for (int i = 0; i < AllSprites.size(); i++) {
 					if (CheckOverlap(AllSprites[i])) {
-						SDL_Delay(600000);
+						printf("Total Frames Passed since inintialization = %d\n", TOTALFRAMECOUNT);
+						SDL_Delay(3600000);
 					}
 				}
 			}
 		}
 
 		if (Debug) {
-			printf("Pause Opportunity\n"); SDL_Delay(1500);
+			printf("Pause Opportunity\n"); //SDL_Delay(1500);
 		}
 
 
@@ -3556,6 +3562,9 @@ public:
 		std::vector<int> EraseableY = {};
 		bool Debug = false;
 		//xs
+
+
+
 
 		if (Debug) {
 			printf("Remove Sprite we found at the end of the stack (I believe already done in the main)\n");
@@ -3722,6 +3731,13 @@ public:
 		}
 
 			while (VictimsNoLonger.size() != 0) {  
+				if (VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 7 || VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 9 || VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 10) {
+					Debug = true;
+				}
+				else {
+					Debug = false;
+				}
+
 				if (Debug) {
 					printf("Top of VictimsNoLonger while loop\n");
 					printf("Take care of victim = Object%d\n", VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation + 1);
@@ -3743,6 +3759,16 @@ public:
 	void HandleVictims(Sprite* CurrentVictim, std::vector<XYArr*>& SpriteStacks, std::vector<int>& CompletedSprites, int QueLocation, std::vector<Sprite*>& VictimsNoLongerOrigin) {
 		 
 		bool Debug = false;
+
+		if (CurrentVictim->OrderCreation == 7 || CurrentVictim->OrderCreation == 9 || CurrentVictim->OrderCreation == 10) {
+			Debug = true;
+		}
+		else {
+			Debug = false;
+		}
+
+
+
 		//move victim,
 		if (Debug) {
 			printf("Try to move Object%d [handlevictim]\n", CurrentVictim->OrderCreation + 1);
@@ -3771,8 +3797,8 @@ public:
 			int yChange = CurrentVictim->yVec; // +1 means moved down, -1 means moved up
 			if (Debug) {
 				printf("%d %d\n", xChange, yChange);
-				printf("Size of Temp Stackable = %d\n", TempStackable->SpriteXCollision.size());
-				printf("Size of Temp Stackable Y%d\n", TempStackable->SpriteYCollision.size());
+				printf("Size of Temp StackableX = %d\n", TempStackable->SpriteXCollision.size());
+				printf("Size of Temp StackableY =%d\n", TempStackable->SpriteYCollision.size());
 
 			}
 			int x = TempStackable->SpriteXCollision.size(); // this is done so the same function is not called multiple times
@@ -3786,20 +3812,6 @@ public:
 
 
 			bool wait = false;
-
-
-			/*
-			XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-						printf("Attempt 1: XC = %d\n", XC);
-						XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-						printf("Attempt 2: XC = %d\n", XC);
-						if (XC > 16 || XC< 0) {
-							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-							printf("Attempt 3: XC = %d\n", XC);
-						}
-		*/
-			
-			/**/
 
 			//print out stackables
 			if (false) {
@@ -3820,90 +3832,7 @@ public:
 
 
 			if (x > 0 && y > 0) { 
-				if (xChange != 0 && yChange != 0) {
-				 
-
-					/* 
-					int XC;
-					int YC;
-					//calculate overlap according to direction
-					if (xChange > 0) { // if moving right
-						printf("Sprite was moving Right\n");
-
-						if (TempStackable->SpriteXCollision[x - 1]->xPos > CurrentVictim->xPos) {
-							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-							printf("Attempt 1: XC = %d\n", XC);
-						}
-						else {
-							XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-							printf("Attempt 2: XC = %d\n", XC);
-						}
-
-						if (XC > 16 || XC < 0) {
-							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-							printf("Attempt 3: XC = %d\n", XC);
-						}
-
-						if (XC == 16) {
-							XC = 0;
-						}
-						printf("1 TempOverlapX=%d\n", XC);
-						pause = true;
-
-					}
-					else { // if moving left
-						printf("Sprite was moving Left\n");
-						XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-						printf("Attempt 1: XC = %d + %d - %d = %d\n", CurrentVictim->xPos, TILE_WIDTH, TempStackable->SpriteXCollision[x - 1]->xPos, XC);
-						XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-						printf("Attempt 2: XC = %d\n", XC);
-						if (XC > 16 || XC < 0) {
-							XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-							printf("Attempt 3: XC = %d\n", XC);
-						}
-						if (XC == 16) {
-							XC = 0;
-						}
-						printf("2 TempOverlapX=%d\n", XC);
-						pause = true;
-
-					}
-					if (yChange > 0) { // if moving down
-						printf("Sprite was moving down\n");
-						YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-						printf("Attempt 1: YC = %d\n", YC);
-						YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-						printf("Attempt 2: YC = %d\n", YC);
-						if (YC > 16 || YC < 0) {
-							YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-							printf("Attempt 3: YC = %d\n", YC);
-						}
-						if (YC == 16) {
-							YC = 0;
-						}
-						printf("3 TempOverlapY=%d\n", YC);
-						pause = true;
-
-					}
-					else { // if moving up
-						printf("Sprite was moving up\n");
-						YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-						printf("Attempt 1: YC = %d\n", YC);
-						YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-						printf("Attempt 2: YC = %d\n", YC);
-						if (YC > 16 || YC < 0) {
-							YC = CurrentVictim->yPos + TILE_HEIGHT - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-							printf("Attempt 3: YC = %d\n", YC);
-						}
-						if (YC == 16) {
-							YC = 0;
-						}
-						//YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-						printf("4 TempOverlapY=%d\n", YC);
-						pause = true;
-
-					}
-					*/
+				if (xChange != 0 && yChange != 0) { 
 					//hopper called before - so that we have the same object. 
 						//this may cause errors, consider theres a 1 by 1 overlap with an object above you, to the right, and one to your left. obviously you want to stop in that case, but if we just loook at one, it'll have us keep going left for hte sliding. in that case, we should adjust to be at the proper location, pop_back, and then adjust again on the other axis.
 
@@ -5198,8 +5127,12 @@ public:
 						}
 					}
 					//CHANGE - flip the less than, and swap between the two the insides of each if else.
+					
+					
 					printf("Time to pause\n");
-					SDL_Delay(500); 
+					//SDL_Delay(500);
+					 
+					 
 					//Now, if this works, there should be no jumping, no overlap, and most importantly, no stopping when sliding.
 					//okay so the overlap = 0 when it should be 16 is a problem... so I'll make it able to be 16, BUT if thats an issue, I'll check for if it's 0 in the statements above.
 
@@ -5286,7 +5219,7 @@ public:
 			}
 
 			if (wait) {
-				SDL_Delay(10000);
+				//SDL_Delay(10000);
 				wait = false;
 			}
 			  
