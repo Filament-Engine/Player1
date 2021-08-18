@@ -966,6 +966,27 @@ public:
 			printf("Object's Proposed Position = {%d, %d}\n", x1, y1);
 		}
 		//Step two, make sure you passed in the right 'moddirection', so if your going down right, and get pushed back on the x axis, then we want to check/undo the y axis overlap.
+		
+		if (Debug) {
+			if (CurrentVictim->xVec > 0 && CurrentVictim->yVec > 0) {
+				printf("Actual Direction is = %d\n", 15);
+			}
+			else if (CurrentVictim->xVec < 0 && CurrentVictim->yVec > 0) {
+				printf("Actual Direction is = %d\n", 7);
+			}
+			else if (CurrentVictim->xVec > 0 && CurrentVictim->yVec < 0) {
+				printf("Actual Direction is = %d\n", 13);
+			}
+		
+			else if (CurrentVictim->xVec < 0 && CurrentVictim->yVec < 0) {
+				printf("Actual Direction is = %d\n", 5);
+			}
+			else {
+				printf("HM? NANI\n");
+			}
+			printf("Proposed Direction (For Proposed Position) = %d\n", ModDirection);
+		}
+		
 		//Step three, Mod Axis controls roughly how much we have to program at first. 
 
 		//step 4 - check for the x1 x2 y1 y2 TempMath
