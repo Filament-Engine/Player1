@@ -953,6 +953,33 @@ public:
 	
 
 
+
+
+
+
+	void CheckFutureSpritePosition3(int x1, int y1, int ModDirection, int ModAxis) {
+		//Step one, take x1, or y1, and make sure you properly 'teleported' that number for the future position
+		//Step two, make sure you passed in the right 'moddirection', so if your going down right, and get pushed back on the x axis, then we want to check/undo the y axis overlap.
+		//Step three, Mod Axis controls roughly how much we have to program at first. 
+
+		//step 4 - check for the x1 x2 y1 y2 TempMath
+		//step 5 - Guard from Map/Matrix Overflow (reverse this and last)
+		//step 6 - becomes a bit unclear from here on. Obtain the directoin (somehow) known as Measure in checkfuture2
+		//step 7 -Store TempXOverlap, TempYOverlap, as well as two others, xOverlpped, yOverlapped=0;
+		//Step 8 - Figure out hte overlap based on the future CORNER position on the LM Matrix, store the overlap in TempXOverlap, TempYOverlap.
+		//This should be able to be taken directly from The Measure checks. 
+		
+		//Step 9 - Pushback to SpriteOVerlapX, or SpriteOverlapY vectors.
+		//Reset the TempX/YOverlap to 0. 
+
+		//Step10 - after the overlap's all be nstorred, we will merge sort it into a new vector, SpriteOVerlapX, SpriteOverlapY, and SpriteX, and SpriteY that hold overlap values
+
+		//Now the code jack insterted code. forgot what it does exactly. I believe it's to sift through and only take the most collision? Or something?
+		//Step 11 - in the other one, CheckFuture 2 we woudl return the TempStackable, HOWEVER we don't, we will just take the highest, most relevant collision type overlap and adjust according to that. 
+
+		
+	}
+
 	void FigureOverlap(Sprite* CurrentVictim, Sprite* Xptr[2], Sprite* Yptr[2], int OverlapX[2], int OverlapY[2], bool & wait) {
 		//will have to test that the arrays are edited back in the MoveAllSprites 
 		//NOTE, we should change each of these to resemble the logic in xChange>0
