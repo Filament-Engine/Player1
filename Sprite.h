@@ -225,6 +225,7 @@ public:
 
 	bool MoveX(int x) { // it's possible we will want int x to be an argument in the object class instead of this function
 		xPos += x;
+
 		if (xPos < 0 || xPos + TILE_WIDTH - 1 >= LEVEL_WIDTH * TILE_WIDTH) {
 			xPos -= x;
 			return 1;
@@ -957,13 +958,14 @@ public:
 
 
 
-	int CheckFutureSpritePosition3(Sprite* CurrentVictim, int x1, int y1, int ModDirection, char ModAxis) {
-		bool Debug = true;
+	int CheckFutureSpritePosition3(Sprite* CurrentVictim, int ModxPos, int ModyPos, int ModDirection, char ModAxis) { //Mod generally tells you what we already have modified from it's original position. In otherwords, we can't use the 'true' value of hte sprite.
+		bool Debug = true; 
+		bool Modified = false;
 		//Step one, take x1, or y1, and make sure you properly 'teleported' that number for the future position
 		if (Debug) {
 			printf("Double check that these values seem appropraite for Object%d\n", CurrentVictim->OrderCreation + 1);
 			printf("Object's Current Position = {%d, %d}\n", CurrentVictim->xPos, CurrentVictim->yPos);
-			printf("Object's Proposed Position = {%d, %d}\n", x1, y1);
+			printf("Object's Proposed Position = {%d, %d}\n", ModxPos, ModyPos);
 		}
 		//Step two, make sure you passed in the right 'moddirection', so if your going down right, and get pushed back on the x axis, then we want to check/undo the y axis overlap.
 		
@@ -982,29 +984,813 @@ public:
 				printf("Actual Direction is = %d\n", 5);
 			}
 			else {
-				printf("HM? NANI\n");
+				printf("HM? NANI\n"); 
+				return 0;
 			}
 			printf("Proposed Direction (For Proposed Position) = %d\n", ModDirection);
 		}
 		
 		//Step three, Mod Axis controls roughly how much we have to program at first. 
+		if (ModAxis = 'x') {
+			printf("The first modified axis is = x, so we wish to jostle on the y axis.\n"); //the axis of which to 'jostle' the sprite
+		}
+		else if (ModAxis = 'y') {
+			printf("The first modified axis is = y, so we wish to jostle on the x axis.\n"); //the axis of which to 'jostle' the sprite 	 
+		}
+		else { 
+			printf("ModAxis must be either x or y\n"); return 0; 
+		}
+
 
 		//step 4 - check for the x1 x2 y1 y2 TempMath
-		//step 5 - Guard from Map/Matrix Overflow (reverse this and last)
+		//step 5 - Guard from Map/Matrix Overflow
+		int x1 = ModxPos;
+		int y1 = ModyPos;
+		int y2 = ModyPos +TILE_HEIGHT;
+		int x2 = ModxPos +TILE_WIDTH;
+		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
+		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
+		//adjusts all the values to be in map bound, as well as x1==x2?.
+		if (true) {
+			y1 = y1 / TILE_HEIGHT;
+			y2 = y2 / TILE_HEIGHT;
+			x1 = x1 / TILE_WIDTH;
+			x2 = x2 / TILE_WIDTH;
+			//gaurds from map/matrix overflow
+			if (y1 > LEVEL_HEIGHT - 1) {
+				y1 = LEVEL_HEIGHT - 1;
+				y2 = y1;
+			}
+			if (y1 < 0) {
+				y1 = 0;
+				y2 = y1;
+			}
+			if (x1 > LEVEL_WIDTH - 1) {
+				x1 = LEVEL_WIDTH - 1;
+				x2 = x1;
+			}
+			if (x1 < 0) {
+				x1 = 0;
+				x2 = x1;
+			}
+			//So we don't check further than we want to, and when we don't need to. In these cases, it doens't matter now if we use x1, or x2. For consistency, we use whatever appears the most as appropriate. 
+			if (TempX2Math == 0) {
+				x2 = x1;
+			}
+			if (TempY2Math == 0) {
+				y2 = y1;
+			}
+		}
+		printf("Proposed LM positions to Check:\nUL=LM[%d][%d]\nUR=LM[%d][%d]\nLL=LM[%d][%d]\nLR=LM[%d][%d]\n", x1, y1, x2, y1, x1, y2, x2, y2);
+
+		
 		//step 6 - becomes a bit unclear from here on. Obtain the directoin (somehow) known as Measure in checkfuture2
+		int Measure = ModDirection;
+		printf("Measure set to = %d\n", ModDirection);
+	
+		
+
+		
 		//step 7 -Store TempXOverlap, TempYOverlap, as well as two others, xOverlpped, yOverlapped=0;
 		//Step 8 - Figure out hte overlap based on the future CORNER position on the LM Matrix, store the overlap in TempXOverlap, TempYOverlap.
-		//This should be able to be taken directly from The Measure checks. 
-		
+			//This should be able to be taken directly from The Measure checks. 
 		//Step 9 - Pushback to SpriteOVerlapX, or SpriteOverlapY vectors.
-		//Reset the TempX/YOverlap to 0. 
+			//Reset the TempX/YOverlap to 0. 
+			//Vector that holds the 'area' of overlap - this is to be compared with, and then swapped if one with larger area shows up
+			//if tie, look at order creation
 
+			//Okay Laymen, check the end of each measure will show you I'm storing a ptr to the sprite, and then the overlap associated. WE DO GET DUPLICATES, because of how we're finding it. still worth it for the most aprt for speed.
+			//That's the purpose of Jacks inserted code, to get rid of duplicates I beleive. 
+			//The reason why we have two vectors, one with ptrs, one with actaul integers,i s so we can sort it according to what is ran into first.
+		std::vector<int> SpriteX = {};
+		std::vector<int> SpriteY = {};
+			//vector that holds the pointer itself. to be returned as a stack
+		std::vector<Sprite*> SpriteOverlapX = {};
+		std::vector<Sprite*> SpriteOverlapY = {};
+		int TempXOverlap=0;
+		int TempYOverlap=0;
+		if (true) {
+			//bug caused if you don't check that it's overlapepd at least one pixel.
+			int xOverlapped = 0; //used exclusively to test for true collision dimension
+			int yOverlapped = 0; //used exclusively to test for true collision dimension.
+			//base l,r,u,d directions
+			if (Measure == 11) {//D
+				//edges are [x1][y2] and [x2][y2]
+				printf("Measure == 11\n");
+				if (Debug && PAUSECOLLISIONJOSTLE[0] == 0) {
+					printf("%d", TOTALFRAMECOUNT);
+					PAUSECOLLISIONJOSTLE[0] = 1;
+					printf("First Jostle int he down direction\n");
+					SDL_Delay(10000);
+					Modified = true;
+				}
+				if (TempX2Math == 0) {
+					if (Debug) {
+						printf("al\n");
+					}
+					for (int i = 0; i < LM[y2][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y2][x1][i]->xPos > ModxPos) {
+								xOverlapped = ModxPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+							}
+							else { //if (Spos =< Posx 
+								xOverlapped = LM[y2][x1][i]->xPos + TILE_WIDTH - ModxPos;
+							} 
+							if (xOverlapped > 0 && xOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going Down, at least one x pixel overlap LL)\n");
+								}
+							}
+						}
+
+						//Figureout the actual overlap to be recorded (LL)
+						if (true) {
+							if (LM[y2][x1][i]->yPos > ModyPos) {
+								TempYOverlap = ModyPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
+							}
+							else {
+								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ModyPos;
+							}
+						}
+
+						//Pushback
+						printf("1) [y2][x1] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							SpriteOverlapY.push_back(LM[y2][x1][i]);
+							SpriteY.push_back(TempYOverlap);
+							xOverlapped = 0;
+							TempYOverlap = 0;
+						}
+					}
+				}
+				else {
+					if (Debug) {
+						printf("am\n");
+					}
+					for (int i = 0; i < LM[y2][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							xOverlapped = LM[y2][x1][i]->xPos + TILE_WIDTH - ModxPos;
+							if (xOverlapped > 0 && xOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going Down, at least one x pixel overlap LL)\n");
+								}
+							}
+						}
+
+						//Figureout the actual overlap to be recorded (LL)
+						if (true) {
+							if (LM[y2][x1][i]->yPos > ModyPos) {
+								TempYOverlap = ModyPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
+							}
+							else {
+								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ModyPos;
+							}
+						}
+
+						//Pushback
+						printf("2) [y2][x1] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							SpriteOverlapY.push_back(LM[y2][x1][i]);
+							SpriteY.push_back(TempYOverlap);
+							xOverlapped = 0;
+							TempYOverlap = 0;
+						}
+
+					}
+					if (Debug) {
+						printf("an\n");
+					}
+					for (int i = 0; i < LM[y2][x2].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y2][x2][i]->xPos > ModxPos) {
+								xOverlapped = ModxPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
+							}
+							else { //if (Spos =< Posx
+								xOverlapped = LM[y2][x2][i]->xPos + TILE_WIDTH - ModxPos;
+							}
+							if (xOverlapped > 0 && xOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going Down, at least one x pixel overlap LR)\n");
+								}
+							}
+						}
+
+						//Figureout the actual overlap to be recorded (LR)
+						if (true) {
+							if (LM[y2][x2][i]->yPos > ModyPos) {
+								TempYOverlap = ModyPos + TILE_HEIGHT - LM[y2][x2][i]->yPos;
+							}
+							else {
+								TempYOverlap = LM[y2][x2][i]->yPos + TILE_HEIGHT - ModyPos;
+							}
+						}
+
+						//Pushback
+						printf("3) [y2][x2] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							SpriteOverlapY.push_back(LM[y2][x2][i]);
+							SpriteY.push_back(TempYOverlap);
+							xOverlapped = 0;
+							TempYOverlap = 0;
+						}
+
+					}
+				}
+			}
+			else if (Measure == 6) {//L
+			//edges are [x1][y1] and [x1][y2]
+				if (Debug && PAUSECOLLISIONJOSTLE[1] == 0) {
+					printf("%d", TOTALFRAMECOUNT);
+					PAUSECOLLISIONJOSTLE[1] = 1;
+					printf("First Jostle int he left direction\n");
+					SDL_Delay(10000);
+					Modified = true;
+				}
+				if (TempY2Math == 0) {
+					if (Debug) {
+						printf("af\n");
+					}
+					for (int i = 0; i < LM[y1][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y1][x1][i]->yPos > ModyPos) {
+								yOverlapped = ModyPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
+							}
+							else { //if (Spos =< Posy 
+								yOverlapped = LM[y1][x1][i]->yPos + TILE_HEIGHT - ModyPos;
+							}
+							if (yOverlapped > 0 && yOverlapped < 17) {
+								//old debug statement would go here. Archaic
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y1][x1][i]->xPos > ModxPos) { //NEW (CHANGED)
+								TempXOverlap = ModxPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+							}
+							else {
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ModxPos;
+							}
+						}
+
+						//Pushback
+						printf("1) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
+							SpriteOverlapX.push_back(LM[y1][x1][i]);
+							SpriteX.push_back(TempXOverlap);
+							yOverlapped = 0;
+							TempXOverlap = 0;
+
+						}
+					}
+				}
+				else {
+					if (Debug) {
+						printf("ag\n");
+					}
+					for (int i = 0; i < LM[y1][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+
+							yOverlapped = LM[y1][x1][i]->yPos + TILE_HEIGHT - ModyPos;
+
+							if (yOverlapped > 0 && yOverlapped < 17) {
+								//archaic
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y1][x1][i]->xPos > ModxPos) { //NEW (CHANGED)
+								TempXOverlap = ModxPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+							}
+							else {
+								TempXOverlap = LM[y1][x1][i]->xPos + TILE_WIDTH - ModxPos;
+							}
+						}
+
+						//Pushback
+						printf("2) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
+							SpriteOverlapX.push_back(LM[y1][x1][i]);
+							SpriteX.push_back(TempXOverlap);
+							yOverlapped = 0;
+							TempXOverlap = 0;
+
+						}
+					}
+					if (Debug) {
+						printf("ah\n");
+					}
+					for (int i = 0; i < LM[y2][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y2][x1][i]->yPos >ModyPos) {
+								yOverlapped = ModyPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
+							}
+							else { //if (Spos =< Posy  
+								yOverlapped = LM[y2][x1][i]->yPos + TILE_HEIGHT - ModyPos;
+							}
+							if (yOverlapped > 0 && yOverlapped < 17) {
+								//archaic
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y2][x1][i]->xPos > ModxPos) { //NEW (CHANGED)
+								TempXOverlap = ModxPos + TILE_WIDTH - LM[y2][x1][i]->xPos;
+							}
+							else {
+								TempXOverlap = LM[y2][x1][i]->xPos + TILE_WIDTH - ModxPos;
+							}
+						}
+
+						//Pushback
+						printf("3) [y2][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
+							SpriteOverlapX.push_back(LM[y2][x1][i]);
+							SpriteX.push_back(TempXOverlap);
+							yOverlapped = 0;
+							TempXOverlap = 0;
+
+						}
+					}
+				}
+			}
+			/*
+			else if (Measure == 14) {//R
+				//edges are [x2][y1] and [x2][y2]
+				if (TempY2Math == 0) {
+					if (Debug) {
+						printf("ai\n");
+					}
+					for (int i = 0; i < LM[y1][x2].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y1][x2][i]->yPos > ObjectSprite->yPos) {
+								yOverlapped = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
+							}
+							else { //if (Spos =< Posy   
+								yOverlapped = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+							}
+							if (yOverlapped > 0 && yOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going Right, at least one x pixel overlap UR)\n");
+								}
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) { //NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+
+							}
+							else {
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
+							}
+						}
+
+						//Pushback
+						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
+							SpriteOverlapX.push_back(LM[y1][x2][i]);
+							SpriteX.push_back(TempXOverlap);
+							yOverlapped = 0;
+							TempXOverlap = 0;
+						}
+					}
+				}
+				else {
+					if (Debug) {
+						printf("aj\n");
+					}
+					for (int i = 0; i < LM[y1][x2].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+
+							yOverlapped = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+
+
+
+							if (yOverlapped > 0 && yOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going Right, at least one x pixel overlap UR)\n");
+								}
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+
+							}
+							else {
+								TempXOverlap = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
+							}
+						}
+
+						//Pushback
+						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
+							SpriteOverlapX.push_back(LM[y1][x2][i]);
+							SpriteX.push_back(TempXOverlap);
+							yOverlapped = 0;
+							TempXOverlap = 0;
+						}
+					}
+					if (Debug) {
+						printf("ak\n");
+					}
+					for (int i = 0; i < LM[y2][x2].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y2][x2][i]->yPos > ObjectSprite->yPos) {
+								yOverlapped = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x2][i]->yPos;
+							}
+							else { //if (Spos =< Posy
+								yOverlapped = LM[y2][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+							}
+							if (yOverlapped > 0 && yOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going Right, at least one x pixel overlap LR)\n");
+								}
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y2][x2][i]->xPos > ObjectSprite->xPos) {//NEW (CHANGED)
+								TempXOverlap = ObjectSprite->xPos + TILE_WIDTH - LM[y2][x2][i]->xPos;
+
+							}
+							else {
+								TempXOverlap = LM[y2][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							}
+						}
+
+						//Pushback
+						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
+							SpriteOverlapX.push_back(LM[y2][x2][i]);
+							SpriteX.push_back(TempXOverlap);
+							yOverlapped = 0;
+							TempXOverlap = 0;
+						}
+					}
+				}
+			}
+			else if (Measure == 9) {//U
+				//edges are [x1][y1] and [x2][x1]
+				if (TempX2Math == 0) {
+					if (Debug) {
+						printf("ao\n");
+					}
+					for (int i = 0; i < LM[y1][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y1][x1][i]->xPos > ObjectSprite->xPos) {
+								xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x1][i]->xPos;
+							}
+							else { //if (Spos =< Posx 
+								xOverlapped = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							}
+							if (xOverlapped > 0 && xOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going UP, at least one x pixel overlap UL)\n");
+								}
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
+								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+							}
+							else {
+								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
+							}
+						}
+
+						//Pushback
+						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							SpriteOverlapY.push_back(LM[y1][x1][i]);
+							SpriteY.push_back(TempYOverlap);
+							xOverlapped = 0;
+							TempYOverlap = 0;
+						}
+					}
+				}
+				else {
+					if (Debug) {
+						printf("ap\n");
+					}
+					for (int i = 0; i < LM[y1][x1].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+
+							xOverlapped = LM[y1][x1][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+
+							if (xOverlapped > 0 && xOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going UP, at least one x pixel overlap UL)\n");
+								}
+							}
+						}
+
+						//Overlap to be Recorded
+						if (true) {
+							if (LM[y1][x1][i]->yPos < ObjectSprite->yPos) {
+								TempYOverlap = LM[y1][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+							}
+							else {
+								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x1][i]->yPos;
+							}
+						}
+
+						//Pushback
+						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							SpriteOverlapY.push_back(LM[y1][x1][i]);
+							SpriteY.push_back(TempYOverlap);
+							xOverlapped = 0;
+							TempYOverlap = 0;
+						}
+					}
+					if (Debug) {
+						printf("aq\n");
+					}
+					for (int i = 0; i < LM[y1][x2].size(); i++) {
+
+						//Figureout if the overlap is at least 1
+						if (true) {
+							if (LM[y1][x2][i]->xPos > ObjectSprite->xPos) {
+								xOverlapped = ObjectSprite->xPos + TILE_WIDTH - LM[y1][x2][i]->xPos;
+							}
+							else { //if (Spos =< Posx
+								xOverlapped = LM[y1][x2][i]->xPos + TILE_WIDTH - ObjectSprite->xPos;
+							}
+							if (xOverlapped > 0 && xOverlapped < 17) {
+								if (Debug) {
+									printf("Truely overalpped with something (Going UP, at least one x pixel overlap UR)\n");
+								}
+							}
+						}
+
+						//Overlap to be recorded
+						if (true) {
+							if (LM[y1][x2][i]->yPos < ObjectSprite->yPos) {
+								TempYOverlap = LM[y1][x2][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
+							}
+							else {
+								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y1][x2][i]->yPos;
+							}
+						}
+
+						//Pushback
+						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
+							SpriteOverlapY.push_back(LM[y1][x2][i]);
+							SpriteY.push_back(TempYOverlap);
+							xOverlapped = 0;
+							TempYOverlap = 0;
+						}
+
+
+					}
+				}
+			}
+			else {
+				if (Debug) {
+					printf("Measure doesn't make sense! [CheckFuture3]\n");
+				}
+			}
+	*/		
+
+		}
+		//Step 9.5 - I want to doble check that I'm not getting a list that doesn't make sense, but I also just want to see it printed
+		if (true) {
+			printf("\n\nIf we hit anything at all, we should see it:\n");
+			if (SpriteX.size() > 0) {
+				printf("SpriteX = {");
+				for (int i = 0; i < SpriteX.size(); i++) {
+					printf("%d, ", SpriteX[i]);
+				}
+				printf("}\n");
+
+				printf("SpriteOverlapX = {");
+				for (int i = 0; i < SpriteX.size(); i++) {
+					printf("Object%d, ", SpriteOverlapX[i]->OrderCreation + 1);
+				}
+				printf("}\n");
+			}
+
+			if (SpriteY.size() > 0) {
+				printf("SpriteY = {");
+				for (int i = 0; i < SpriteY.size(); i++) {
+					printf("%d, ", SpriteY[i]);
+				}
+				printf("}\n");
+
+				printf("SpriteOverlapY = {");
+				for (int i = 0; i < SpriteY.size(); i++) {
+					printf("Object%d, ", SpriteOverlapY[i]->OrderCreation + 1);
+				}
+				printf("}\n");
+			}
+			printf("\n\n");
+		}
+		//step 9.6 - prune and sort (in the event you have overlapped with multiple sprites
 		//Step10 - after the overlap's all be nstorred, we will merge sort it into a new vector, SpriteOVerlapX, SpriteOverlapY, and SpriteX, and SpriteY that hold overlap values
+		 
+			//PRUNE -Eliminate any dobules, and anything that doesn't collide. For now assume everything you overlap with collides -Sort by overlap most, figure out the order of collision. 
+			//mergesort then merge
+			//then prune doubles
+			//then prune those without collision
+		if (true) {
+			/*
+			//using swap since it's constant as opposed to insert.
+			//also if we get one that is the exact same creation order, we want to erase it rather than swap it.
+			std::vector<int> HaveSeen = {};
+			bool found = false;
+
+			//eliminate all doubles
+			/*
+			for (int i = 0; i < SpriteOverlap.size(); i++) {
+				for (int j = 0; j < HaveSeen.size(); j++) { //would like a better version of this that stops when found
+					if (SpriteOverlap[i]->OrderCreation == HaveSeen[j]) {
+						found = true;
+					}
+				}
+				if (found = true) {
+					SpriteOverlap.erase(SpriteOverlap.begin() + i);
+					SpriteArea.erase(SpriteArea.begin()+i);
+					i--; //to balance out the erasure and the itteration of hte loop
+				}
+				else {
+					HaveSeen.push_back(SpriteOverlap[i]->OrderCreation);
+				}
+				found = false;
+			}
+
+
+
+			//sort the stack by priority of colliding first. So it should go {this, ..., collides third, collides second, collides first}
+			//This will differ from the previous tile collision because NOW we have every single tile possibly creating a localized stack. it is easier to find deadlocks probably. this also brings more value to a holder for items we have successfully moved.
+
+			//for now we'll do a merge sort, but in the future we want to weigh how many things an object collided with/overlapped, and then sort it based on the size. If you say, collide with 100 objects, it is wort hdoing a merge sort or binary.
+			MergeSortSpriteCollision(SpriteOverlap, SpriteArea, 0, SpriteOverlap.size());
+			*/
+
+			//merge sort each side individually
+			SpriteOverlapX; //holds pointers to those overlapping x
+			SpriteOverlapY; //hlds poitners to those overlapping y
+			SpriteX; //holds x overlap values
+			SpriteY; //holds y overlap values
+			if (SpriteOverlapX.size() > 0) {
+				MergeSortSpriteCollision(SpriteOverlapX, SpriteX);
+			}
+			if (SpriteOverlapY.size() > 0) {
+				MergeSortSpriteCollision(SpriteOverlapY, SpriteY);
+			}
+
+		}
+		//NOTE - jacks code might not be finding and pruning duplicates, but it may be.
+		//jack (inserted here hope its right) - here is fine, we will improve the merge eventually so this bit would be faster.
+		int xloop = 0;
+		int yloop = 0;
+		if (true) {
+			if (SpriteOverlapX.size() > 1) {
+				while (xloop < SpriteOverlapX.size() - 1) {
+					for (int i = xloop + 1; i < SpriteOverlapX.size(); i++) {
+						if (SpriteOverlapX[xloop] == SpriteOverlapX[i]) {
+							SpriteOverlapX.erase(SpriteOverlapX.begin() + i);
+							SpriteX.erase(SpriteX.begin() + i);
+							i--;
+						}
+					}
+					xloop++;
+				}
+			}
+			if (SpriteOverlapY.size() > 1) {
+				while (yloop < SpriteOverlapY.size() - 1) {
+					for (int i = yloop + 1; i < SpriteOverlapY.size(); i++) {
+						if (SpriteOverlapY[yloop] == SpriteOverlapY[i]) {
+							SpriteOverlapY.erase(SpriteOverlapY.begin() + i);
+							SpriteY.erase(SpriteY.begin() + i);
+							i--;
+						}
+					}
+					yloop++;
+				}
+			}
+			//end of Jacks insertion. I should check this later. - I believe this gets rid of duplicates in the collision list (because multiple corners could collide, or a sprite may occupy two cells and be collided with by two different corners for hte check or something
+			if (Debug) {
+				if (Measure != 10) {
+					printf("Direction for the moving sprite is = %d\n", Measure);
+					printf("Moving Sprite positions = {xPos= %d, yPos= %d}\n", ModxPos, ModyPos);
+				}
+				if (SpriteOverlapX.size() > 0) {
+					printf("Every item in the SpriteOverlapX =");
+					for (int i = 0; i < SpriteOverlapX.size(); i++) {
+						printf("{Object%d, ", SpriteOverlapX[i]->OrderCreation + 1);
+						printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteX[i], SpriteOverlapX[i]->xPos, SpriteOverlapX[i]->yPos);
+						if (SpriteX[i] > 0) {
+
+						}
+					}
+					printf("\n");
+				}
+				if (SpriteOverlapY.size() > 0) {
+					printf("Every item in the SpriteOverlapY =");
+					for (int i = 0; i < SpriteOverlapY.size(); i++) {
+						printf("{Object%d, ", SpriteOverlapY[i]->OrderCreation + 1);
+						printf("Overlap = %d, xPos=%d, yPos=%d}", SpriteY[i], SpriteOverlapY[i]->xPos, SpriteOverlapY[i]->yPos);
+						if (SpriteY[i] > 0) {
+
+						}
+					}
+					printf("\n");
+				}
+			}
+			if (Debug) {
+				if ((SpriteOverlapY.size() > 0 || SpriteOverlapX.size() > 0)) {
+					printf("Take Time to ensure the above looks correct for Object%d.\n", CurrentVictim->OrderCreation + 1);
+				}
+				if (SpriteOverlapY.size() > 2 || SpriteOverlapX.size() > 2) {
+					printf("Double check that duplicates are actually gotten rid of. Pretty sure jacks code does so but I forget.\n");
+					SDL_Delay(360000);
+				}
+			}
+		}
+
+
+
+		 
+
+		
+		
+
+
 
 		//Now the code jack insterted code. forgot what it does exactly. I believe it's to sift through and only take the most collision? Or something?
 		//Step 11 - in the other one, CheckFuture 2 we woudl return the TempStackable, HOWEVER we don't, we will just take the highest, most relevant collision type overlap and adjust according to that. 
 		if (Debug) {
-			printf("Object's Proposed Jostled Position = {%d, %d}\n", x1, y1);
+			//figure out for hte printf
+			if (SpriteY.size() > 0) {
+				if (Measure == 11) {
+					ModyPos = ModyPos - SpriteY[SpriteY.size() - 1];  
+				}
+				else if (Measure == 9) {
+					ModyPos = ModyPos + SpriteY[SpriteY.size() - 1];  
+
+				}
+			}
+			if (SpriteX.size() > 0) {
+				if (Measure == 6) {
+					ModxPos = ModxPos + SpriteX[SpriteX.size() - 1];
+				}
+				else if (Measure == 14) {
+					ModxPos = ModxPos -SpriteX[SpriteX.size() - 1];
+				}
+			}
+
+			printf("Object's Proposed Jostled Position = {%d, %d}\n", ModxPos, ModyPos);
+			if (Debug && Modified) {
+				SDL_Delay(10000);
+			}
+		}
+
+		//so instead of returning the whole vector of collisions, I'm only interested in the one you overlap most with (likely the first one you collided with with the current way we're doing things)
+		//that will be stored at the end of the vector.
+		if (SpriteY.size() > 0) {
+			return SpriteY[SpriteY.size() - 1]; //return end overlap (because it will be the sprite you likely collide with, but we only care about the integer itself.
+		}
+		if (SpriteX.size() > 0) {
+			return SpriteX[SpriteX.size() - 1]; //we should only have a list of one or the other, not both.
+		}
+
+
+
+		if (ModAxis == 'x') {
+			printf("No collisions on y axis\n");
+		}
+		if (ModAxis == 'y') {
+			printf("No collisions on x axis\n");
 		}
 		return 0; //default
 		
@@ -1364,7 +2150,7 @@ public:
 	void CheckFutureSpritePosition2(Sprite* ObjectSprite, XYArr* TempStackable) {
 		bool Debug =false;
 		if (Debug) {
-			printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation);
+			printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation); 
 		}
 		if (ObjectSprite->OrderCreation == 1 || ObjectSprite->OrderCreation == 0) {
 			Debug = true;
@@ -1373,7 +2159,27 @@ public:
 			Debug = false;
 		}
 		Debug = false;
-
+		
+		int xD=0;
+		int yD = 0;
+		if (true ||Debug) {
+			//Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
+			xD=8;
+			yD=2;
+			if (ObjectSprite->xVec > 0) {
+				xD = 12;
+			}
+			else if (ObjectSprite->xVec < 0) {
+				xD = 4;
+			}
+			if (ObjectSprite->yVec > 0) {
+				yD = 3;
+			}
+			else if (ObjectSprite->yVec < 0) {
+				yD = 1;
+			}
+			printf("Original direction for Object%d = %d\n", ObjectSprite->OrderCreation + 1, xD+yD);
+		}
 
 		// printf("CheckFutureSpritePosition\n");
 		int x1, x2, y1, y2;
@@ -1394,22 +2200,50 @@ public:
 		y2 = y2 / TILE_HEIGHT;
 		x1 = x1 / TILE_WIDTH;
 		x2 = x2 / TILE_WIDTH;
-		//gaurds from map/matrix overflow
-		if (y1 > LEVEL_HEIGHT - 1) {
+		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
+		if (ObjectSprite->yPos >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
 			y1 = LEVEL_HEIGHT - 1;
 			y2 = y1;
-		}
-		if (y1 < 0) {
+			ObjectSprite->yVec = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+			if (Debug || PAUSECOLLISIONJOSTLE[4] == 0) {
+				printf("%d", TOTALFRAMECOUNT); 
+				printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
+				PAUSECOLLISIONJOSTLE[4] = 1;
+				SDL_Delay(1000);
+			}
+		} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
+		if (ObjectSprite->yPos <= 0) {
 			y1 = 0;
 			y2 = y1;
+			ObjectSprite->yVec = 0;
+			if (Debug || PAUSECOLLISIONJOSTLE[5] == 0) {
+				printf("%d", TOTALFRAMECOUNT);
+				printf(" Sprite%dcan no longer go further up\n", ObjectSprite->OrderCreation + 1);
+				PAUSECOLLISIONJOSTLE[5] = 1;
+				SDL_Delay(1000);
+			}
 		}
-		if (x1 > LEVEL_WIDTH - 1) {
+		if (ObjectSprite->xPos >= (LEVEL_WIDTH - 1)*TILE_WIDTH ) {
 			x1 = LEVEL_WIDTH - 1;
 			x2 = x1;
+			ObjectSprite->xVec = 0;
+			if (Debug || PAUSECOLLISIONJOSTLE[6] == 0) {
+				printf("%d", TOTALFRAMECOUNT);
+				printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
+				//PAUSECOLLISIONJOSTLE[6] = 1;
+				SDL_Delay(1000);
+			}
 		}
-		if (x1 < 0) {
+		if (ObjectSprite->xPos <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 			x1 = 0;
 			x2 = x1;
+			ObjectSprite->xVec = 0;
+			if (Debug || PAUSECOLLISIONJOSTLE[7] == 0) {
+				printf("%d", TOTALFRAMECOUNT);
+				printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation+1);
+				//PAUSECOLLISIONJOSTLE[7] = 1;
+				SDL_Delay(1000);
+			}
 		}
 
 		//So we don't check further than we want to, and when we don't need to. In these cases, it doens't matter now if we use x1, or x2. For consistency, we use whatever appears the most as appropriate. 
@@ -1419,6 +2253,28 @@ public:
 		if (TempY2Math == 0) {
 			y2 = y1;
 		}
+
+
+
+		if (true || Debug) {
+			//Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
+			xD = 8;
+			yD = 2;
+			if (ObjectSprite->xVec > 0) {
+				xD = 12;
+			}
+			else if (ObjectSprite->xVec < 0) {
+				xD = 4;
+			}
+			if (ObjectSprite->yVec > 0) {
+				yD = 3;
+			}
+			else if (ObjectSprite->yVec < 0) {
+				yD = 1;
+			}
+			printf("New direction for Object%d = %d\n", ObjectSprite->OrderCreation + 1, xD + yD);
+		}
+		 
 
 		//Vector that holds the 'area' of overlap - this is to be compared with, and then swapped if one with larger area shows up
 		//if tie, look at order creation
@@ -3966,6 +4822,29 @@ public:
 		XYArr* TempStackable; //used to just see if it's empty or not
 		TempStackable = new XYArr; //besure to delete before leaving function.
 		CheckFutureSpritePosition2(CurrentVictim, TempStackable);
+
+		int xD = 0;
+		int yD = 0;
+		if (true || Debug) {
+			//Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
+			xD = 8;
+			yD = 2;
+			if (CurrentVictim->xVec > 0) {
+				xD = 12;
+			}
+			else {
+				xD = 4;
+			}
+			if (CurrentVictim->yVec > 0) {
+				yD = 3;
+			}
+			else {
+				yD = 1;
+			}
+			printf("Check new direction was saved direction for Object%d = %d\n", CurrentVictim->OrderCreation + 1, xD + yD);
+		}
+
+
 		if (Debug) {
 			printf("Finished checking Object%d's future\n", CurrentVictim->OrderCreation + 1);
 		}
@@ -4021,6 +4900,9 @@ public:
 
 			if (x > 0 && y > 0) { 
 				if (xChange != 0 && yChange != 0) { 
+					if (Debug || true) {
+						printf("Diagonal xChange !=0, yChange !=0\n");
+					}
 					//hopper called before - so that we have the same object. 
 						//this may cause errors, consider theres a 1 by 1 overlap with an object above you, to the right, and one to your left. obviously you want to stop in that case, but if we just loook at one, it'll have us keep going left for hte sliding. in that case, we should adjust to be at the proper location, pop_back, and then adjust again on the other axis.
 

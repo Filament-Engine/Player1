@@ -1,5 +1,8 @@
 #pragma once
 #include <SDL.h>
+
+int PAUSECOLLISIONJOSTLE[8] = {0,0,0,0,0,0,0,0};
+
 int TOTALFRAMECOUNT=0;
 int TIME = 0; // NEW -- used for randomMove, and likely other things too! functions as a sort of clock
 

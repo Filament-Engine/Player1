@@ -130,7 +130,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 			
 
-				/* 
+				 /* 
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
@@ -145,7 +145,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object4);
 				//NOTE YOU MUST MAP SPRITE BEFORE DECLARING THE REST, OTHERWISE THE ORDER IS THE SAME!!! (may be useful but might not be, who knows....)
-				 */
+				  */
 				 
 
 				
@@ -174,7 +174,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 					}
 				}
 				//RANDOM SPRITES END
-				
+				 
 
 
 
@@ -256,7 +256,7 @@ void handleLoop() {
 				switch (e.key.keysym.sym) // this is just checking to see what key was pressed
 				{
 				case SDLK_w: // if the user presses 'w'
-					yVel -= yVec;
+						yVel -= yVec;
 					break;
 				case SDLK_s: // if the user presses 's'
 					yVel += yVec;
@@ -334,58 +334,91 @@ void handleLoop() {
 				switch (e.key.keysym.sym) // Select surfaces based on key press
 				{
 				case SDLK_w: // if the user releases 'w'
-					yVel += yVec;
+					if (yVel < 0) {//NEW statements, because velocities can change at a moment, and the buttom presses shouldn't be dependent on it.
+						yVel += yVec;
+					}
 					break;
 				case SDLK_s: // if the user releases 's'
-					yVel -= yVec;
+					if (yVel > 0) {
+						yVel -= yVec;
+					}
 					break;
 				case SDLK_a: // if the user releases 'a'
-					xVel += xVec;
+					if (xVel < 0) {
+						xVel += xVec;
+					}
 					break;
 				case SDLK_d: // if the user releases 'd'
-					xVel -= xVec;
+					if (yVel > 0) {
+						xVel -= xVec;
+					}
 					break;
 
 				case SDLK_RIGHT: // if the user presses right arrow key
-					Object1->xVec += -xVec;
+					if (Object1->xVec > 0) {
+						Object1->xVec += -xVec;
+					}
 					break;
 				case SDLK_DOWN: // if the user presses up arrow key
-					Object1->yVec += -yVec;
+					if (Object1->yVec > 0) {
+						Object1->yVec += -yVec;
+					}
 					break;
 				case SDLK_LEFT: // if the user presses right arrow key
-					Object1->xVec += xVec;
+					if (Object1->xVec < 0) {
+						Object1->xVec += xVec;
+					}
 					break;
 				case SDLK_UP: // if the user presses up arrow key
-					Object1->yVec += yVec;
+					if (Object1->yVec < 0) {
+						Object1->yVec += yVec;
+					}
 					break;
 
 
 					//Test Object 2
 				case SDLK_l: // if the user presses right arrow key
-					Object2->xVec += -xVec;
+					if (Object2->yVec < 0) {
+						Object2->xVec += -xVec;
+					}
 					break;
 				case SDLK_k: // if the user presses up arrow key
-					Object2->yVec += -yVec;
+					if (Object2->yVec > 0) {
+						Object2->yVec += -yVec;
+					}
 					break;
+					
 				case SDLK_j: // if the user presses right arrow key
-					Object2->xVec += xVec;
+					if (Object2->xVec < 0) {
+						Object2->xVec += xVec;
+					}
 					break;
 				case SDLK_i: // if the user presses up arrow key
-					Object2->yVec += yVec;
+					if (Object2->yVec < 0) {
+						Object2->yVec += yVec;
+					}
 					break;
 
 					//Test Object 3
 				case SDLK_h: // if the user presses right arrow key
-					Object3->xVec += -xVec;
+					if (Object3->yVec < 0) {
+						Object3->xVec += -xVec;
+					}
 					break;
 				case SDLK_g: // if the user presses up arrow key
-					Object3->yVec += -yVec;
+					if (Object3->yVec > 0) {
+						Object3->yVec += -yVec;
+					}
 					break;
 				case SDLK_f: // if the user presses right arrow key
-					Object3->xVec += xVec;
+					if (Object3->xVec < 0) {
+						Object3->xVec += xVec;
+					}
 					break;
 				case SDLK_t: // if the user presses up arrow key
-					Object3->yVec += yVec;
+					if (Object3->yVec < 0) {
+						Object3->yVec += yVec;
+					}
 					break;
 
 				}
