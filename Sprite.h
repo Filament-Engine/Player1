@@ -4084,20 +4084,6 @@ public:
 					Sprite* LRptr[2] = { nullptr,nullptr };
 
 
-					/*
-					if (x1 == x2 && y1 == y2) {
-							//just the diagonal
-						}
-						else if (x1 == x2) {
-							//just test the y axis edge
-						}
-						else if (y1 == y2) {
-							//just test the x axis edge
-						}
-						else {
-							//test all three
-						}
-					*/
 
 					//what direction are you heading?
 					if (CurrentVictim->xVec < 0) {
