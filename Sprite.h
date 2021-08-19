@@ -2034,7 +2034,7 @@ public:
 						if (Debug) {
 							printf("5\n");
 						}
-						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 - (16 - YC), 14, 'y'); //just going right
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 - YC, 14, 'y'); //just going right
 					}
 					else {
 						if (Debug) {
