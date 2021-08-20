@@ -279,45 +279,33 @@ public:
 		}
 		
 		if (RandomX == 2) {
-			if (OrderCreation == 7) {
-				printf("xPos -1\n");
-			}
+			 
 			xVec = -1;
 			AdjustedPositionX = MoveX(xVec);
 		}
 		else if (RandomX == 3) {
-			if (OrderCreation == 7) {
-				printf("xPos +1\n");
-			}
+			 
 			xVec = 1;
 			AdjustedPositionX = MoveX(xVec);
 		}
 		else if (RandomX == 1 || RandomX == 0) {
-			if (OrderCreation == 7) {
-				printf("xPos -0\n");
-			}
+			 
 			xVec = 0;
 			//AdjustedPositionX = false;
 		}
 
 		if (RandomY == 2) {
-			if (OrderCreation == 7) {
-				printf("yPos -1\n");
-			}
+		 
 			yVec = -1;
 			AdjustedPositionY = MoveY(yVec);
 		}
 		else if (RandomY == 3) {
-			if (OrderCreation == 7) {
-				printf("yPos + 1\n");
-			}
+			 
 			yVec = 1;
 			AdjustedPositionY = MoveY(yVec);
 		}
 		else if (RandomY == 1 || RandomY == 0) {
-			if (OrderCreation == 7) {
-				printf("yPos -0\n");
-			}
+			 
 			yVec = 0;
 			//AdjustedPositionX = false; //both of these are redundant.
 		}
@@ -512,52 +500,48 @@ public:
 		}
 	}
 	void UndoRandomMove() {
+		bool Debug =false;
+		if (TOTALFRAMECOUNT > 120000) {
+			Debug = true;
+		}
 		if (!AdjustedPositionX) {
 			if (RandomX == 2) {
-				if (OrderCreation == 7) {
-					printf("xPos +1\n");
-				}
+				 
 				MoveX(-xVec);
 			}
 			else if (RandomX == 3) {
-				if (OrderCreation == 7) {
-					printf("xPos -1\n");
-				}
+				 
 				MoveX(-xVec);
 			}
 			else if (RandomX == 1 || RandomX == 0) {
-				if (OrderCreation == 7) {
-					printf("xPos -0\n");
-				}
+				 
 				xVec = 0;
 			}
 		}
 		else {
-			printf("AdjustedX is True!\n");
+			if (Debug) {
+				printf("AdjustedX is True!\n");
+			}
 		}
 
 		if (!AdjustedPositionY) {
 			if (RandomY == 2) {
-				if (OrderCreation == 7) {
-					printf("yPos +1\n");
-				}
+				 
 				MoveY(-yVec);
 			}
 			else if (RandomY == 3) {
-				if (OrderCreation == 7) {
-					printf("yPos -1\n");
-				}
+				 
 				MoveY(-yVec);
 			}
 			else if (RandomY == 1 || RandomY == 0) {
-				if (OrderCreation == 7) {
-					printf("yPos -0\n");
-				}
+				 
 				yVec = 0;
 			}
 		}
 		else {
-			printf("AdjustedY is True!\n");
+			if (Debug) {
+				printf("AdjustedY is True!\n");
+			}
 		}
 		//AdjustPositionV is reset at the end of the loop, when we are checking for overlap. There should be better way of handling this, because the vast majority of sprites won't have to adjust like this.
 		//Though they may, because of the Level Collision itself.... :/ I'll need to think about it.
@@ -959,8 +943,14 @@ public:
 
 
 	int CheckFutureSpritePosition3(Sprite* CurrentVictim, int ModxPos, int ModyPos, int ModDirection, char ModAxis) { //Mod generally tells you what we already have modified from it's original position. In otherwords, we can't use the 'true' value of hte sprite.
-		bool Debug = true; 
+		bool Debug = false;
 		bool Modified = false;
+
+		if (TOTALFRAMECOUNT > 120000) {
+			printf("CheckFuture3\n");
+			Debug = true;
+		}
+
 		//Step one, take x1, or y1, and make sure you properly 'teleported' that number for the future position
 		if (Debug) {
 			printf("Double check that these values seem appropraite for Object%d\n", CurrentVictim->OrderCreation + 1);
@@ -968,7 +958,7 @@ public:
 			printf("Object's Proposed Position = {%d, %d}\n", ModxPos, ModyPos);
 		}
 		//Step two, make sure you passed in the right 'moddirection', so if your going down right, and get pushed back on the x axis, then we want to check/undo the y axis overlap.
-		
+
 		if (Debug) {
 			if (CurrentVictim->xVec > 0 && CurrentVictim->yVec > 0) {
 				printf("Actual Direction is = %d\n", 15);
@@ -979,35 +969,36 @@ public:
 			else if (CurrentVictim->xVec > 0 && CurrentVictim->yVec < 0) {
 				printf("Actual Direction is = %d\n", 13);
 			}
-		
+
 			else if (CurrentVictim->xVec < 0 && CurrentVictim->yVec < 0) {
 				printf("Actual Direction is = %d\n", 5);
 			}
 			else {
-				printf("HM? NANI\n"); 
+				printf("HM? NANI\n");
 				return 0;
 			}
 			printf("Proposed Direction (For Proposed Position) = %d\n", ModDirection);
 		}
-		
-		//Step three, Mod Axis controls roughly how much we have to program at first. 
-		if (ModAxis = 'x') {
-			printf("The first modified axis is = x, so we wish to jostle on the y axis.\n"); //the axis of which to 'jostle' the sprite
-		}
-		else if (ModAxis = 'y') {
-			printf("The first modified axis is = y, so we wish to jostle on the x axis.\n"); //the axis of which to 'jostle' the sprite 	 
-		}
-		else { 
-			printf("ModAxis must be either x or y\n"); return 0; 
-		}
 
+		//Step three, Mod Axis controls roughly how much we have to program at first. 
+		if (Debug) {
+			if (ModAxis = 'x') {
+				printf("The first modified axis is = x, so we wish to jostle on the y axis.\n"); //the axis of which to 'jostle' the sprite
+			}
+			else if (ModAxis = 'y') {
+				printf("The first modified axis is = y, so we wish to jostle on the x axis.\n"); //the axis of which to 'jostle' the sprite 	 
+			}
+			else {
+				printf("ModAxis must be either x or y\n"); return 0;
+			}
+		}
 
 		//step 4 - check for the x1 x2 y1 y2 TempMath
 		//step 5 - Guard from Map/Matrix Overflow
 		int x1 = ModxPos;
 		int y1 = ModyPos;
-		int y2 = ModyPos +TILE_HEIGHT;
-		int x2 = ModxPos +TILE_WIDTH;
+		int y2 = ModyPos + TILE_HEIGHT;
+		int x2 = ModxPos + TILE_WIDTH;
 		int TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
 		int TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
 		//adjusts all the values to be in map bound, as well as x1==x2?.
@@ -1041,13 +1032,15 @@ public:
 				y2 = y1;
 			}
 		}
-		printf("Proposed LM positions to Check:\nUL=LM[%d][%d]\nUR=LM[%d][%d]\nLL=LM[%d][%d]\nLR=LM[%d][%d]\n", x1, y1, x2, y1, x1, y2, x2, y2);
-
+		if (Debug) {
+			printf("Proposed LM positions to Check:\nUL=LM[%d][%d]\nUR=LM[%d][%d]\nLL=LM[%d][%d]\nLR=LM[%d][%d]\n", x1, y1, x2, y1, x1, y2, x2, y2);
+		}
 		
 		//step 6 - becomes a bit unclear from here on. Obtain the directoin (somehow) known as Measure in checkfuture2
 		int Measure = ModDirection;
-		printf("Measure set to = %d\n", ModDirection);
-	
+		if (Debug) {
+			printf("Measure set to = %d\n", ModDirection);
+		}
 		
 
 		
@@ -1076,7 +1069,10 @@ public:
 			//base l,r,u,d directions
 			if (Measure == 11) {//D
 				//edges are [x1][y2] and [x2][y2]
-				printf("Measure == 11\n");
+				if (Debug) {
+					printf("Measure == 11\n");
+				}
+
 				if (Debug && PAUSECOLLISIONJOSTLE[0] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					PAUSECOLLISIONJOSTLE[0] = 1;
@@ -1116,7 +1112,9 @@ public:
 						}
 
 						//Pushback
-						printf("1) [y2][x1] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if (Debug) {
+							printf("1) [y2][x1] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						}
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y2][x1][i]);
 							SpriteY.push_back(TempYOverlap);
@@ -1152,7 +1150,9 @@ public:
 						}
 
 						//Pushback
-						printf("2) [y2][x1] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if (Debug) {
+							printf("2) [y2][x1] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						}
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y2][x1][i]);
 							SpriteY.push_back(TempYOverlap);
@@ -1192,7 +1192,9 @@ public:
 						}
 
 						//Pushback
-						printf("3) [y2][x2] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if (Debug) {
+							printf("3) [y2][x2] xOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						}
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y2][x2][i]);
 							SpriteY.push_back(TempYOverlap);
@@ -1242,7 +1244,9 @@ public:
 						}
 
 						//Pushback
-						printf("1) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if (Debug) {
+							printf("1) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						}
 						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x1][i]);
 							SpriteX.push_back(TempXOverlap);
@@ -1279,7 +1283,9 @@ public:
 						}
 
 						//Pushback
-						printf("2) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if (Debug) {
+							printf("2) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						}
 						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x1][i]);
 							SpriteX.push_back(TempXOverlap);
@@ -1317,7 +1323,9 @@ public:
 						}
 
 						//Pushback
-						printf("3) [y2][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if (Debug) {
+							printf("3) [y2][x1] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						}
 						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y2][x1][i]);
 							SpriteX.push_back(TempXOverlap);
@@ -1364,7 +1372,9 @@ public:
 						}
 
 						//Pushback
-						printf("1) [y1][x2] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if (Debug) {
+							printf("1) [y1][x2] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						}
 						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x2][i]);
 							SpriteX.push_back(TempXOverlap);
@@ -1406,7 +1416,9 @@ public:
 						}
 
 						//Pushback
-						printf("2) [y1][x2] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if (Debug) {
+							printf("2) [y1][x2] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						}
 						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y1][x2][i]);
 							SpriteX.push_back(TempXOverlap);
@@ -1446,7 +1458,9 @@ public:
 						}
 
 						//Pushback
-						printf("3) [y2][x2] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						if (Debug) {
+							printf("3) [y2][x2] yOverlap = %d, TempYOverlap = %d\n", yOverlapped, TempXOverlap);
+						}
 						if ((yOverlapped > 0 && yOverlapped < 17) && TempXOverlap < 17 && TempXOverlap > 0) {
 							SpriteOverlapX.push_back(LM[y2][x2][i]);
 							SpriteX.push_back(TempXOverlap);
@@ -1490,7 +1504,9 @@ public:
 						}
 
 						//Pushback
-						printf("1) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if (Debug) {
+							printf("1) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						}
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y1][x1][i]);
 							SpriteY.push_back(TempYOverlap);
@@ -1528,7 +1544,9 @@ public:
 						}
 
 						//Pushback
-						printf("2) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if (Debug) {
+							printf("2) [y1][x1] yOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						}
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y1][x1][i]);
 							SpriteY.push_back(TempYOverlap);
@@ -1567,7 +1585,9 @@ public:
 						}
 
 						//Pushback
-						printf("3) [y1][x2] yOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						if (Debug) {
+							printf("3) [y1][x2] yOverlap = %d, TempYOverlap = %d\n", xOverlapped, TempYOverlap);
+						}
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
 							SpriteOverlapY.push_back(LM[y1][x2][i]);
 							SpriteY.push_back(TempYOverlap);
@@ -1586,7 +1606,8 @@ public:
 			}  
 		}
 		//Step 9.5 - I want to doble check that I'm not getting a list that doesn't make sense, but I also just want to see it printed
-		if (true) {
+		if (Debug) {
+
 			printf("\n\nIf we hit anything at all, we should see it:\n");
 			if (SpriteX.size() > 0) {
 				printf("SpriteX = {");
@@ -1788,12 +1809,13 @@ public:
 		}
 
 
-
-		if (ModAxis == 'x') {
-			printf("No collisions on y axis\n");
-		}
-		if (ModAxis == 'y') {
-			printf("No collisions on x axis\n");
+		if (Debug) {
+			if (ModAxis == 'x') {
+				printf("No collisions on y axis\n");
+			}
+			if (ModAxis == 'y') {
+				printf("No collisions on x axis\n");
+			}
 		}
 		return 0; //default
 		
@@ -1803,7 +1825,10 @@ public:
 		//will have to test that the arrays are edited back in the MoveAllSprites 
 		//NOTE, we should change each of these to resemble the logic in xChange>0
 
-		bool Debug = true;
+		bool Debug = false;
+		if (TOTALFRAMECOUNT > 120000) {
+			Debug = true;
+		}
 
 		if (Debug) {
 			printf("XY = {%d, %d}\n", OverlapX[0], OverlapY[1]);
@@ -1871,22 +1896,30 @@ public:
 				}*/
 			}
 			else { // if moving left
-				printf("Sprite was moving Left\n");
+				if (Debug) {
+					printf("Sprite was moving Left\n");
+				}
 				if (Xptr[0]->xPos > CurrentVictim->xPos) {
 					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
-					printf("Attempt 1: XC = %d\n", XC);
+					if (Debug) {
+						printf("Attempt 1: XC = %d\n", XC);
+					}
 				}
 				else {
 					XC = CurrentVictim->xPos + TILE_WIDTH - Xptr[0]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap. 
 					XC = Xptr[0]->xPos + TILE_WIDTH - CurrentVictim->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-					printf("Attempt 2: XC = %d\n", XC);
+					if (Debug) {
+						printf("Attempt 2: XC = %d\n", XC);
+					}
 				}
 				/* 
 				if (XC == 16) {
 					XC = 0;
 				}
 				*/
-				printf("2 TempOverlapX=%d\n", XC);
+				if (Debug) {
+					printf("2 TempOverlapX=%d\n", XC);
+				}
 				pause = true;
 				/* if (XC == 0) {
 					XC = 16;
@@ -2048,13 +2081,13 @@ public:
 						if (Debug) {
 							printf("7\n");
 						}
-						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 + YC, 9, 'y'); //just going right
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 + YC, 14, 'y'); //just going right
 					}
 					else {
 						if (Debug) {
 							printf("8\n");
 						}
-						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 + YC, 9, 'y'); //just going left
+						XC = CheckFutureSpritePosition3(CurrentVictim, x1, y1 + YC, 6, 'y'); //just going left
 					} 
 				}
 			}
@@ -2084,7 +2117,7 @@ public:
 
 	}
 
-
+	
 
 	void Hopper(XYArr* Sorter) {
 		printf("The last two overlaps were not from the same item. We'll figure out which is greater\n"); //if neither is greater, lets go with x.
@@ -2151,13 +2184,19 @@ public:
 	}
 
 	void CheckFutureSpritePosition2(Sprite* ObjectSprite, XYArr* TempStackable) {
+
+
 		bool Debug =false;
+		
+		if (TOTALFRAMECOUNT > 120000) {
+			printf("CheckFuture2\n");
+			Debug = true;
+		}
+		
 		if (Debug) {
 			printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation); 
 		}
-		if (ObjectSprite->OrderCreation == 1 || ObjectSprite->OrderCreation == 0) {
-			Debug = true;
-		}
+		 
 		else {
 			Debug = false;
 		}
@@ -2165,10 +2204,10 @@ public:
 		
 		int xD=0;
 		int yD = 0;
-		if (true ||Debug) {
+		if (true) { //debug
 			//Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
-			xD=8;
-			yD=2;
+			xD = 8;
+			yD = 2;
 			if (ObjectSprite->xVec > 0) {
 				xD = 12;
 			}
@@ -2181,7 +2220,9 @@ public:
 			else if (ObjectSprite->yVec < 0) {
 				yD = 1;
 			}
-			printf("Original direction for Object%d = %d\n", ObjectSprite->OrderCreation + 1, xD+yD);
+			if (Debug) {
+				printf("Original direction for Object%d = %d\n", ObjectSprite->OrderCreation + 1, xD + yD);
+			}
 		}
 
 		// printf("CheckFutureSpritePosition\n");
@@ -2259,7 +2300,7 @@ public:
 
 
 
-		if (true || Debug) {
+		if (true  ) { //Debug
 			//Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
 			xD = 8;
 			yD = 2;
@@ -2275,7 +2316,9 @@ public:
 			else if (ObjectSprite->yVec < 0) {
 				yD = 1;
 			}
-			printf("New direction for Object%d = %d\n", ObjectSprite->OrderCreation + 1, xD + yD);
+			if (Debug) {
+				printf("New direction for Object%d = %d\n", ObjectSprite->OrderCreation + 1, xD + yD);
+			}
 		}
 		 
 
@@ -3582,9 +3625,7 @@ public:
 						if (true) {
 							if (LM[y2][x1][i]->yPos > ObjectSprite->yPos) {
 								TempYOverlap = ObjectSprite->yPos + TILE_HEIGHT - LM[y2][x1][i]->yPos;
-								if (ObjectSprite->OrderCreation == 1) {
-									printf("[yPos+16 - Spos] : %d + 16 - %d\n", ObjectSprite->yPos, LM[y2][x1][i]->yPos);
-								}
+								 
 							}
 							else {
 								TempYOverlap = LM[y2][x1][i]->yPos + TILE_HEIGHT - ObjectSprite->yPos;
@@ -3593,9 +3634,7 @@ public:
 
 						//Pushback
 						if ((xOverlapped > 0 && xOverlapped < 17) && TempYOverlap < 17 && TempYOverlap > 0) {
-							if (ObjectSprite->OrderCreation == 1) {
-								printf("Pushback the D stack\n");
-							}
+							 
 							SpriteOverlapY.push_back(LM[y2][x1][i]);
 							SpriteY.push_back(TempYOverlap);
 							xOverlapped = 0;
@@ -4002,16 +4041,15 @@ public:
 	int CheckOverlap(Sprite* ObjectSprite) {
 		RemoveSpriteFromMap(ObjectSprite); //Temporary, this is just for the testing for collision and the strange overlap. In the future it won't remove and then readd, but instead ignore itself when checking.
 		bool Debug = false;
+
+		if (TOTALFRAMECOUNT > 120000) {
+			Debug = true;
+		}
+
 		if (Debug) {
 			printf("Object Creation Order == %d\n", ObjectSprite->OrderCreation);
 		}
-		if (ObjectSprite->OrderCreation == 1 || ObjectSprite->OrderCreation == 0) {
-			Debug = true;
-		}
-		else {
-			Debug = false;
-		}
-		Debug = false;
+		 
 
 
 		// printf("CheckFutureSpritePosition\n");
@@ -4258,7 +4296,9 @@ public:
 
 	void MoveAllSprites2() {
 		bool Debug = false;
-
+		if (TOTALFRAMECOUNT > 120000) {
+			Debug = true;
+		}
 		ReCreateQue2();
 		/**/
 		std::vector<XYArr*> SpriteStacks = {}; //hold each XYArr with information
@@ -4275,12 +4315,7 @@ public:
 
 		for (int i = 0; i < AllSprites.size(); i++) { //{1, 4, 8, 10}
 			 
-			if (i == 7 || i == 9 || i == 10) {
-				Debug = true;
-			}
-			else {
-				Debug = false;
-			}
+			 
 			//deleted large comment here, not sure why I had it. maybe based on previous version of stack?
 
 			//for now who cares about handling the stack. For right now we are focused on just making sure we can see the stack we care about.
@@ -4353,8 +4388,9 @@ public:
 							printf("Stacks been looked at for Object%d.\n", Queue2[i]->OrderCreation + 1);
 						}
 						if (InvestigateIndexsY.size() > 0 || InvestigateIndexsX.size() > 0) {
-							 
+							if (Debug) {
 								printf("Start Handle\n\n");
+							}
 							
 							HandleCollision2(InvestigateIndexsX, InvestigateIndexsY, SpriteStacks, CompletedSprites, i);
 							if (Debug) {
@@ -4491,7 +4527,9 @@ public:
 	
 		
 		if (TIME < 18) {
-			printf("Check all positions at the end of movement:\n");
+			if (Debug) {
+				printf("Check all positions at the end of movement:\n");
+			}
 			for (int i = 0; i < AllSprites.size(); i++) {
 				if (true) {
 					//Get direction (diagnonal, or 
@@ -4546,13 +4584,15 @@ public:
 					else { //still
 						Direction = 2 + 8; //10
 					}
-				
-					
-				} 		
+
+
+				}
 				AllSprites[i]->AdjustedPositionX = false;
 				AllSprites[i]->AdjustedPositionY = false;
-				printf("Object%d, Current Position = {%d, %d}, Old Position = {%d, %d}, Velocities = {%d, %d}, Direction = %d\n", AllSprites[i]->OrderCreation+1, AllSprites[i]->xPos, AllSprites[i]->yPos, AllSprites[i]->xPos - AllSprites[i]->xVec, AllSprites[i]->yPos - AllSprites[i]->yVec, AllSprites[i]->xVec, AllSprites[i]->yVec, Direction);
-			} 
+				if (Debug) { // Debug || true, because it's helpful.
+					printf("Object%d, Current Position = {%d, %d}, Old Position = {%d, %d}, Velocities = {%d, %d}, Direction = %d\n", AllSprites[i]->OrderCreation + 1, AllSprites[i]->xPos, AllSprites[i]->yPos, AllSprites[i]->xPos - AllSprites[i]->xVec, AllSprites[i]->yPos - AllSprites[i]->yVec, AllSprites[i]->xVec, AllSprites[i]->yVec, Direction);
+				}
+			}
 		}
 		/* 
 		if (TIME == 15) {
@@ -4563,7 +4603,7 @@ public:
 			printf("TIME==16\n");
 		}
 		*/
-		if (TIME == 17) {
+		if (TIME == 17 && Debug) {
 			printf("TIME==17\n");
 		}
 		
@@ -4774,17 +4814,12 @@ public:
 			printf("Take care of victims\n");
 		}
 
-		if (VictimsNoLonger.size() == 0) {
+		if (VictimsNoLonger.size() == 0 && Debug) {
 			printf("This might've caused the issue XD if size==0, then inside while size!=0, this was used to test something earlier by accident slipped through.\n");
 		}
 
 			while (VictimsNoLonger.size() != 0) {  
-				if (VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 7 || VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 9 || VictimsNoLonger[VictimsNoLonger.size() - 1]->OrderCreation == 10) {
-					Debug = true;
-				}
-				else {
-					Debug = false;
-				}
+				 
 
 				if (Debug) {
 					printf("Top of VictimsNoLonger while loop\n");
@@ -4808,12 +4843,10 @@ public:
 		 
 		bool Debug = false;
 
-		if (CurrentVictim->OrderCreation == 7 || CurrentVictim->OrderCreation == 9 || CurrentVictim->OrderCreation == 10) {
+		if (TOTALFRAMECOUNT > 120000) {
 			Debug = true;
 		}
-		else {
-			Debug = false;
-		}
+		 
 
 
 
@@ -4829,7 +4862,7 @@ public:
 
 		int xD = 0;
 		int yD = 0;
-		if (true || Debug) {
+		if (true ) { //for debuging
 			//Y=-1,0,1, [1, 2, 3] X=-1, 0, 1, [4, 8, 12] 
 			xD = 8;
 			yD = 2;
@@ -4845,7 +4878,9 @@ public:
 			else {
 				yD = 1;
 			}
-			printf("Check new direction was saved direction for Object%d = %d\n", CurrentVictim->OrderCreation + 1, xD + yD);
+			if (Debug) {
+				printf("Check new direction was saved direction for Object%d = %d\n", CurrentVictim->OrderCreation + 1, xD + yD);
+			}
 		}
 
 
@@ -4875,7 +4910,7 @@ public:
 			int x = TempStackable->SpriteXCollision.size(); // this is done so the same function is not called multiple times
 			int y = TempStackable->SpriteYCollision.size(); // this is done so the same function is not called multiple times
 
-			if (true) {
+			if (Debug) {
 				printf("Teleport! Object%d\n", CurrentVictim->OrderCreation + 1);
 			}
 
@@ -4904,7 +4939,7 @@ public:
 
 			if (x > 0 && y > 0) { 
 				if (xChange != 0 && yChange != 0) { 
-					if (Debug || true) {
+					if (Debug ) {
 						printf("Diagonal xChange !=0, yChange !=0\n");
 					}
 					//hopper called before - so that we have the same object. 
@@ -4951,7 +4986,9 @@ public:
 					//CHECK - IDEA - perhaps I should compare overlap of diagonal to the edges, and figure out which axis matters first, resolve those, then attempt to resolve the remaining axis' if still relavent. Implement this after getting the jitter fixed maybe.
 					bool AdjustedX = false;
 					bool AdjustedY = false;
-
+					if (Debug) {
+						printf("x1, x2, y1, y2 = {%d, %d, %d, %d}\n", x1, x2, y1, y2);
+					}
 					//Okay, so thinking this through, we want to calculate our overlap independently of what is doing above. 
 					//CHANGE - make hte loops work if x2=x1, but only run the necessary ones.
 					//INSERT - insert temporary x and y overlaps to set the arrays equal to
@@ -4998,7 +5035,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5013,7 +5052,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5033,7 +5074,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5048,7 +5091,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5065,7 +5110,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5087,7 +5134,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5102,7 +5151,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5118,7 +5169,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										URptr[0] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5139,7 +5192,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5154,7 +5209,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5171,7 +5228,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										URptr[0] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5189,7 +5248,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5214,7 +5275,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}			
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5229,7 +5292,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5249,7 +5314,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5265,7 +5332,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5281,7 +5350,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										URptr[0] = TempStackable->SpriteXCollision[j];
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5301,7 +5372,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5316,7 +5389,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5332,7 +5407,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
@@ -5353,7 +5430,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5368,7 +5447,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5384,7 +5465,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
@@ -5401,7 +5484,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										URptr[0] = TempStackable->SpriteXCollision[j];
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5421,13 +5506,18 @@ public:
 
 						if (x1 == x2 && y1 == y2) {
 							//just the diagonal
+							if (Debug) {
+								printf("Just Diagonal check\n");
+							}
 
 							//search both x and y for the first that appears.  both overlap values will be important. 
 							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5442,7 +5532,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5455,6 +5547,9 @@ public:
 							EarlyBreak = false;
 						}
 						else if (x1 == x2) {
+							if (Debug) {
+								printf("Just y axis check\n");
+							}
 							//just test the y axis edge
 
 							//search both x and y for the first that appears.  both overlap values will be important. 
@@ -5462,7 +5557,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5477,7 +5574,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5494,7 +5593,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5509,13 +5610,19 @@ public:
 						}
 						else if (y1 == y2) {
 							//just test the x axis edge
+							if (Debug) {
+								printf("Just x axis check\n"); //bug here. Seems the LL corner doesn't ever get found, because it is never passed to begin with, so we need to consider the jostle before hand.
+								
+							}
 
 							//search both x and y for the first that appears.  both overlap values will be important. 
 							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5529,8 +5636,10 @@ public:
 							for (int j = 0; j < TempStackable->SpriteYCollision.size(); j++) {
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
-										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										//calcualte the overlap
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5546,7 +5655,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
@@ -5561,13 +5672,17 @@ public:
 						}
 						else {
 							//test all three
-
+							if (Debug) {
+								printf("Just all three to be checked\n");
+							}
 							//search both x and y for the first that appears.  both overlap values will be important. 
 							for (int j = 0; j < TempStackable->SpriteXCollision.size(); j++) {
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LLptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5582,7 +5697,9 @@ public:
 								for (int i = 0; i < LM[y2][x1].size(); i++) {
 									if (LM[y2][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LLptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5598,7 +5715,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5615,7 +5734,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
@@ -5633,6 +5754,7 @@ public:
 					else if (right && up) { //right up 
 
 						if (x1 == x2 && y1 == y2) {
+
 							//just the diagonal
 
 							//search both x and y for the first that appears.  both overlap values will be important. 
@@ -5640,7 +5762,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										URptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5655,7 +5779,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5675,7 +5801,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										URptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5690,7 +5818,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5707,7 +5837,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5728,7 +5860,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										URptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5743,7 +5877,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5760,7 +5896,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
@@ -5781,7 +5919,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										URptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5796,7 +5936,9 @@ public:
 								for (int i = 0; i < LM[y1][x2].size(); i++) {
 									if (LM[y1][x2][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UR -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										URptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
 										break;
@@ -5813,7 +5955,9 @@ public:
 								for (int i = 0; i < LM[y1][x1].size(); i++) {
 									if (LM[y1][x1][i] == TempStackable->SpriteYCollision[j]) {
 										//calcualte the overlap 
-										printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("UL -> Ran into Object%d first\n", TempStackable->SpriteYCollision[j]->OrderCreation + 1);
+										}
 										ULptr[1] = TempStackable->SpriteYCollision[j];
 										ULptr[0] = TempStackable->SpriteXCollision[j];
 										EarlyBreak = true;
@@ -5831,7 +5975,9 @@ public:
 								for (int i = 0; i < LM[y2][x2].size(); i++) {
 									if (LM[y2][x2][i] == TempStackable->SpriteXCollision[j]) {
 										//calcualte the overlap 
-										printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										if (Debug) {
+											printf("LR -> Ran into Object%d first\n", TempStackable->SpriteXCollision[j]->OrderCreation + 1);
+										}
 										LRptr[0] = TempStackable->SpriteXCollision[j];
 										LRptr[1] = TempStackable->SpriteYCollision[j];
 										EarlyBreak = true;
@@ -5880,6 +6026,18 @@ public:
 					else if (left && down) {
 						//figure out overlap on x and y
 						//UL = x, LR = y 
+						if (Debug)
+						{
+							printf("Attempt Left down diagonal. Pass UL and LR ptrs \n");
+						}
+						if (Debug) {
+							if (ULptr[0] != NULL) {
+								printf("UL has something\n");
+							}
+							if (LRptr[1] != NULL) {
+								printf("LR has something\n");
+							} 
+						}
 						FigureOverlap(CurrentVictim, ULptr, LRptr, UL, LR, wait);
 						if (UL[0] != 0) {
 							AdjustedX = true;
@@ -5900,13 +6058,14 @@ public:
 						}
 					}
 
-					//Great, now lets see if we got them edited back in hte original array.
-					printf("UL = {%d, %d}\n", UL[0], UL[1]);
-					printf("UR = {%d, %d}\n", UR[0], UR[1]);
-					printf("LL = {%d, %d}\n", LL[0], LL[1]);
-					printf("LR = {%d, %d}\n", LR[0], LR[1]);
-					//SDL_Delay(500);
-
+					if (Debug) {
+						//Great, now lets see if we got them edited back in hte original array.
+						printf("UL = {%d, %d}\n", UL[0], UL[1]);
+						printf("UR = {%d, %d}\n", UR[0], UR[1]);
+						printf("LL = {%d, %d}\n", LL[0], LL[1]);
+						printf("LR = {%d, %d}\n", LR[0], LR[1]);
+						//SDL_Delay(500);
+					}
 					
 
 					//Now I'd like you to teleport based solely on the two directionals we got. 
@@ -6007,12 +6166,17 @@ public:
 						FigureOverlap(CurrentVictim, LRptr, LRptr, LR, LR, wait); 
 						
 						if (LR[0] == 0 || LR[1] == 0) { //new, attempt to fix sliding. This is because the diagonal even though the overlap became 0 on one of the axis', it didn't slide because one or the other wasn't 0.
-							printf("NEW : Try to just ignore the overlap since one of the two is 0.\n");
+							if (Debug) {
+
+								printf("NEW : Try to just ignore the overlap since one of the two is 0.\n");
+							}
 							CurrentVictim->TeleportX(CurrentVictim->xPos);
 							CurrentVictim->TeleportY(CurrentVictim->yPos);
 						}
 						else if (LR[0] < LR[1]) { //X>Y
-							printf("X<Y\n");
+							if (Debug) {
+								printf("X<Y\n");
+							}
 							XC = LR[0];
 							if (xChange > 0) { //right
 								CurrentVictim->TeleportX(CurrentVictim->xPos - XC);
@@ -6022,7 +6186,9 @@ public:
 							}
 						}
 						else if (LR[1] < LR[0]) { //Y>X
-							printf("Y<X\n");
+							if (Debug) {
+								printf("Y<X\n");
+							}
 							YC = LR[1];
 							if (yChange > 0) { //down
 								CurrentVictim->TeleportY(CurrentVictim->yPos - YC);
@@ -6070,6 +6236,9 @@ public:
 
 					}
 					else if (left && down) {  
+						if (Debug) {
+							printf("Try LL Diagonal corner check, pass LL ptrs\n");
+						}
 						FigureOverlap(CurrentVictim, LLptr, LLptr, LL, LL, wait);
 						if (LL[0] < LL[1]) { //X>Y
 							XC = LL[0];
@@ -6083,8 +6252,7 @@ public:
 								CurrentVictim->TeleportX(CurrentVictim->xPos + XC);
 							}
 						}
-						else if (LL[1] < LL[0]) { //Y>X
-							printf("TELEPORT DIAGONAL Y\n");
+						else if (LL[1] < LL[0]) { //Y>X 
 							YC = LL[1];
 							if (YC == 16) { //didn't work :/
 								YC = 0;
@@ -6188,8 +6356,9 @@ public:
 					}
 					//CHANGE - flip the less than, and swap between the two the insides of each if else.
 					
-					
-					printf("Time to pause\n");
+					if (Debug) {
+						printf("Time to pause\n");
+					}
 					//SDL_Delay(500);
 					 
 					 
@@ -6217,18 +6386,24 @@ public:
 			else if (x > 0) { 
 				int XC;
 				if (xChange > 0) { // if moving right
-					printf("Sprite was moving Right\n");
-
+					if (Debug) {
+						printf("Sprite was moving Right\n");
+					}
 					XC = CurrentVictim->xPos + TILE_WIDTH - TempStackable->SpriteXCollision[x - 1]->xPos; //object 4={64, 0}, obj5 ={79, 0}. 64+16-79=1, so 79+1 is where obj 5 would be without overlap.
-					printf("5 TempOverlapX=%d\n", XC);
+					if (Debug) {
+						printf("5 TempOverlapX=%d\n", XC);
+					}
 					pause = true;
 
 				}
 				else { // if moving left
-					printf("Sprite was moving Left\n");
-
+					if (Debug) {
+						printf("Sprite was moving Left\n");
+					}
 					XC = TempStackable->SpriteXCollision[x - 1]->xPos + TILE_WIDTH - CurrentVictim->xPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-					printf("6 TempOverlapX=%d\n", XC);
+					if (Debug) {
+						printf("6 TempOverlapX=%d\n", XC);
+					}
 					pause = true;
 
 				}
@@ -6241,7 +6416,9 @@ public:
 				}
 				
 				if (XC > 16 || XC < 0) {
-					printf("We've got a problem sir!\n");
+					if (Debug) {
+						printf("We've got a problem sir!\n");
+					}
 					wait = true;
 				}
 			} //don't have ot worry about diag considerations, where inline map could be a problem.
@@ -6250,17 +6427,24 @@ public:
 			else if (y > 0) { 
 				int YC;
 				if (yChange > 0) { // if moving down
-					printf("Sprite was moving down\n");
-
+					if (Debug) {
+						printf("Sprite was moving down\n");
+					}
 					YC = CurrentVictim->yPos + TILE_WIDTH - TempStackable->SpriteYCollision[y - 1]->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-					printf("7 TempOverlapY=%d\n", YC);
+					if (Debug) {
+						printf("7 TempOverlapY=%d\n", YC);
+					}
 					pause = true;
 
 				}
 				else { // if moving up
-					printf("Sprite was moving up\n");
+					if (Debug) {
+						printf("Sprite was moving up\n");
+					}
 					YC = TempStackable->SpriteYCollision[y - 1]->yPos + TILE_HEIGHT - CurrentVictim->yPos; //insert virtually the same check used for checkfuture 2, to ensure consistency among objects that move morethan 1 pxl at a time.
-					printf("8 TempOverlapY=%d\n", YC);
+					if (Debug) {
+						printf("8 TempOverlapY=%d\n", YC);
+					}
 					pause = true;
 
 				}
@@ -6273,7 +6457,9 @@ public:
 				}
 					 
 				if (YC > 16 || YC < 0) {
-					printf("We've got a problem sir!\n");
+					if (Debug) {
+						printf("We've got a problem sir!\n");
+					}
 					wait = true;
 				}
 			}
