@@ -5006,6 +5006,35 @@ public:
 
 					bool EarlyBreak = false;
 
+
+					///The big difference between this and the other method, is that we were previously storing the final position, not asking how we are getting there, out of the desire not to have a bias to the x or y axis
+					//however this lead to a problem of jostling with Figure Overlap. Which again causes issues in VERY specific circumstances. Demonstratable logic however
+					//Thus this new method will 'jostle' them first, so that there is no bias on axis, and then apply both vectors to move diagonal. 
+					//Most of the math will stay the same, just added actions, however before moving on to program I'd like to rigorously discuss this with Adam to avoid any more mistakes.
+
+
+					//To 'Jostle' is to move only one of the directions from your original position. 
+					//1) Jostle X
+					//2) Jostle Y
+
+					//If you collide with neither, calcualte overlap diagonal as usual
+					//if you collide with both, calculate them as usual, then check the diagonal we previously found, or will find (point of discussion)
+
+					//if you collide with ONE axis, but not the other. 
+					
+						//Store the axis and overlap,
+						
+						//figure out diagonal's overlap (if any)
+						// compare sotred value to that of the diagonal, if the stored is bigger, just tp the stored, if the diagonal is larger, just diagonal
+						//(Diagonal in the one axis direction suggested by stored)
+						//Jostle (Figure out end position by reevaluating your new position. Teleport based on LAST adjusted axis). 
+						
+						//if no diagonal, end 
+
+
+
+
+
 					//Great, now what sprites are you potentially hitting? (Relys on XYArr right now)
 					if (left && up) { //left up
 
