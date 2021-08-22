@@ -6570,7 +6570,7 @@ public:
 				printf("%d, ", InvestigateIndexsY[j]);
 			}
 			printf("}\n");
-		}
+		} //
 
 		//^From the main loop
 		//now every stack should be popped as much as it could be. Then we must find the eraseable elements again. NOTE I SHOULD ERASE IT FROM THE STACK WHEN WE FIRST ADD IT
