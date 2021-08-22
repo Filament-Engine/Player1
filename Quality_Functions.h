@@ -68,3 +68,13 @@ char* StringAndStringToCharArr(std::string& TempPath2, std::string& tempSource) 
 	TempPath[TempPath2Len + TempSourceLen] = '\0';
 	return TempPath;
 }
+
+//NEW, for Sprite.h Returns absolute value of an integer.  
+int absolute(int v) {
+	if (v < 0) {
+		return (-v);
+	}
+	else {
+		return v;
+	}
+}
