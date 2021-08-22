@@ -46,7 +46,7 @@ public:
 	bool UseContort = false;
 	int ExVel[2] = { 0,0 };
 	std::vector<int[2]> LastDestination = {}; //NOTE - This might only ever need to be a single pair of x y values.
-	
+	int CollisionType = 1; //Solid, Default for now, because it need st ograb it from the IMG, and then be overridden if needed,
 
 	// normal constructor -- uses moveX and moveY
 	Sprite(int x, int y, std::string l, std::map<std::string, SurfaceProperty*> SurfacePropertyMap, int Order) {
@@ -611,8 +611,8 @@ struct XYArr2 {
 	Sprite* CurrentVictim;
 	int XCollision; //might want int
 	int YCollision; //might want int
-	Sprite* Collisions[3] = { nullptr, nullptr, nullptr }; //x, y, d cases. (what you could be overlapping
-	Sprite* HitSprites[3] = { nullptr, nullptr, nullptr }; //what you actually hit/overlap with when calcualted.
+	Sprite* Collisions[4] = { nullptr, nullptr, nullptr, nullptr }; //x, y, d cases. (what you could be overlapping
+	Sprite* HitSprites[4] = { nullptr, nullptr, nullptr, nullptr }; //what you actually hit/overlap with when calcualted.
 };
 
 class ObjectLayer {
@@ -6728,7 +6728,68 @@ public:
 
 
 
+	void MergeSortSpriteCollision2(std::vector<Sprite*>& SpriteOverlap, std::vector<int>& SpriteArea) { //we will be editing directly onto it
+		bool Debug = false;
+		if (TOTALFRAMECOUNT > 120000) {
+			Debug = true;
+		}
+		Debug = false;
 
+		if (SpriteArea.size() > 1) {
+			int M = SpriteArea.size() / 2;
+			std::vector<int> LeftHalfArea(SpriteArea.begin(), SpriteArea.begin() + M);
+			std::vector<int> RightHalfArea(SpriteArea.begin() + M, SpriteArea.begin() + SpriteArea.size());
+
+			std::vector<Sprite*> LeftHalfOverlap(SpriteOverlap.begin(), SpriteOverlap.begin() + M);
+			std::vector<Sprite*> RightHalfOverlap(SpriteOverlap.begin() + M, SpriteOverlap.begin() + SpriteOverlap.size());
+
+
+			MergeSortSpriteCollision2(LeftHalfOverlap, LeftHalfArea);
+			MergeSortSpriteCollision2(RightHalfOverlap, RightHalfArea);
+
+
+
+
+			unsigned LeftItter = 0;
+			unsigned RightItter = 0;
+			unsigned SourceItter = 0;
+			while (LeftItter < LeftHalfArea.size() && RightItter < RightHalfArea.size()) {
+				if (LeftHalfArea[LeftItter] < RightHalfArea[RightItter]) {
+					SpriteArea[SourceItter] = LeftHalfArea[LeftItter];
+					SpriteOverlap[SourceItter] = LeftHalfOverlap[LeftItter];
+					LeftItter++;
+				}
+				else {
+					SpriteArea[SourceItter] = RightHalfArea[RightItter];
+					SpriteOverlap[SourceItter] = RightHalfOverlap[RightItter];
+					RightItter++;
+				}
+				SourceItter++;
+			}
+
+			while (LeftItter < LeftHalfArea.size()) {
+				SpriteArea[SourceItter] = LeftHalfArea[LeftItter];
+				SpriteOverlap[SourceItter] = LeftHalfOverlap[LeftItter];
+				LeftItter++;
+				SourceItter++;
+			}
+
+			while (RightItter < RightHalfArea.size()) {
+				SpriteArea[SourceItter] = RightHalfArea[RightItter];
+				SpriteOverlap[SourceItter] = RightHalfOverlap[RightItter];
+				RightItter++;
+				SourceItter++;
+			}
+
+		}
+
+
+
+		if (Debug) {
+			printf("Try Merging\n");
+		}
+
+	}
 	int CheckOverlap2(Sprite* ObjectSprite) {
 		RemoveSpriteFromMap(ObjectSprite); //Temporary, this is just for the testing for collision and the strange overlap. In the future it won't remove and then readd, but instead ignore itself when checking.
 		bool Debug = false;
@@ -6936,10 +6997,11 @@ public:
 
 
 	//Goes into LM, figures out the one closest to your travel path, returns it, and figures out appropriate overlap value.
-	Sprite* JostleX(Sprite* ObjectSprite, int Edge[2], int Measure);
-	Sprite* JostleY(Sprite* ObjectSprite, int Edge[2], int Measure);
-	Sprite* JostleD(Sprite* ObjectSprite, int D[2], int Measure) {
+	Sprite* JostleX(Sprite* ObjectSprite, int Edge[2], int Measure, XYArr2* TempStackable);
+	Sprite* JostleY(Sprite* ObjectSprite, int Edge[2], int Measure, XYArr2* TempStackable);
+	Sprite* JostleD(Sprite* ObjectSprite, int D[2], int Measure, XYArr2* TempStackable) {
 		bool Debug = false;
+		int xPos, yPos;
 		int x1, x2, y1, y2;
 
 		int TempX2Math, TempY2Math;
@@ -6949,7 +7011,7 @@ public:
 		y1 = ObjectSprite->yPos + ObjectSprite->ExVel[1];
 		x2 = ObjectSprite->xPos + TILE_WIDTH + ObjectSprite->ExVel[0];
 		y2 = ObjectSprite->yPos + TILE_HEIGHT + ObjectSprite->ExVel[1];
-
+	
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
@@ -6998,7 +7060,8 @@ public:
 			}
 		}
 		//WORK - maybe change measure if this is used to adjust position? 
-		
+		xPos = x1; //so we work wit hthe adjusted position of the ObjectSprite
+		yPos = y1;
 		TempY2Math = y2 - TILE_HEIGHT * (y2 / TILE_HEIGHT); //A = C - B * (C/B)
 		TempX2Math = x2 - TILE_WIDTH * (x2 / TILE_WIDTH);
 		y1 = y1 / TILE_HEIGHT;
@@ -7021,76 +7084,265 @@ public:
 		//if largest X and Y do not point to the same object, return two *
 		//Else return just the one. 
 		//Place the largest X, Y into D[2], if any!
-	 
-	
-		
+
+
+
 		//Vector that holds the 'area' of overlap - this is to be compared with, and then swapped if one with larger area shows up
 		//if tie, look at order creation
 		std::vector<Sprite*> SpritesHit = {};
 		std::vector<int> SpriteX = {};
 		std::vector<int> SpriteY = {};
-		//vector that holds the pointer itself. to be returned as a stack
+
 		std::vector<Sprite*> SpriteOverlapX = {};
 		std::vector<Sprite*> SpriteOverlapY = {};
 
+		int TempXOverlap = 0;
+		int TempYOverlap = 0;
+		//EDIT Switch all ObjextSprite pos' to x1, y1's!
+
 		//diagonals
-		if (Measure == 5) {//UL 
-			//Depending on how perfectly inligned with the grid you are, you can skip checking some edges/points.
-			if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
+		//Get all those possibly hit
+		if (true) {
+			if (Measure == 5) {//UL 
+				//Depending on how perfectly inligned with the grid you are, you can skip checking some edges/points.
 				if (Debug) {
 					printf("a\n");
 				}
 				for (int i = 0; i < LM[y1][x1].size(); i++) {
-					if (LM[y1][x1][i]->xPos < ObjectSprite->xPos && LM[y1][x1][i]->yPos < ObjectSprite->yPos) { //NEW (CHANGED)
+					if (LM[y1][x1][i]->xPos < xPos && LM[y1][x1][i]->yPos < yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y1][x1][i]);
-					} 
+					}
 				}
-			} 
-		}
-		else if (Measure == 13) {//UR 
-			if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
+			}
+			else if (Measure == 13) {//UR 
 				if (Debug) {
 					printf("i\n");
 				}
 				for (int i = 0; i < LM[y1][x2].size(); i++) { // first
-					if (LM[y1][x2][i]->xPos > ObjectSprite->xPos && LM[y1][x2][i]->yPos < ObjectSprite->yPos) { //NEW (CHANGED)
+					if (LM[y1][x2][i]->xPos > xPos && LM[y1][x2][i]->yPos < yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y1][x2][i]);
 					}
 				}
-			} 
-		}
-		else if (Measure == 7) {//DL 
-			if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
+			}
+			else if (Measure == 7) {//DL 
 				if (Debug) {
 					printf("q\n");
 				}
 				for (int i = 0; i < LM[y2][x1].size(); i++) { // first
-					if (LM[y2][x1][i]->xPos < ObjectSprite->xPos && LM[y2][x1][i]->yPos > ObjectSprite->yPos) { //NEW (CHANGED)
+					if (LM[y2][x1][i]->xPos <  xPos && LM[y2][x1][i]->yPos > yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y2][x1][i]);
 					}
 				}
-			} 
-		}
-		else if (Measure == 15) {//DR 
-			if (TempX2Math == 0 && TempY2Math == 0) { //you are perfectly in line with the gird
-
+			}
+			else if (Measure == 15) {//DR 
 				if (Debug) {
 					printf("x\n");
 				}
 				for (int i = 0; i < LM[y2][x2].size(); i++) { // LL
-					if (LM[y2][x2][i]->xPos > ObjectSprite->xPos && LM[y2][x2][i]->yPos > ObjectSprite->yPos) { //NEW (CHANGED)
+					if (LM[y2][x2][i]->xPos > xPos && LM[y2][x2][i]->yPos > yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y2][x2][i]);
 					}
 				}
 			}
-		
 		}
 		//Now we have all possible Sprites we could've hit for that given measure.
+		
+
+		//Now I have to figure out if there's any  REAL overlap.
+		if (true) {
+			if (Measure == 5) {//UL 
+				//Depending on how perfectly inligned with the grid you are, you can skip checking some edges/points.
+				if (Debug) {
+					printf("a\n");
+				}
+				for (int i = 0; i < SpritesHit.size(); i++) {
+					//2) now check for overlap, diagonal so check for x and y. These formulas change every time. For simplcity, attempt to make sure that if there is a gap between the two object, 
+					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					}
+					else {
+						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+					}
+					if (SpritesHit[i]->yPos < ObjectSprite->yPos) {
+						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					}
+					else {
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+					}
+					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
+					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
+						SpriteOverlapX.push_back(SpritesHit[i]);
+						SpriteX.push_back(TempXOverlap);
+						SpriteOverlapY.push_back(SpritesHit[i]);
+						SpriteY.push_back(TempYOverlap);
+						TempXOverlap = 0;
+						TempYOverlap = 0;
+					}
+				}
+			}
+			else if (Measure == 13) {//UR 
+				if (Debug) {
+					printf("i\n");
+				}
+				for (int i = 0; i < SpritesHit.size(); i++) { // first 
+					if (SpritesHit[i]->xPos > xPos) {//NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					}
+					else {
+						TempXOverlap = xPos + TILE_WIDTH - xPos;
+					}
+					if (SpritesHit[i]->yPos < yPos) {
+						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					}
+					else {
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+					}
+					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
+						SpriteOverlapX.push_back(SpritesHit[i]);
+						SpriteX.push_back(TempXOverlap);
+						SpriteOverlapY.push_back(SpritesHit[i]);
+						SpriteY.push_back(TempYOverlap);
+						TempXOverlap = 0;
+						TempYOverlap = 0;
+					}
+				}
+			}
+			else if (Measure == 7) {//DL 
+				if (Debug) {
+					printf("q\n");
+				}
+				for (int i = 0; i < SpritesHit.size(); i++) { // first
+					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					}
+					else {
+						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+					}
+					if (SpritesHit[i]->yPos > yPos) {
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+					}
+					else {
+						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					}
+					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
+						SpriteOverlapX.push_back(SpritesHit[i]);
+						SpriteX.push_back(TempXOverlap);
+						SpriteOverlapY.push_back(SpritesHit[i]);
+						SpriteY.push_back(TempYOverlap);
+						TempXOverlap = 0;
+						TempYOverlap = 0;
+					}
+				}
+			}
+			else if (Measure == 15) {//DR  if (Debug) {
+				if (Debug) {
+					printf("x\n");
+				}
+				for (int i = 0; i < SpritesHit.size(); i++) { // LL
+					if (SpritesHit[i]->xPos > xPos) {//NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					}
+					else {
+						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+					}
+					if (SpritesHit[i]->yPos > yPos) {
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+					}
+					else {
+						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					}
+					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
+						SpriteOverlapX.push_back(SpritesHit[i]);
+						SpriteX.push_back(TempXOverlap);
+						SpriteOverlapY.push_back(SpritesHit[i]);
+						SpriteY.push_back(TempYOverlap);
+						TempXOverlap = 0;
+						TempYOverlap = 0;
+					}
+				}
+			}
+		}
+		
+		
+		
 		//Now I want to mergeSort it into SpriteOverlapX and SpriteOverlapY by how 'close' it is, and then sort via order creation.
 
 		//Then, once we sorted it by most aggressive overlap by least, we then want to ensure that it's an actual dimension.
 		
 		//Then also mergesort into SpriteOverlapY (again, using SpriteOverlapX, saving the ptr to the largest overlap)
+		if (Debug) {
+			printf("Before Merge:\n");
+			printf("SpriteX = {");
+			for (auto x : SpriteX) {
+				printf("%d, ", SpriteX[x]);
+			}
+			printf("}\n");
+			printf("SpriteY = {");
+			for (auto x : SpriteY) {
+				printf("%d, ", SpriteX[x]);
+			}
+			printf("}\n");
+		}
+		
+		MergeSortSpriteCollision2(SpriteOverlapX, SpriteX);
+		MergeSortSpriteCollision2(SpriteOverlapY, SpriteY);
+		if (Debug) {
+			printf("After Merge:\n");
+			printf("SpriteX = {");
+			for (auto x : SpriteX) {
+				printf("%d, ", SpriteX[x]);
+			}
+			printf("}\n");
+			printf("SpriteY = {");
+			for (auto x : SpriteY) {
+				printf("%d, ", SpriteX[x]);
+			}
+			printf("}\n");
+		}
+
+
+		//Assuming the max overlap is at the back. -this needs to change to consider the collision type, of both, and see if they are same, and itterate independently to get the correct answer.
+		if (SpriteOverlapX[SpriteOverlapX.size()-1] = SpriteOverlapY[SpriteOverlapY.size() - 1]) {
+			//There is only one diagonal we need to consider
+			D[0] = SpriteX[SpriteX.size() - 1];
+			D[1] = SpriteY[SpriteY.size() - 1];			
+		}
+
+		int xItter = SpriteX.size()-1;
+		int yItter = SpriteY.size()-1;
+		bool EarlyBreak =false;
+		while ( (yItter>-1 && xItter>-1) && (D[0]==0 || D[1]==0) ) {
+			if (SpriteOverlapX[xItter]->CollisionType == 1) {
+				xItter -= 1;
+				//break early
+				EarlyBreak = true;
+			} 
+			if (SpriteOverlapY[yItter]->CollisionType == 1) {
+				yItter -= 1;
+				//break early
+				EarlyBreak = true;
+			}
+
+			//WORK - Need  to figure out overlap, then figure out which one has priority (if there's a tie in either for overlap), then figure out if the same sprite is used. If theres a tie in collision priority, default to creation order.
+			if (!EarlyBreak) { 
+				//at the end of each of these vectors is the sprite wit hthe most overlap 
+				if (SpriteOverlapX[xItter] = SpriteOverlapY[yItter]) {
+					//There is only one diagonal we need to consider
+					D[0] = SpriteX[xItter];
+					D[1] = SpriteY[yItter];
+					TempStackable->HitSprites[2] = SpriteOverlapX[xItter];
+				}
+				else {
+					//Therea re two idagonals we need to consider - use find to find the overlap, returns itterator, if no element found returns last, but we know it will be there.
+					D[0] = SpriteX[xItter];
+					D[1] = SpriteY[yItter];
+					TempStackable->HitSprites[2] = SpriteOverlapX[xItter];
+					TempStackable->HitSprites[3] = SpriteOverlapY[yItter];
+				} //So we'll have to check whether there are two collisions to pay attention to or not.
+			}
+		}
+
+
 		//Then return a ptr to Sprite* to the 0, 1, or 2 possible Sprites.
 
 		
@@ -7107,9 +7359,9 @@ public:
 		TempStackable->CurrentVictim = ObjectSprite;
 
 		//only do the necessary ones //WORK - double check that Edge and D are properlly storing some values when they finish!
-		TempStackable->Collisions[0] = JostleX(ObjectSprite, Edge, Measure);
-		TempStackable->Collisions[1] = JostleY(ObjectSprite, Edge, Measure);
-		TempStackable->Collisions[2] = JostleD(ObjectSprite, D, Measure);
+		JostleX(ObjectSprite, Edge, Measure, TempStackable);
+		JostleY(ObjectSprite, Edge, Measure, TempStackable);
+		JostleD(ObjectSprite, D, Measure, TempStackable);
 		//Edge = {x,y}, D = {Dx, Dy}
 
 
@@ -7122,13 +7374,13 @@ public:
 		//Figure out How to move - Note the Sprite you choose to run into.
 		if (Measure == 5 || Measure == 7 || Measure == 13 || Measure == 15) {
 			//Diagonal ONLY
-			if (x == 0 xor y == 0 && (dx != 0 && dy != 0)) { //Xor gate maybe? on the XY check?
+			if (x == 0 || y == 0 && (dx != 0 && dy != 0)) { //Xor gate maybe? on the XY check?
 				if (x == 0) {
 					if (dy > y) {
 						Final[0] = dx;
 						Final[1] = y;
 						TempStackable->HitSprites[2] = TempStackable->Collisions[2]; //the hit sprite is only equal to whatever you COULD'VE hit.
-						TempStackable->HitSprites[1] = TempStackable->Collisions[1]
+						TempStackable->HitSprites[1] = TempStackable->Collisions[1];
 					}
 				}
 				if (y == 0) {
@@ -7441,6 +7693,6 @@ public:
 
 
 
-
-
-};
+	
+	};
+	
