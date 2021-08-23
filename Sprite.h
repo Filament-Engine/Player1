@@ -630,6 +630,10 @@ struct XYArr2 {
 	int YCollision; //might want int
 	Sprite* Collisions[4] = { nullptr, nullptr, nullptr, nullptr }; //x, y, d cases. (what you could be overlapping
 	Sprite* HitSprites[4] = { nullptr, nullptr, nullptr, nullptr }; //what you actually hit/overlap with when calcualted.
+	int Edge[2] = { 0,0 };
+	int D1[2] = { 0,0 };
+	int D2[2] = { 0,0 };
+	int Final[2] = { 0,0 };
 };
 
 class ObjectLayer {
@@ -8268,6 +8272,7 @@ public:
 	 
 
 	void CheckFuture3(Sprite* ObjectSprite, XYArr2* TempStackable, int Measure) {
+		bool Debug = true;
 		int Edge[2];
 		int D1[2];
 		int D2[2]; //The reason there are two diagonals is that if in some case we perfectly align with two sprites on the diagonal, and they have different axis' max, but equal, then we want to the ake the minimum appropriate values.
@@ -8368,6 +8373,18 @@ public:
 				TempStackable->HitSprites[1] = TempStackable->Collisions[1];
 			}
 		}
+
+		if (Debug) {
+			TempStackable->D1[0] = D1[0];
+			TempStackable->D2[1] = D1[1];
+			TempStackable->D1[0] = D2[0];
+			TempStackable->D2[1] = D2[1];
+			TempStackable->Edge[0] = Edge[0];
+			TempStackable->Edge[1] = Edge[1];
+			TempStackable->Final[0] = Final[0];
+			TempStackable->Final[1] = Final[1];
+		}
+
 		TempStackable->XCollision = Final[0];
 		TempStackable->YCollision = Final[1];
 
@@ -8470,11 +8487,48 @@ public:
 					}
 
 					TempStackable = new XYArr2;
+					TempStackable->CurrentVictim = AllSprites[i]; //purely for the debug purposes. Shouldn't have t oeven make one until it's required.
 					if (Debug) {
 						printf("CheckFuture3\n");
 					}
 
 					CheckFuture3(AllSprites[i], TempStackable, Measure);
+					if (Debug) {
+						printf("\n_______________________________\n");
+						printf("|TempStackable:                 |\n");
+						printf("|CurrentVictim = Object%d        |\n", TempStackable->CurrentVictim->OrderCreation + 1);
+						if (TempStackable->HitSprites[0] != nullptr) {
+							printf("|HitSprite X: Object%d          |\n", TempStackable->HitSprites[0]->OrderCreation + 1);
+						}
+						else {
+							printf("|HitSprite X:                   |\n");
+						}
+						if (TempStackable->HitSprites[1] != nullptr) {
+							printf("|HitSprite Y: Object%d          |\n", TempStackable->HitSprites[0]->OrderCreation + 1);
+						}
+						else {
+							printf("|HitSprite Y:                   |\n");
+						}
+						if (TempStackable->HitSprites[2] != nullptr) {
+							printf("|HitSprite Greater D: Object%d  |\n", TempStackable->HitSprites[0]->OrderCreation + 1);
+						}
+						else {
+							printf("|HitSprite Greater D:           |\n");
+						}
+						if (TempStackable->HitSprites[3] != nullptr) {
+							printf("|HitSprite Lesser D: Object%d   |\n", TempStackable->HitSprites[0]->OrderCreation + 1);
+						}
+						else {
+							printf("|HitSprite Lesser D:            |\n");
+						}
+						printf("|E={%d, %d}                       |\n", TempStackable->Edge[0], TempStackable->Edge[1]);
+						printf("|D1={%d, %d}                      |\n", TempStackable->D1[0], TempStackable->D1[1]);
+						printf("|D2={%d, %d}                      |\n", TempStackable->D2[0], TempStackable->D2[1]);
+						printf("|F={%d, %d}                       |\n", TempStackable->Final[0], TempStackable->Final[1]);
+						printf("_______________________________\n\n");
+					}
+
+
 					ReMapSprite2(AllSprites[i]);
 					//if all HitCollision is compelte, or nothing, update Latest 'viable positoin'.
 					//then pause, 
