@@ -6972,7 +6972,7 @@ public:
 		if (Debug) {
 			printf("overlapped with nothing\n");
 			if (ObjectSprite->OrderCreation == AllSprites.size() - 1) {
-				printf("END OF OVERLAPSTART2");
+				printf("END OF OVERLAPSTART2\n\n\n");
 			}
 		}
 		return 0;
@@ -8414,7 +8414,19 @@ public:
 					if (Debug) {
 						printf("CheckOverlap2\n");
 					}
-					CheckOverlap2(AllSprites[i]); //Sets Extravel, exVec, and the Contort variables. For now just ExTravel and exVec
+
+					//CheckOverlap2, CheckOverlapSTART2 <-NOTE, for now I'm storing all the sucessful end destinations, then erasing them all at the end of the Que handling. - however we may only ever need to store the most recent successful destination, or the last two.
+					if (i == 0) {
+						for (int s = 0; s <  AllSprites.size(); s++) {
+							 CheckOverlapSTART2(AllSprites[s]); //presets the last destination, so taht it'll always work from the get go.
+							//at the end of handlingthe stack, we should ensure that the last successsful destination is set totheir current position, or do so at the start of the functioneach time, besides through checkoverlap. maybe it's unnecessary to call here.. :/
+						}
+					}
+					else {
+						CheckOverlap2(AllSprites[i]); //Sets Extravel, exVec, and the Contort variables. For now just ExTravel and exVec
+					}
+
+
 					if (Debug) {
 						printf("RemoveSpriteFromMap2\n");
 					}
@@ -8475,9 +8487,12 @@ public:
 				}
 			}
 			if (Debug) {
-				printf("Finished AllSprite for loop\n");
-				printf("For now itterate completed\n"); 
+				printf("\n\n\nFinished AllSprite for loop\n");
+				printf("For now itterate completed\n\n\n"); 
 				Completed += 1;
+				for (int i = 0; i < AllSprites.size(); i++) {
+					AllSprites[i]->LastDestination.clear();
+				}
 			}
 		}
 	}
