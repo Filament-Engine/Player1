@@ -961,8 +961,6 @@ public:
 	int CheckFutureSpritePosition3(Sprite* CurrentVictim, int ModxPos, int ModyPos, int ModDirection, char ModAxis) { //Mod generally tells you what we already have modified from it's original position. In otherwords, we can't use the 'true' value of hte sprite.
 		bool Debug = false;
 		bool Modified = false;
-
-		bool Debug = false;
 		if (TOTALFRAMECOUNT > 120000) {
 			Debug = true;
 		}
@@ -6999,7 +6997,7 @@ public:
 	//Goes into LM, figures out the one closest to your travel path, returns it, and figures out appropriate overlap value.
 	Sprite* JostleX(Sprite* ObjectSprite, int Edge[2], int Measure, XYArr2* TempStackable);
 	Sprite* JostleY(Sprite* ObjectSprite, int Edge[2], int Measure, XYArr2* TempStackable);
-	Sprite* JostleD(Sprite* ObjectSprite, int D[2], int Measure, XYArr2* TempStackable) {
+	Sprite* JostleD(Sprite* ObjectSprite, int D1[2], int D2[2], int Measure, XYArr2* TempStackable) {
 		bool Debug = false;
 		int xPos, yPos;
 		int x1, x2, y1, y2;
@@ -7304,41 +7302,67 @@ public:
 		//Assuming the max overlap is at the back. -this needs to change to consider the collision type, of both, and see if they are same, and itterate independently to get the correct answer.
 		if (SpriteOverlapX[SpriteOverlapX.size()-1] = SpriteOverlapY[SpriteOverlapY.size() - 1]) {
 			//There is only one diagonal we need to consider
-			D[0] = SpriteX[SpriteX.size() - 1];
-			D[1] = SpriteY[SpriteY.size() - 1];			
+			D1[0] = SpriteX[SpriteX.size() - 1];
+			D1[1] = SpriteY[SpriteY.size() - 1];			
 		}
 
 		int xItter = SpriteX.size()-1;
 		int yItter = SpriteY.size()-1;
-		bool EarlyBreak =false;
-		while ( (yItter>-1 && xItter>-1) && (D[0]==0 || D[1]==0) ) {
+		bool EarlyBreak1 =false;
+		bool EarlyBreak2 = false;
+		while ( (yItter>-1 && xItter>-1) && (D1[0]==0 || D1[1]==0) ) {
 			if (SpriteOverlapX[xItter]->CollisionType == 1) {
 				xItter -= 1;
 				//break early
-				EarlyBreak = true;
+				EarlyBreak1 = true;
 			} 
 			if (SpriteOverlapY[yItter]->CollisionType == 1) {
 				yItter -= 1;
 				//break early
-				EarlyBreak = true;
+				EarlyBreak2 = true;
 			}
 
-			//WORK - Need  to figure out overlap, then figure out which one has priority (if there's a tie in either for overlap), then figure out if the same sprite is used. If theres a tie in collision priority, default to creation order.
-			if (!EarlyBreak) { 
+
+
+
+			//WORK - Need  to figure out overlap, then figure out which one has priority 
+			//(if there's a tie in either for overlap), then figure out if the same sprite is used. 
+			//If theres a tie in collision priority, default to creation order. <-will do later
+			
+			
+			if (EarlyBreak1 && EarlyBreak2) { 
 				//at the end of each of these vectors is the sprite wit hthe most overlap 
 				if (SpriteOverlapX[xItter] = SpriteOverlapY[yItter]) {
 					//There is only one diagonal we need to consider
-					D[0] = SpriteX[xItter];
-					D[1] = SpriteY[yItter];
+					D1[0] = SpriteX[xItter];
+					D1[1] = SpriteY[yItter];
 					TempStackable->HitSprites[2] = SpriteOverlapX[xItter];
 				}
 				else {
 					//Therea re two idagonals we need to consider - use find to find the overlap, returns itterator, if no element found returns last, but we know it will be there.
-					D[0] = SpriteX[xItter];
-					D[1] = SpriteY[yItter];
+					D1[0] = SpriteX[xItter];
+					D1[1] = SpriteY[yItter];
+					
+					//Find the other two dimensions for later
+					for (int x = 0; x < SpriteOverlapX.size(); x++) {
+						if (SpriteOverlapX[x] == SpriteOverlapY[yItter]) {
+							D2[0] = SpriteX[x];
+							break;
+						}
+					}
+					for (int y = 0; y < SpriteOverlapY.size(); y++) {
+						if (SpriteOverlapY[y] == SpriteOverlapX[xItter]) {
+							D2[1] = SpriteY[y];
+							break;
+						}
+					}
+
 					TempStackable->HitSprites[2] = SpriteOverlapX[xItter];
 					TempStackable->HitSprites[3] = SpriteOverlapY[yItter];
 				} //So we'll have to check whether there are two collisions to pay attention to or not.
+			}
+			if (EarlyBreak1 && EarlyBreak2) {
+				break;
 			}
 		}
 
@@ -7351,9 +7375,17 @@ public:
 	};
 
 	void CheckFuture3(Sprite* ObjectSprite, XYArr2* TempStackable, int Measure) {
-		int Edge[2] = { 0,0 };
-		int D[2] = { 0,0 };
-		int Final[2] = { 0, 0 }; //the values that matter. Figure out how to move for this
+		int Edge[2];
+		int D1[2];
+		int D2[2]; //The reason there are two diagonals is that if in some case we perfectly align with two sprites on the diagonal, and they have different axis' max, but equal, then we want to the ake the minimum appropriate values.
+		int Final[2]; //the values that matter. Figure out how to move for this
+		for (int x = 0; x < 2; x++) {
+			Edge[x] = 0;
+			D1[x] = 0;
+			D2[x] = 0;
+			Final[x] = 0;
+		}
+					  
 		//figure out direction then send to jostle (appropriately!) 
 		TempStackable = new XYArr2;
 		TempStackable->CurrentVictim = ObjectSprite;
@@ -7361,7 +7393,7 @@ public:
 		//only do the necessary ones //WORK - double check that Edge and D are properlly storing some values when they finish!
 		JostleX(ObjectSprite, Edge, Measure, TempStackable);
 		JostleY(ObjectSprite, Edge, Measure, TempStackable);
-		JostleD(ObjectSprite, D, Measure, TempStackable);
+		JostleD(ObjectSprite, D1, D2, Measure, TempStackable);
 		//Edge = {x,y}, D = {Dx, Dy}
 
 
@@ -7369,8 +7401,8 @@ public:
 
 		int x = Edge[0];
 		int y = Edge[1];
-		int dx = D[0];
-		int dy = D[1];
+		int dx = D1[0];
+		int dy = D1[1];
 		//Figure out How to move - Note the Sprite you choose to run into.
 		if (Measure == 5 || Measure == 7 || Measure == 13 || Measure == 15) {
 			//Diagonal ONLY
