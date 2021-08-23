@@ -440,7 +440,7 @@ void handleLoop() {
 		}
 
 		//test to see if auto movement works 
-		gLevel1->SpriteLayer->MoveAllSprites2();	
+		gLevel1->SpriteLayer->MoveAllSprites3();	
 		
 
 		gLevel1->RenderThis(Player1);
