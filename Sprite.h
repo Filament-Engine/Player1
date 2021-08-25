@@ -8269,6 +8269,10 @@ public:
 	}
 	
 	
+	//WORK - figure out when you want to jostle again
+	//figure out when we want to update position
+	//figure out when we want to stack (or end early)
+	//edittravel on successful moves.
 	void CheckFuture3(Sprite* ObjectSprite, XYArr2* TempStackable, int Measure) {
 		bool Debug = true;
 		int Edge[2]; //{x,y}
@@ -8321,7 +8325,7 @@ public:
 			}
 			printf("Rise overRun = %f\n", Percentage);
 			printf("New (temp) ExVel for this Jostle ={%d, %d}\n", NewXDistance, NewYDistance);
-			SDL_Delay(300);
+			//SDL_Delay(300);
 		}
 
 		//INSERT - guard against overflow on matrix here, this avoids adjusting the values multiple times throughout each jostling.
@@ -8857,6 +8861,7 @@ public:
 	};
 
 
+	//WORK - Change behavior to just edit vec each frame, without touching position!
 	void MoveAllSprites3() {
 		bool Debug = true;
 		if (Debug) {
