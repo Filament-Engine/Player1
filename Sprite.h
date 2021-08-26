@@ -7708,7 +7708,7 @@ public:
 				if (TempX2Math == 0) {
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y1][x1][i]->yPos < yPos) {
+							if (LM[y1][x1][i]->yPos + TILE_HEIGHT > yPos) {
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
@@ -7717,14 +7717,14 @@ public:
 				else {
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y1][x1][i]->yPos < yPos) {
+							if (LM[y1][x1][i]->yPos + TILE_HEIGHT > yPos) {
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
 						if (true) {
-							if (LM[y1][x2][i]->yPos < yPos) {
+							if (LM[y1][x2][i]->yPos + TILE_HEIGHT > yPos) {
 								SpritesHit.push_back(LM[y1][x2][i]);
 							}
 						}
@@ -7738,7 +7738,7 @@ public:
 				if (TempX2Math == 0) {
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y2][x1][i]->yPos > yPos +TILE_HEIGHT) { //WORK <-these formuals forget that tile height and width need to be applied!
+							if (LM[y2][x1][i]->yPos < yPos +TILE_HEIGHT) { //WORK <-these formuals forget that tile height and width need to be applied!
 								SpritesHit.push_back(LM[y2][x1][i]);
 							}
 						}
@@ -7747,14 +7747,14 @@ public:
 				else {
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
 						if (true) {
-							if (LM[y2][x1][i]->yPos > yPos) {
+							if (LM[y2][x1][i]->yPos < yPos + TILE_HEIGHT) {
 								SpritesHit.push_back(LM[y2][x1][i]);
 							}
 						}
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
 						if (true) {
-							if (LM[y2][x2][i]->yPos > yPos) {
+							if (LM[y2][x2][i]->yPos < yPos + TILE_HEIGHT) {
 								SpritesHit.push_back(LM[y2][x2][i]);
 							}
 						}
