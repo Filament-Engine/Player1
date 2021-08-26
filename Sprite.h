@@ -629,8 +629,8 @@ public:
 
 struct XYArr2 {
 	Sprite* CurrentVictim;
-	int XCollision; //might want int
-	int YCollision; //might want int
+	int XCollision=0; //might want int
+	int YCollision=0; //might want int
 	Sprite* Collisions[4] = { nullptr, nullptr, nullptr, nullptr }; //x, y, d1, d2 cases. (what you could be overlapping
 	Sprite* HitSprites[4] = { nullptr, nullptr, nullptr, nullptr }; //what you actually hit/overlap with when calcualted. (x, y, d1, d2) -where d1 and d2 are seperated because of the possible ties and such that cause additional considerations. 
 	int Edge[2] = { 0,0 };
@@ -6685,7 +6685,22 @@ public:
 
 
 
-
+	void ResetTempStackable(XYArr2* TempStackable) {
+		TempStackable->D1[0] = 0;
+		TempStackable->D1[1] = 0;
+		TempStackable->D2[0] = 0;
+		TempStackable->D2[1] = 0;
+		TempStackable->Edge[0] = 0;
+		TempStackable->Edge[1] = 0;
+		TempStackable->Final[0] = 0;
+		TempStackable->Final[1] = 0;
+		TempStackable->XCollision = 0;
+		TempStackable->YCollision = 0;
+		for (int i = 0; i < 4; i++) {
+			TempStackable->HitSprites[i] = nullptr ;
+			TempStackable->Collisions[i] = nullptr;
+		}
+	}
 	void SetTempStackableDebugInfo(XYArr2* TempStackable, int D1[], int D2[], int Edge[], int Final[]) {
 		TempStackable->D1[0] = D1[0];
 		TempStackable->D1[1] = D1[1];
@@ -6795,6 +6810,8 @@ public:
 					printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y1][x1][i]->OrderCreation + 1);
 					ReMapSprite(ObjectSprite);
 					HaveOverlapped = true; //you have overlapped 
+
+					SDL_Delay(2000);
 				}
 				yOverlapped = 0;
 				xOverlapped = 0;
@@ -6823,6 +6840,8 @@ public:
 
 					if ((xOverlapped > 0 && xOverlapped < 17) && (yOverlapped > 0 && yOverlapped < 17)) {
 						printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y1][x2][i]->OrderCreation + 1);
+
+						SDL_Delay(2000);
 						ReMapSprite(ObjectSprite);
 						HaveOverlapped = true; //you have overlapped 
 					}
@@ -6856,6 +6875,8 @@ public:
 						printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y2][x1][i]->OrderCreation + 1);
 						ReMapSprite(ObjectSprite);
 						HaveOverlapped = true; //you have overlapped 
+
+						SDL_Delay(2000);
 					}
 					yOverlapped = 0;
 					xOverlapped = 0;
@@ -6886,6 +6907,8 @@ public:
 							printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y2][x2][i]->OrderCreation + 1);
 							ReMapSprite(ObjectSprite);
 							HaveOverlapped = true; //you have overlapped 
+
+							SDL_Delay(2000);
 						}
 						yOverlapped = 0;
 						xOverlapped = 0;
@@ -7233,6 +7256,8 @@ public:
 					printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y1][x1][i]->OrderCreation + 1);
 					ReMapSprite(ObjectSprite);
 					HaveOverlapped = true; //you have overlapped 
+
+					SDL_Delay(2000);
 				}
 				yOverlapped = 0;
 				xOverlapped = 0;
@@ -7263,6 +7288,8 @@ public:
 						printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y1][x2][i]->OrderCreation + 1);
 						ReMapSprite(ObjectSprite);
 						HaveOverlapped = true; //you have overlapped 
+
+						SDL_Delay(2000);
 					}
 					yOverlapped = 0;
 					xOverlapped = 0;
@@ -7294,6 +7321,8 @@ public:
 						printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y2][x1][i]->OrderCreation + 1);
 						ReMapSprite(ObjectSprite);
 						HaveOverlapped = true; //you have overlapped 
+
+						SDL_Delay(2000);
 					}
 					yOverlapped = 0;
 					xOverlapped = 0;
@@ -7324,6 +7353,7 @@ public:
 							printf("Object%d overlapped with Object%d!\n", ObjectSprite->OrderCreation + 1, LM[y2][x2][i]->OrderCreation + 1);
 							ReMapSprite(ObjectSprite);
 							HaveOverlapped = true; //you have overlapped 
+							SDL_Delay(2000);
 						}
 						yOverlapped = 0;
 						xOverlapped = 0;
@@ -7352,6 +7382,7 @@ public:
 		if (HaveOverlapped == true) {
 			if (Debug) {
 				printf("You have overlapped with something\n");
+				SDL_Delay(2000);
 			}
 			return 1;
 		}
@@ -7443,7 +7474,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y1][x1][i]->xPos < xPos) {
+							if (LM[y1][x1][i]->xPos +TILE_WIDTH > xPos) {
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
@@ -7455,7 +7486,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y1][x1][i]->xPos < xPos) { //NEW (CHANGED)
+							if (LM[y1][x1][i]->xPos + TILE_WIDTH > xPos) { //NEW (CHANGED)
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
@@ -7466,7 +7497,7 @@ public:
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
 						//Overlap to be recorded
 						if (true) {
-							if (LM[y2][x1][i]->xPos < xPos) { //NEW (CHANGED)
+							if (LM[y2][x1][i]->xPos + TILE_WIDTH > xPos) { //NEW (CHANGED)
 								SpritesHit.push_back(LM[y2][x1][i]);
 							}
 						}
@@ -7481,7 +7512,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
 						if (true) {
-							if (LM[y1][x2][i]->xPos > xPos) { //NEW (CHANGED)
+							if (LM[y1][x2][i]->xPos < xPos + TILE_WIDTH) { //NEW (CHANGED)
 								SpritesHit.push_back(LM[y1][x2][i]);
 							}
 						}
@@ -7493,7 +7524,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
 						if (true) {
-							if (LM[y1][x2][i]->xPos > xPos) {//NEW (CHANGED)
+							if (LM[y1][x2][i]->xPos < xPos + TILE_WIDTH) {//NEW (CHANGED)
 								SpritesHit.push_back(LM[y1][x2][i]);
 
 							}
@@ -7504,7 +7535,7 @@ public:
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
 						if (true) {
-							if (LM[y2][x2][i]->xPos > xPos) {//NEW (CHANGED)
+							if (LM[y2][x2][i]->xPos < xPos + TILE_WIDTH) {//NEW (CHANGED)
 								SpritesHit.push_back(LM[y2][x2][i]);
 							}
 						}
@@ -7526,10 +7557,10 @@ public:
 					else {
 						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
 					}
-					if (SpritesHit[i]->yPos <  yPos) {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
-					}
-					else {
+					 
+					TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					 
+					if (TempYOverlap < 0 || TempYOverlap>16) {
 						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
 					}
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
@@ -7549,10 +7580,8 @@ public:
 					else {
 						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
 					}
-					if (SpritesHit[i]->yPos <  yPos) {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
-					}
-					else {
+					TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					if (TempYOverlap < 0 || TempYOverlap>16) {
 						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
 					}
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
@@ -7736,7 +7765,7 @@ public:
 					printf("af\n");
 				}
 				if (TempX2Math == 0) {
-					for (int i = 0; i < LM[y1][x1].size(); i++) {
+					for (int i = 0; i < LM[y2][x1].size(); i++) {
 						if (true) {
 							if (LM[y2][x1][i]->yPos < yPos +TILE_HEIGHT) { //WORK <-these formuals forget that tile height and width need to be applied!
 								SpritesHit.push_back(LM[y2][x1][i]);
@@ -7777,14 +7806,13 @@ public:
 		if (true) {
 			if (Measure == 9) {
 				for (int i = 0; i < SpritesHit.size(); i++) {
-					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
-						if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
-					}
-					else {
+					 
+					TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+						 
+					if (TempXOverlap < 0 || TempXOverlap>16) {
 						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
-						if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
 					}
+					if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
 					if (SpritesHit[i]->yPos <  yPos) {
 						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
@@ -7804,15 +7832,12 @@ public:
 				}
 			}
 			else if (Measure == 11) {
-				for (int i = 0; i < SpritesHit.size(); i++) {
-					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
-						if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
+				for (int i = 0; i < SpritesHit.size(); i++) { 
+					TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos; 
+					if (TempXOverlap<0 || TempXOverlap>16) {
+						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos; 
 					}
-					else {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
-						if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
-					}
+					if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
 					if (SpritesHit[i]->yPos < ObjectSprite->yPos) {
 						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
@@ -7821,6 +7846,7 @@ public:
 						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
 					}
+					printf("JostleY {%d, %d}\n", TempXOverlap, TempYOverlap);
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
 					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 						if (Debug) { printf("JostleY pushback Y\n"); }
@@ -7993,7 +8019,7 @@ public:
 					printf("a\n");
 				}
 				for (int i = 0; i < LM[y1][x1].size(); i++) {
-					if (LM[y1][x1][i]->xPos < xPos && LM[y1][x1][i]->yPos < yPos) { //NEW (CHANGED)
+					if (LM[y1][x1][i]->xPos +TILE_WIDTH > xPos  && LM[y1][x1][i]->yPos + TILE_HEIGHT > yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y1][x1][i]);
 					}
 				}
@@ -8003,7 +8029,7 @@ public:
 					printf("i\n");
 				}
 				for (int i = 0; i < LM[y1][x2].size(); i++) { // first
-					if (LM[y1][x2][i]->xPos > xPos && LM[y1][x2][i]->yPos < yPos) { //NEW (CHANGED)
+					if (LM[y1][x2][i]->xPos < xPos +TILE_WIDTH && LM[y1][x2][i]->yPos + TILE_HEIGHT > yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y1][x2][i]);
 					}
 				}
@@ -8013,7 +8039,7 @@ public:
 					printf("q\n");
 				}
 				for (int i = 0; i < LM[y2][x1].size(); i++) { // first
-					if (LM[y2][x1][i]->xPos <  xPos && LM[y2][x1][i]->yPos > yPos) { //NEW (CHANGED)
+					if (LM[y2][x1][i]->xPos + TILE_WIDTH > xPos && LM[y2][x1][i]->yPos < yPos +TILE_HEIGHT) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y2][x1][i]);
 					}
 				}
@@ -8023,7 +8049,7 @@ public:
 					printf("x\n");
 				}
 				for (int i = 0; i < LM[y2][x2].size(); i++) { // LL
-					if (LM[y2][x2][i]->xPos > xPos && LM[y2][x2][i]->yPos > yPos) { //NEW (CHANGED)
+					if (LM[y2][x2][i]->xPos < xPos + TILE_WIDTH && LM[y2][x2][i]->yPos < yPos + TILE_HEIGHT) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y2][x2][i]);
 					}
 				}
@@ -9272,7 +9298,7 @@ public:
 					if (Debug) {
 						printf("RemoveSpriteFromMap2\n");
 					}
-					RemoveSpriteFromMap2(AllSprites[i]); //WORK - make a second one, based on last viable position.
+					RemoveSpriteFromMap2(AllSprites[i]);  
 					if (Debug) {
 						printf("Figure out the direction\n");
 					}
@@ -9318,10 +9344,18 @@ public:
 						printf("CheckFuture3\n");
 					}
 
-					CheckFuture3(AllSprites[i], TempStackable, Measure); //if 1 = complete, if 0=stack, 
+					int Outcome = CheckFuture3(AllSprites[i], TempStackable, Measure);
+					if ( Outcome== 1) {//if 1 = complete, if 0=stack, 
 					//if 1, delete tempstackable, check the stack, mark investigates,make into a list of victims
 					// Send list to VictimHandle,  attempt to move them, if there are no more incomplete sprites in their list.
 					//if 0, push to stack
+						if (Debug) { printf("TempStackable should be deleted, sprite either finished or got stopped by completed sprites\n"); } 
+
+					}
+					else if (Outcome == 0) {
+						if (Debug) { printf("Pushed TempStackable to the Stack!\n"); }
+						SpriteStacks.push_back(TempStackable);
+					}
 				 
 					if (Debug) {
 						printf("\n_______________________________\n");
@@ -9360,6 +9394,61 @@ public:
 							SDL_Delay(500);
 						}
 					}
+
+
+
+
+
+					if (AllSprites[i]->xPos != AllSprites[i]->LastDestination.back()[0] || AllSprites[i]->yPos != AllSprites[i]->LastDestination.back()[1]) {
+						if (Debug) { printf("Sprite Moved, even if it did not complete it's movement! Check the Stack\n"); }
+
+
+						std::vector<int> InvestigateIndexs = {}; 
+						//search for the moved sprite in the stack
+						for (int d = 0; d < SpriteStacks.size(); d++) {
+							for (int j = 0; j < SpriteStacks.size(); j++) {
+								if (SpriteStacks[j]->HitSprites[j]==AllSprites[i]) {
+									SpriteStacks[j]->HitSprites[j] = nullptr; //since it moved, it should no longer block the sprite.
+									InvestigateIndexs.push_back(d); //Mark that particular tempstackable to attempt moving again, 
+								}
+							}
+							if (Debug && d==SpriteStacks.size()-1) {printf("Finished looking through the stack\n");}
+
+						}
+						if (Debug) {
+							printf("Stacks been looked at for Object%d.\n", AllSprites[i]->OrderCreation + 1);
+						}
+
+						//This while was an if. 
+						//This while should  
+						// 1)take care of interesting sprites. 
+						// 2)Remove from SpriteStacks ONLY if it was compelted (this involves moving the whole vector :/)
+						// 3)Increase the number of interesting sprites, when we get a successful move. 
+						// 4)Help verify that the checkfuture does not have infinite IC cases, since we desire everything to slide and freeze when desired.
+						//
+						while ( InvestigateIndexs.size() > 0) {
+							for (int d = 0; d < InvestigateIndexs.size(); d++) {
+								XYArr2* ShortenAddress = SpriteStacks[InvestigateIndexs[d]];
+								if (ShortenAddress->HitSprites[0] == nullptr && ShortenAddress->HitSprites[2] == nullptr && ShortenAddress->HitSprites[2] == nullptr && ShortenAddress->HitSprites[3] == nullptr) {
+									//INSERT - this can be improved by asking for that victims measure first, then you only really need to check 1->4 per instead of all 4.
+									RemoveSpriteFromMap2(AllSprites[i]);  
+									ResetTempStackable(ShortenAddress);
+									
+									CheckFuture3(ShortenAddress->CurrentVictim, ShortenAddress, ShortenAddress->CurrentVictim->Measure); //objectsprite, tempstackable, Measure. 
+									
+									ReMapSprite2(ShortenAddress->CurrentVictim);
+								}
+							}
+							 
+						}
+
+
+
+
+
+
+					}
+
 
 
 					//NOTE - likely will actually put into the end of CheckFuture3, after travel is edited, and have it break when it's time to mark as completed or push to stack
