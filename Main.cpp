@@ -145,6 +145,8 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object4);
 				//NOTE YOU MUST MAP SPRITE BEFORE DECLARING THE REST, OTHERWISE THE ORDER IS THE SAME!!! (may be useful but might not be, who knows....)
+
+				//Check too see if it's archaic
 				for (int i = 0; i < gLevel1->SpriteLayer->AllSprites.size(); i++) {
 					gLevel1->SpriteLayer->CheckOverlapSTART2(gLevel1->SpriteLayer->AllSprites[i]); //presets the last destination, so taht it'll always work from the get go.
 					//at the end of handlingthe stack, we should ensure that the last successsful destination is set totheir current position, or do so at the start of the functioneach time, besides through checkoverlap. maybe it's unnecessary to call here.. :/
@@ -381,7 +383,7 @@ void handleLoop() {
 
 					//Test Object 2
 				case SDLK_l: // if the user presses right arrow key
-					if (Object2->yVec < 0) {
+					if (Object2->xVec > 0) {
 						Object2->xVec += -xVec;
 					}
 					break;
@@ -404,7 +406,7 @@ void handleLoop() {
 
 					//Test Object 3
 				case SDLK_h: // if the user presses right arrow key
-					if (Object3->yVec < 0) {
+					if (Object3->xVec > 0) {
 						Object3->xVec += -xVec;
 					}
 					break;
