@@ -1923,7 +1923,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y1][x1][i]->xPos +TILE_WIDTH > xPos) {
+							if (LM[y1][x1][i]->LastDestination.back()[0] +TILE_WIDTH > xPos) {
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
@@ -1935,7 +1935,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x1].size(); i++) {
 						if (true) {
-							if (LM[y1][x1][i]->xPos + TILE_WIDTH > xPos) { //NEW (CHANGED)
+							if (LM[y1][x1][i]->LastDestination.back()[0] + TILE_WIDTH > xPos) { //NEW (CHANGED)
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
@@ -1946,7 +1946,7 @@ public:
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
 						//Overlap to be recorded
 						if (true) {
-							if (LM[y2][x1][i]->xPos + TILE_WIDTH > xPos) { //NEW (CHANGED)
+							if (LM[y2][x1][i]->LastDestination.back()[0] + TILE_WIDTH > xPos) { //NEW (CHANGED)
 								SpritesHit.push_back(LM[y2][x1][i]);
 							}
 						}
@@ -1961,7 +1961,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
 						if (true) {
-							if (LM[y1][x2][i]->xPos < xPos + TILE_WIDTH) { //NEW (CHANGED)
+							if (LM[y1][x2][i]->LastDestination.back()[0] < xPos + TILE_WIDTH) { //NEW (CHANGED)
 								SpritesHit.push_back(LM[y1][x2][i]);
 							}
 						}
@@ -1973,7 +1973,7 @@ public:
 					}
 					for (int i = 0; i < LM[y1][x2].size(); i++) {
 						if (true) {
-							if (LM[y1][x2][i]->xPos < xPos + TILE_WIDTH) {//NEW (CHANGED)
+							if (LM[y1][x2][i]->LastDestination.back()[0] < xPos + TILE_WIDTH) {//NEW (CHANGED)
 								SpritesHit.push_back(LM[y1][x2][i]);
 
 							}
@@ -1984,7 +1984,7 @@ public:
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
 						if (true) {
-							if (LM[y2][x2][i]->xPos < xPos + TILE_WIDTH) {//NEW (CHANGED)
+							if (LM[y2][x2][i]->LastDestination.back()[0] < xPos + TILE_WIDTH) {//NEW (CHANGED)
 								SpritesHit.push_back(LM[y2][x2][i]);
 							}
 						}
@@ -2004,17 +2004,17 @@ public:
 			if (Measure == 6) {
 				for (int i = 0; i < SpritesHit.size(); i++) {
 					//2) now check for overlap, diagonal so check for x and y. These formulas change every time. For simplcity, attempt to make sure that if there is a gap between the two object, 
-					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					if (SpritesHit[i]->LastDestination.back()[0] > xPos) { //NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 					}
 					else {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 					}
 					 
-					TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 					 
 					if (TempYOverlap < 0 || TempYOverlap>16) {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 					}
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
 					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
@@ -2027,15 +2027,15 @@ public:
 			}
 			else if (Measure == 14) {
 				for (int i = 0; i < SpritesHit.size(); i++) {
-					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					if (SpritesHit[i]->LastDestination.back()[0] > xPos) { //NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 					}
 					else {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 					}
-					TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 					if (TempYOverlap < 0 || TempYOverlap>16) {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 					}
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
 					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
@@ -2189,29 +2189,29 @@ public:
 				if (Debug) {
 					printf("up\n");
 				}
-				if (TempX2Math == 0) {
-					for (int i = 0; i < LM[y1][x1].size(); i++) {
+				if (TempX2Math == 0) { 
+					for (int i = 0; i < LM[y1][x1].size(); i++) { 
 						if (true) {
-							if (LM[y1][x1][i]->yPos + TILE_HEIGHT > yPos) {
+							if (LM[y1][x1][i]->LastDestination.back()[1] + TILE_HEIGHT > yPos) {
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
-					}
+					} 
 				}
-				else {
-					for (int i = 0; i < LM[y1][x1].size(); i++) {
+				else { 
+					for (int i = 0; i < LM[y1][x1].size(); i++) { 
 						if (true) {
-							if (LM[y1][x1][i]->yPos + TILE_HEIGHT > yPos) {
+							if (LM[y1][x1][i]->LastDestination.back()[1] + TILE_HEIGHT > yPos) {
 								SpritesHit.push_back(LM[y1][x1][i]);
 							}
 						}
-					}
-					for (int i = 0; i < LM[y1][x2].size(); i++) {
+					} 
+					for (int i = 0; i < LM[y1][x2].size(); i++) { 
 						if (true) {
-							if (LM[y1][x2][i]->yPos + TILE_HEIGHT > yPos) {
+							if (LM[y1][x2][i]->LastDestination.back()[1] + TILE_HEIGHT > yPos) {
 								SpritesHit.push_back(LM[y1][x2][i]);
 							}
-						}
+						} 
 					}
 				}
 			}
@@ -2222,7 +2222,7 @@ public:
 				if (TempX2Math == 0) {
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
 						if (true) {
-							if (LM[y2][x1][i]->yPos < yPos +TILE_HEIGHT) { //WORK <-these formuals forget that tile height and width need to be applied!
+							if (LM[y2][x1][i]->LastDestination.back()[1] < yPos +TILE_HEIGHT) { //WORK <-these formuals forget that tile height and width need to be applied!
 								SpritesHit.push_back(LM[y2][x1][i]);
 							}
 						}
@@ -2231,14 +2231,14 @@ public:
 				else {
 					for (int i = 0; i < LM[y2][x1].size(); i++) {
 						if (true) {
-							if (LM[y2][x1][i]->yPos < yPos + TILE_HEIGHT) {
+							if (LM[y2][x1][i]->LastDestination.back()[1] < yPos + TILE_HEIGHT) {
 								SpritesHit.push_back(LM[y2][x1][i]);
 							}
 						}
 					}
 					for (int i = 0; i < LM[y2][x2].size(); i++) {
 						if (true) {
-							if (LM[y2][x2][i]->yPos < yPos + TILE_HEIGHT) {
+							if (LM[y2][x2][i]->LastDestination.back()[1] < yPos + TILE_HEIGHT) {
 								SpritesHit.push_back(LM[y2][x2][i]);
 							}
 						}
@@ -2260,18 +2260,18 @@ public:
 			if (Measure == 9) {
 				for (int i = 0; i < SpritesHit.size(); i++) {
 					 
-					TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 						 
 					if (TempXOverlap < 0 || TempXOverlap>16) {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 					}
 					if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
-					if (SpritesHit[i]->yPos <  yPos) {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					if (SpritesHit[i]->LastDestination.back()[1] <  yPos) {
+						TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
 					}
 					else {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
 					}
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
@@ -2286,17 +2286,17 @@ public:
 			}
 			else if (Measure == 11) {
 				for (int i = 0; i < SpritesHit.size(); i++) { 
-					TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos; 
+					TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 					if (TempXOverlap<0 || TempXOverlap>16) {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos; 
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 					}
 					if (Debug) { printf("JostleY X = %d\n", TempXOverlap); }
-					if (SpritesHit[i]->yPos < ObjectSprite->yPos) {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					if (SpritesHit[i]->LastDestination.back()[1] < ObjectSprite->yPos) {
+						TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
 					}
 					else {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 						if (Debug) { printf("JostleY Y = %d\n", TempYOverlap); }
 					}
 					printf("JostleY {%d, %d}\n", TempXOverlap, TempYOverlap);
@@ -2472,7 +2472,7 @@ public:
 					printf("a\n");
 				}
 				for (int i = 0; i < LM[y1][x1].size(); i++) {
-					if (LM[y1][x1][i]->xPos +TILE_WIDTH > xPos  && LM[y1][x1][i]->yPos + TILE_HEIGHT > yPos) { //NEW (CHANGED)
+					if (LM[y1][x1][i]->LastDestination.back()[0] +TILE_WIDTH > xPos  && LM[y1][x1][i]->LastDestination.back()[1] + TILE_HEIGHT > yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y1][x1][i]);
 					}
 				}
@@ -2482,7 +2482,7 @@ public:
 					printf("i\n");
 				}
 				for (int i = 0; i < LM[y1][x2].size(); i++) { // first
-					if (LM[y1][x2][i]->xPos < xPos +TILE_WIDTH && LM[y1][x2][i]->yPos + TILE_HEIGHT > yPos) { //NEW (CHANGED)
+					if (LM[y1][x2][i]->LastDestination.back()[0] < xPos +TILE_WIDTH && LM[y1][x2][i]->LastDestination.back()[1] + TILE_HEIGHT > yPos) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y1][x2][i]);
 					}
 				}
@@ -2492,7 +2492,7 @@ public:
 					printf("q\n");
 				}
 				for (int i = 0; i < LM[y2][x1].size(); i++) { // first
-					if (LM[y2][x1][i]->xPos + TILE_WIDTH > xPos && LM[y2][x1][i]->yPos < yPos +TILE_HEIGHT) { //NEW (CHANGED)
+					if (LM[y2][x1][i]->LastDestination.back()[0] + TILE_WIDTH > xPos && LM[y2][x1][i]->LastDestination.back()[1] < yPos +TILE_HEIGHT) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y2][x1][i]);
 					}
 				}
@@ -2502,7 +2502,7 @@ public:
 					printf("x\n");
 				}
 				for (int i = 0; i < LM[y2][x2].size(); i++) { // LL
-					if (LM[y2][x2][i]->xPos < xPos + TILE_WIDTH && LM[y2][x2][i]->yPos < yPos + TILE_HEIGHT) { //NEW (CHANGED)
+					if (LM[y2][x2][i]->LastDestination.back()[0] < xPos + TILE_WIDTH && LM[y2][x2][i]->LastDestination.back()[1] < yPos + TILE_HEIGHT) { //NEW (CHANGED)
 						SpritesHit.push_back(LM[y2][x2][i]);
 					}
 				}
@@ -2524,17 +2524,17 @@ public:
 				}
 				for (int i = 0; i < SpritesHit.size(); i++) {
 					//2) now check for overlap, diagonal so check for x and y. These formulas change every time. For simplcity, attempt to make sure that if there is a gap between the two object, 
-					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					if (SpritesHit[i]->LastDestination.back()[0] > xPos) { //NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 					}
 					else {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 					}
-					if (SpritesHit[i]->yPos <  yPos) {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					if (SpritesHit[i]->LastDestination.back()[1] <  yPos) {
+						TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 					}
 					else {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 					}
 					//2) if you didn't collide, even if your in the same grid space, then the equation returned negative, or 0 if just barely touching. (butnot collding)
 					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
@@ -2552,17 +2552,17 @@ public:
 					printf("i\n");
 				}
 				for (int i = 0; i < SpritesHit.size(); i++) { // first 
-					if (SpritesHit[i]->xPos > xPos) {//NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					if (SpritesHit[i]->LastDestination.back()[0] > xPos) {//NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 					}
 					else {
-						TempXOverlap = xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 					}
-					if (SpritesHit[i]->yPos < yPos) {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+					if (SpritesHit[i]->LastDestination.back()[1] < yPos) {
+						TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 					}
 					else {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 					}
 					if ((TempYOverlap < 17 && TempYOverlap > 0) && TempXOverlap < 17 && TempXOverlap > 0) {
 						SpriteOverlapX.push_back(SpritesHit[i]);
@@ -2579,26 +2579,26 @@ public:
 					printf("q\n");
 				}
 				for (int i = 0; i < SpritesHit.size(); i++) { // first
-					if (SpritesHit[i]->xPos > xPos) { //NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					if (SpritesHit[i]->LastDestination.back()[0] > xPos) { //NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 						if (Debug) {
 							printf("%d\n", TempXOverlap);
 						}
 					}
 					else {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 						if (Debug) {
 							printf("%d\n", TempXOverlap);
 						}
 					}
-					if (SpritesHit[i]->yPos > yPos) {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+					if (SpritesHit[i]->LastDestination.back()[1] > yPos) {
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 						if (Debug) {
 							printf("%d\n", TempYOverlap);
 						}
 					}
 					else {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+						TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 						if (Debug) {
 							printf("%d\n", TempYOverlap);
 						}
@@ -2618,26 +2618,26 @@ public:
 					printf("x\n");
 				}
 				for (int i = 0; i < SpritesHit.size(); i++) { // LL
-					if (SpritesHit[i]->xPos > xPos) {//NEW (CHANGED)
-						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->xPos;
+					if (SpritesHit[i]->LastDestination.back()[0] > xPos) {//NEW (CHANGED)
+						TempXOverlap = xPos + TILE_WIDTH - SpritesHit[i]->LastDestination.back()[0];
 						if (Debug) {
 							printf("%d\n", TempXOverlap);
 						}
 					}
 					else {
-						TempXOverlap = SpritesHit[i]->xPos + TILE_WIDTH - xPos;
+						TempXOverlap = SpritesHit[i]->LastDestination.back()[0] + TILE_WIDTH - xPos;
 						if (Debug) {
 							printf("%d\n", TempXOverlap);
 						}
 					}
-					if (SpritesHit[i]->yPos > yPos) {
-						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->yPos;
+					if (SpritesHit[i]->LastDestination.back()[1] > yPos) {
+						TempYOverlap = yPos + TILE_HEIGHT - SpritesHit[i]->LastDestination.back()[1];
 						if (Debug) {
 							printf("%d\n", TempYOverlap);
 						}
 					}
 					else {
-						TempYOverlap = SpritesHit[i]->yPos + TILE_HEIGHT - yPos;
+						TempYOverlap = SpritesHit[i]->LastDestination.back()[1] + TILE_HEIGHT - yPos;
 						if (Debug) {
 							printf("%d\n", TempYOverlap);
 						}
@@ -3745,6 +3745,7 @@ public:
 						for (int s = 0; s < AllSprites.size(); s++) {
 							CheckOverlapSTART2(AllSprites[s]); //presets the last destination, so taht it'll always work from the get go.
 						   //at the end of handlingthe stack, we should ensure that the last successsful destination is set totheir current position, or do so at the start of the functioneach time, besides through checkoverlap. maybe it's unnecessary to call here.. :/
+							if (Debug) { printf("Checkoverlap Start set's LD for everything. Very important, since that will be the reference for every other function during any point in time. We could potentially just run it once, and then before clearing store the last end of the vector... but for now lets not get ahead of ourselves\n"); }
 						}
 					}
 					else {
