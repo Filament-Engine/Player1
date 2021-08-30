@@ -130,7 +130,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				//grabs the order. Might make global later, but for now this'll do. It should also leave the player alone for now, since I can insert it to the start as creation order '0'
 			
 
-				 
+				 /* 
 				//TEST TELEPORT OBJECTS BEGIN
 				Object1 = new Sprite(64, 64, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
 				printf("Object%d, created order = %d\n", 1, Object1->OrderCreation);
@@ -145,15 +145,10 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				printf("Object%d, created order = %d\n", 4, Object4->OrderCreation);
 				gLevel1->SpriteLayer->MapSprite(Object4);
 				//NOTE YOU MUST MAP SPRITE BEFORE DECLARING THE REST, OTHERWISE THE ORDER IS THE SAME!!! (may be useful but might not be, who knows....)
-
-				//Check too see if it's archaic
-				for (int i = 0; i < gLevel1->SpriteLayer->AllSprites.size(); i++) {
-					gLevel1->SpriteLayer->CheckOverlapSTART2(gLevel1->SpriteLayer->AllSprites[i]); //presets the last destination, so taht it'll always work from the get go.
-					//at the end of handlingthe stack, we should ensure that the last successsful destination is set totheir current position, or do so at the start of the functioneach time, besides through checkoverlap. maybe it's unnecessary to call here.. :/
-				}
+				*/ 
 				 
 
-				/* 
+				 
 				//RANDOM SPRITES BEGIN
 				//kept Object1 because it's global, don't want to mess anything up.
 				Object1 = new Sprite(16, 16, "AA229", SurfacePropertyMap, std::distance(gLevel1->SpriteLayer->AllSprites.begin(), gLevel1->SpriteLayer->AllSprites.end())); // TEMP
@@ -180,7 +175,7 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 				}
 				//RANDOM SPRITES END
 				 
-				 */
+				 
 
 
 
@@ -188,6 +183,11 @@ void FileHandler(std::string MapRepo, long int& TotalTilesOfSurface) {
 
 
 
+				 //Check too see if it's archaic
+				for (int i = 0; i < gLevel1->SpriteLayer->AllSprites.size(); i++) {
+					gLevel1->SpriteLayer->CheckOverlapSTART2(gLevel1->SpriteLayer->AllSprites[i]); //presets the last destination, so taht it'll always work from the get go.
+					//at the end of handlingthe stack, we should ensure that the last successsful destination is set totheir current position, or do so at the start of the functioneach time, besides through checkoverlap. maybe it's unnecessary to call here.. :/
+				}
 
 
 

@@ -294,15 +294,13 @@ public:
 			if (OrderCreation == 7) {
 				printf("xPos -1\n");
 			}
-			xVec = -1;
-			AdjustedPositionX = MoveX(xVec);
+			xVec = -1; 
 		}
 		else if (RandomX == 3) {
 			if (OrderCreation == 7) {
 				printf("xPos +1\n");
 			}
-			xVec = 1;
-			AdjustedPositionX = MoveX(xVec);
+			xVec = 1; 
 		}
 		else if (RandomX == 1 || RandomX == 0) {
 			if (OrderCreation == 7) {
@@ -316,15 +314,13 @@ public:
 			if (OrderCreation == 7) {
 				printf("yPos -1\n");
 			}
-			yVec = -1;
-			AdjustedPositionY = MoveY(yVec);
+			yVec = -1; 
 		}
 		else if (RandomY == 3) {
 			if (OrderCreation == 7) {
 				printf("yPos + 1\n");
 			}
-			yVec = 1;
-			AdjustedPositionY = MoveY(yVec);
+			yVec = 1; 
 		}
 		else if (RandomY == 1 || RandomY == 0) {
 			if (OrderCreation == 7) {
@@ -1850,23 +1846,44 @@ public:
 		int x1, x2, y1, y2;
 
 		int TempX2Math, TempY2Math;
-
+		if (Debug) {
+			printf("DIST= %d\n", xDist);
+		}
 		//the 'jostle'
 		x1 = ObjectSprite->LastDestination.back()[0] +  xDist;
 		y1 = ObjectSprite->LastDestination.back()[1];
 		x2 = ObjectSprite->LastDestination.back()[0] + TILE_WIDTH +  xDist;
 		y2 = ObjectSprite->LastDestination.back()[1] + TILE_HEIGHT;
-		if (Debug) {
-			printf("LastPos = {%d, %d}\n", TempStackable->CurrentVictim->LastDestination.back()[0], TempStackable->CurrentVictim->LastDestination.back()[1]);
-			printf("LastPos = {%d, %d}\n", x1, y1);
-		}
+		 
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
+			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
+				y1 = LEVEL_HEIGHT - 1;
+				y2 = y1;
+				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+				if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
+					printf("%d", TOTALFRAMECOUNT);
+					printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
+					PAUSECOLLISIONJOSTLE[4] = 1;
+					SDL_Delay(10000);
+				}
+			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
+			if (y1 <= 0) {
+				y1 = 0;
+				y2 = y1;
+				ObjectSprite->ExVel[1] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
+					printf("%d", TOTALFRAMECOUNT);
+					printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
+					PAUSECOLLISIONJOSTLE[5] = 1;
+					SDL_Delay(10000);
+				}
+			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 				x1 = LEVEL_WIDTH - 1;
 				x2 = x1;
-				ObjectSprite->xVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[6] == 0) {
+				ObjectSprite->ExVel[0] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[6] = 1;
@@ -1876,8 +1893,8 @@ public:
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
-				ObjectSprite->xVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[7] == 0) {
+				ObjectSprite->ExVel[0] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[7] = 1;
@@ -1885,6 +1902,13 @@ public:
 				}
 			}
 		}
+
+		if (Debug) {
+			printf("LastPos = {%d, %d}\n", TempStackable->CurrentVictim->LastDestination.back()[0], TempStackable->CurrentVictim->LastDestination.back()[1]);
+			printf("LastDes = {%d, %d}\n", x1, y1);
+		}
+
+
 		//WORK - maybe change measure if this is used to adjust position? 
 		xPos = x1; //so we work wit hthe adjusted position of the ObjectSprite
 		yPos = y1;
@@ -2091,7 +2115,10 @@ public:
 		int xPos, yPos;
 		int x1, x2, y1, y2;
 
-		int TempX2Math, TempY2Math;
+		int TempX2Math, TempY2Math; 
+		if (Debug) {
+			printf("DIST= %d \n", yDist);
+		}
 
 		//the 'jostle'
 		x1 = ObjectSprite->LastDestination.back()[0];
@@ -2104,8 +2131,8 @@ public:
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
 				y1 = LEVEL_HEIGHT - 1;
 				y2 = y1;
-				ObjectSprite->yVec = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-				if (Debug || PAUSECOLLISIONJOSTLE[4] == 0) {
+				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+				if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[4] = 1;
@@ -2115,10 +2142,10 @@ public:
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
-				ObjectSprite->yVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[5] == 0) {
+				ObjectSprite->ExVel[1] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%dcan no longer go further up\n", ObjectSprite->OrderCreation + 1);
+					printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[5] = 1;
 					SDL_Delay(10000);
 				}
@@ -2126,8 +2153,8 @@ public:
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 				x1 = LEVEL_WIDTH - 1;
 				x2 = x1;
-				ObjectSprite->xVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[6] == 0) {
+				ObjectSprite->ExVel[0] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[6] = 1;
@@ -2137,8 +2164,8 @@ public:
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
-				ObjectSprite->xVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[7] == 0) {
+				ObjectSprite->ExVel[0] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[7] = 1;
@@ -2146,6 +2173,7 @@ public:
 				}
 			}
 		}
+
 		//WORK - maybe change measure if this is used to adjust position? 
 		xPos = x1; //so we work wit hthe adjusted position of the ObjectSprite
 		yPos = y1; 
@@ -2370,18 +2398,15 @@ public:
 		y1 = ObjectSprite->LastDestination.back()[1] + yDist;
 		x2 = ObjectSprite->LastDestination.back()[0] + TILE_WIDTH + xDist;
 		y2 = ObjectSprite->LastDestination.back()[1] + TILE_HEIGHT + yDist;
-		if (Debug) {
-			printf("LastPos = {%d, %d}\n", TempStackable->CurrentVictim->LastDestination.back()[0], TempStackable->CurrentVictim->LastDestination.back()[1]);
-			printf("LastPos = {%d, %d}\n", x1, y1);
-		}
+		 
 
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
 				y1 = LEVEL_HEIGHT - 1;
 				y2 = y1;
-				ObjectSprite->yVec = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-				if (Debug || PAUSECOLLISIONJOSTLE[4] == 0) {
+				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+				if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[4] = 1;
@@ -2391,10 +2416,10 @@ public:
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
-				ObjectSprite->yVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[5] == 0) {
+				ObjectSprite->ExVel[1] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%dcan no longer go further up\n", ObjectSprite->OrderCreation + 1);
+					printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[5] = 1;
 					SDL_Delay(10000);
 				}
@@ -2402,8 +2427,8 @@ public:
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 				x1 = LEVEL_WIDTH - 1;
 				x2 = x1;
-				ObjectSprite->xVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[6] == 0) {
+				ObjectSprite->ExVel[0] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[6] = 1;
@@ -2413,14 +2438,19 @@ public:
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
-				ObjectSprite->xVec = 0;
-				if (Debug || PAUSECOLLISIONJOSTLE[7] == 0) {
+				ObjectSprite->ExVel[0] = 0;
+				if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
 					printf("%d", TOTALFRAMECOUNT);
 					printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
 					PAUSECOLLISIONJOSTLE[7] = 1;
 					SDL_Delay(10000);
 				}
 			}
+		}
+		
+		if (Debug) {
+			printf("LastPos = {%d, %d}\n", TempStackable->CurrentVictim->LastDestination.back()[0], TempStackable->CurrentVictim->LastDestination.back()[1]);
+			printf("LastDes = {%d, %d}\n", x1, y1);
 		}
 		//WORK - maybe change measure if this is used to adjust position? 
 		xPos = x1; //so we work wit hthe adjusted position of the ObjectSprite
@@ -2793,7 +2823,7 @@ public:
 		int yDistance;
 		int NewXDistance, NewYDistance;
 		double Percentage; 
-		TempStackable = new XYArr2;
+		//TempStackable = new XYArr2; it's in moveall3
 		TempStackable->CurrentVictim = ObjectSprite;
 		int xPos;
 		int yPos; 
@@ -2908,6 +2938,12 @@ public:
 				dx = D1[0];
 				dy = D1[1];
 				if (Debug) { printf("Initial values set\n"); }
+				if (Debug) {
+					printf("NOW FIGURE OUT FINAL POSITON\n");
+					printf("CurrentPos = {%d, %d}\n", xPos, yPos);
+					printf("Edge Overlaps = {%d, %d}\n", Edge[0], Edge[1]);
+					printf("Diagonal OVerlaps = {%d, %d}\n", D1[0], D1[1]);
+				}
 
 				//NOTE NOTE NOTE - when sliding, and checking if your clear, this is only optimal when you are hitting something that is already complete, OTHERWISE DON'T
 
@@ -2919,28 +2955,33 @@ public:
 				//if x,y, if either is greater than the diagonal, then take x and y
 				
 				//WORK - these formulas aren't quite right for what I'm expecting. I'm expecting Final to be absolutely positive, but the additions and such to be correct
+
+				int x1, y1; //These are used to contain the resulting position, this also helps consider whether or not the sprite has mvoed beyond the limits of the map matrix.
 				if (Measure == 5 || Measure == 7 || Measure == 13 || Measure == 15) { //ObjectSprite->LastDestination.push_back({ xPos+NewXDistance, yPos +NewYDistance});
 					//Diagonal ONLY
 					if (Measure == 15) {
-						//{0,y},{dx,dy}
+						//{0,y},{dx,dy} 
 						if (x == 0 && y != 0 && (dx != 0 && dy != 0)) {
-							if (y < dy) { 
+							if (y < dy) {
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance - dy }); //this is slightly wrong. we want to glide UNLESS dx==dy
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance - dy; //this is slightly wrong. we want to glide UNLESS dx==dy
 							}
 							else if (y == dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
-								 SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance - y });
+								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance - y;
 							}
 							else if (y > dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
-								 SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance - y });//Check when your clear, so that you can edit y appropriately
+								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance - y; //Check when your clear, so that you can edit y appropriately
 							}
 						}
 						//{x,0},{dx,dy}
@@ -2948,29 +2989,32 @@ public:
 							if (x < dx) {
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance - dy;
-								 SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance - dy }); //See previous
+								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance - dy;  //See previous
 							}
 							else if (x == dx) {
 								Final[0] = NewXDistance - x;
-								Final[1] = NewYDistance  ;
+								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance });
+								x1 = xPos + NewXDistance - x;
+								y1 = yPos + NewYDistance;
 							}
 							else if (x > dx) {
 								Final[0] = NewXDistance - x;
-								Final[1] = NewYDistance ;
+								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance }); //Check when your clear, so that you can edit x appropriately
+								x1 = xPos + NewXDistance - x;
+								y1 = yPos + NewYDistance; //Check when your clear, so that you can edit x appropriately
 							}
-
 						}
 						//{x,y}, {0,0}
 						if (x != 0 && y != 0 && (dx == 0 && dy == 0)) {
 							Final[0] = NewXDistance - x;
-							Final[1] = NewYDistance- y;
+							Final[1] = NewYDistance - y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - y });
+							x1 = xPos + NewXDistance - x;
+							y1 = yPos + NewYDistance - y;
 						}
 						//{0,0},{dx, dy}
 						if (x == 0 && y == 0 && (dx != 0 && dy != 0)) {
@@ -2981,44 +3025,50 @@ public:
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance - dy });
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance - dy;
 							}
 							//Tp on the dx, but slide down dy
 							else if (dx > dy) {
 								Final[0] = NewXDistance - x;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - dy });
+								x1 = xPos + NewXDistance - x;
+								y1 = yPos + NewYDistance - dy;
 							}
 							//Tp on the dy, but slide down the dx
 							else if (dy > dx) {
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance - y });
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance - y;
 							}
 						}
 						//{0,0},{0,0}
 						if (x == 0 && y == 0 && dx == 0 && dy == 0) {
-							Final[0] = NewXDistance  ;
-							Final[1] = NewYDistance  ;
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 						//{x,y}{dx,dy}
 						if (x != 0 && y != 0 && (dx != 0 && dy != 0)) {
 							if (x >= dx) {
 								if (y >= dy) {
 									Final[0] = NewXDistance - x;
-									Final[1] = NewYDistance -y;
+									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance - y;
 								}
 								else if (y < dy) { //this is because we just slide down the side a small bit away on the x axis from the D. Insert a check to move if you'r free a bit on the x axis. (same as other ones for the same considerations)
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance - y;
 								}
 							}
 							else if (y >= dy) {
@@ -3026,13 +3076,15 @@ public:
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance - y;
 								}
 								else if (x < dx) {
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance - y;
 								}
 							}
 							else if (dx > x && dy > y) { //yoink this code for earlier if statements
@@ -3044,21 +3096,24 @@ public:
 									Final[0] = NewXDistance - dx;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance - dy });
+									x1 = xPos + NewXDistance - dx;
+									y1 = yPos + NewYDistance - dy;
 								}
 								//Tp on the dx, but slide down dy
 								else if (dx > dy) {
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance - dy });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance - dy;
 								}
 								//Tp on the dy, but slide down the dx
 								else if (dy > dx) {
 									Final[0] = NewXDistance - dx;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance - dx;
+									y1 = yPos + NewYDistance - y;
 								}
 							}
 						}
@@ -3070,18 +3125,21 @@ public:
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance + dy;
 							}
 							else if (y == dy) {
 								Final[1] = NewYDistance + y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance + y });
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance + y;
 							}
 							else if (y > dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance + y });
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance + y;
 							}
 						}
 						//{x,0},{dx,dy}
@@ -3090,19 +3148,22 @@ public:
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance + dy;
 							}
 							else if (x == dx) {
 								Final[0] = NewXDistance - x;
-								Final[1] = NewYDistance ;
+								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance });
+								x1 = xPos + NewXDistance - x;
+								y1 = yPos + NewYDistance;
 							}
 							else if (x > dx) {
 								Final[0] = NewXDistance - x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance });
+								x1 = xPos + NewXDistance - x;
+								y1 = yPos + NewYDistance;
 							}
 
 						}
@@ -3111,7 +3172,8 @@ public:
 							Final[0] = NewXDistance - x;
 							Final[1] = NewYDistance + y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + y });
+							x1 = xPos + NewXDistance - x;
+							y1 = yPos + NewYDistance + y;
 						}
 						//{0,0},{dx, dy}
 						if (x == 0 && y == 0 && (dx != 0 && dy != 0)) {  //slight error here potentially. Check to see if overlap is the same and if so freeze there for a bit.
@@ -3121,29 +3183,33 @@ public:
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance + dy;
 							}
 							//Tp on the dx, but slide down dy
 							else if (dx > dy) {
 								Final[0] = NewXDistance - x;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance - x;
+								y1 = yPos + NewYDistance + dy;
 							}
 							//Tp on the dy, but slide down the dx
 							else if (dy > dx) {
 								Final[0] = NewXDistance - dx;
 								Final[1] = NewYDistance + y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance + y });
+								x1 = xPos + NewXDistance - dx;
+								y1 = yPos + NewYDistance + y;
 							}
 						}
 						//{0,0},{0,0}
 						if (x == 0 && y == 0 && dx == 0 && dy == 0) {
-							Final[0] = NewXDistance  ;
-							Final[1] = NewYDistance  ;
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 						//{x,y}{dx,dy}
 						if (x != 0 && y != 0 && (dx != 0 && dy != 0)) {
@@ -3152,13 +3218,15 @@ public:
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance + y;
 								}
 								else if (y < dy) { //this is because we just slide down the side a small bit away on the x axis from the D. Insert a check to move if you'r free a bit on the x axis. (same as other ones for the same considerations)
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance + y;
 								}
 							}
 							else if (y >= dy) {
@@ -3166,13 +3234,15 @@ public:
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance + y;
 								}
 								else if (x < dx) {
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance + y;
 								}
 							}
 							else if (dx > x && dy > y) { //yoink this code for earlier if statements
@@ -3184,21 +3254,24 @@ public:
 									Final[0] = NewXDistance - dx;
 									Final[1] = NewYDistance + dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance + dy });
+									x1 = xPos + NewXDistance - dx;
+									y1 = yPos + NewYDistance + dy;
 								}
 								//Tp on the dx, but slide down dy
 								else if (dx > dy) {
 									Final[0] = NewXDistance - x;
 									Final[1] = NewYDistance + dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance + dy });
+									x1 = xPos + NewXDistance - x;
+									y1 = yPos + NewYDistance + dy;
 								}
 								//Tp on the dy, but slide down the dx
 								else if (dy > dx) {
 									Final[0] = NewXDistance - dx;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - dx, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance - dx;
+									y1 = yPos + NewYDistance + y;
 								}
 							}
 						}
@@ -3231,19 +3304,22 @@ public:
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance + dy;
 							}
 							else if (x == dx) {
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance });
+								x1 = xPos + NewXDistance + x;
+								y1 = yPos + NewYDistance;
 							}
 							else if (x > dx) {
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance });
+								x1 = xPos + NewXDistance + x;
+								y1 = yPos + NewYDistance;
 							}
 
 						}
@@ -3252,7 +3328,8 @@ public:
 							Final[0] = NewXDistance + x;
 							Final[1] = NewYDistance + y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + y });
+							x1 = xPos + NewXDistance + x;
+							y1 = yPos + NewYDistance + y;
 						}
 						//{0,0},{dx, dy}
 						if (x == 0 && y == 0 && (dx != 0 && dy != 0)) { //slight error here potentially. Check to see if overlap is the same and if so freeze there for a bit.
@@ -3262,29 +3339,33 @@ public:
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance + dy;
 							}
 							//Tp on the dx, but slide down dy
 							else if (dx > dy) {
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance + x;
+								y1 = yPos + NewYDistance + dy;
 							}
 							//Tp on the dy, but slide down the dx
 							else if (dy > dx) {
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance + y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance + y });
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance + y;
 							}
 						}
 						//{0,0},{0,0}
 						if (x == 0 && y == 0 && dx == 0 && dy == 0) {
-							Final[0] = NewXDistance  ;
-							Final[1] = NewYDistance  ;
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 						//{x,y}{dx,dy}
 						if (x != 0 && y != 0 && (dx != 0 && dy != 0)) {
@@ -3293,13 +3374,15 @@ public:
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance + y;
 								}
 								else if (y < dy) { //this is because we just slide down the side a small bit away on the x axis from the D. Insert a check to move if you'r free a bit on the x axis. (same as other ones for the same considerations)
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance + y;
 								}
 							}
 							else if (y >= dy) {
@@ -3307,13 +3390,15 @@ public:
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance + y;
 								}
 								else if (x < dx) {
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance + y;
 								}
 							}
 							else if (dx > x && dy > y) { //yoink this code for earlier if statements
@@ -3325,21 +3410,24 @@ public:
 									Final[0] = NewXDistance + dx;
 									Final[1] = NewYDistance + dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance + dy });
+									x1 = xPos + NewXDistance + dx;
+									y1 = yPos + NewYDistance + dy;
 								}
 								//Tp on the dx, but slide down dy
 								else if (dx > dy) {
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance + dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance + dy });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance + dy;
 								}
 								//Tp on the dy, but slide down the dx
 								else if (dy > dx) {
 									Final[0] = NewXDistance + dx;
 									Final[1] = NewYDistance + y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance + y });
+									x1 = xPos + NewXDistance + dx;
+									y1 = yPos + NewYDistance + y;
 								}
 							}
 						}
@@ -3351,19 +3439,22 @@ public:
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance - dy }); //this is slightly wrong. we want to glide UNLESS dx==dy
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance - dy; //this is slightly wrong. we want to glide UNLESS dx==dy
 							}
 							else if (y == dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance - y });
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance - y;
 							}
 							else if (y > dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance - y });//Check when your clear, so that you can edit y appropriately
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance - y; //Check when your clear, so that you can edit y appropriately
 							}
 						}
 						//{x,0},{dx,dy}
@@ -3372,19 +3463,22 @@ public:
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance - dy }); //See previous
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance - dy; //See previous
 							}
 							else if (x == dx) {
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance });
+								x1 = xPos + NewXDistance + x;
+								y1 = yPos + NewYDistance;
 							}
 							else if (x > dx) {
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance }); //Check when your clear, so that you can edit x appropriately
+								x1 = xPos + NewXDistance + x;
+								y1 = yPos + NewYDistance; //Check when your clear, so that you can edit x appropriately
 							}
 
 						}
@@ -3393,7 +3487,8 @@ public:
 							Final[0] = NewXDistance + x;
 							Final[1] = NewYDistance - y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - y });
+							x1 = xPos + NewXDistance + x;
+							y1 = yPos + NewYDistance - y;
 						}
 						//{0,0},{dx, dy}
 						if (x == 0 && y == 0 && (dx != 0 && dy != 0)) {  //slight error here potentially. Check to see if overlap is the same and if so freeze there for a bit.
@@ -3403,21 +3498,24 @@ public:
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance - dy });
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance - dy;
 							}
 							//Tp on the dx, but slide down dy
 							else if (dx > dy) {
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - dy });
+								x1 = xPos + NewXDistance + x;
+								y1 = yPos + NewYDistance - dy;
 							}
 							//Tp on the dy, but slide down the dx
 							else if (dy > dx) {
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance - y });
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance - y;
 							}
 						}
 						//{0,0},{0,0}
@@ -3425,7 +3523,8 @@ public:
 							Final[0] = NewXDistance ;
 							Final[1] = NewYDistance  ;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 						//{x,y}{dx,dy}
 						if (x != 0 && y != 0 && (dx != 0 && dy != 0)) {
@@ -3434,13 +3533,15 @@ public:
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance - y;
 								}
 								else if (y < dy) { //this is because we just slide down the side a small bit away on the x axis from the D. Insert a check to move if you'r free a bit on the x axis. (same as other ones for the same considerations)
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance - y;
 								}
 							}
 							else if (y >= dy) {
@@ -3448,13 +3549,15 @@ public:
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance - y;
 								}
 								else if (x < dx) {
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance - y;
 								}
 							}
 							else if (dx > x && dy > y) { //yoink this code for earlier if statements
@@ -3466,21 +3569,24 @@ public:
 									Final[0] = NewXDistance + dx;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance - dy });
+									x1 = xPos + NewXDistance + dx;
+									y1 = yPos + NewYDistance - dy;
 								}
 								//Tp on the dx, but slide down dy
 								else if (dx > dy) {
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance - dy });
+									x1 = xPos + NewXDistance + x;
+									y1 = yPos + NewYDistance - dy;
 								}
 								//Tp on the dy, but slide down the dx
 								else if (dy > dx) {
 									Final[0] = NewXDistance + dx;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-									ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance - y });
+									x1 = xPos + NewXDistance + dx;
+									y1 = yPos + NewYDistance - y;
 								}
 							}
 						}
@@ -3494,13 +3600,15 @@ public:
 							Final[0] = NewXDistance + x;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + x, yPos + NewYDistance });
+							x1 = xPos + NewXDistance + x;
+							y1 = yPos + NewYDistance; 
 						}
 						else {
 							Final[0] = NewXDistance  ;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 					}
 					else if (Measure == 14) {
@@ -3508,13 +3616,15 @@ public:
 							Final[0] = NewXDistance - x;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance - x, yPos + NewYDistance });
+							x1 = xPos + NewXDistance - x;
+							y1 = yPos + NewYDistance;
 						}
 						else {
 							Final[0] = NewXDistance;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 					}
 					else if (Measure == 9) {
@@ -3524,13 +3634,15 @@ public:
 							Final[1] = NewYDistance + y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
 							printf("Final={%d, %d}, LastDestination = {%d, %d}\n", Final[0], Final[1], xPos + NewXDistance, yPos + NewYDistance + y);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance , yPos + NewYDistance + y });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance + y;
 						}
 						else {
 							Final[0] = NewXDistance;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 					}
 					else if (Measure == 11) {
@@ -3538,13 +3650,15 @@ public:
 							Final[0] = NewXDistance; 
 							Final[1] = NewYDistance - y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance  , yPos + NewYDistance - y });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance - y;
 						}
 						else {
 							Final[0] = NewXDistance;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-							ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance });
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance;
 						}
 					}
 				}
@@ -3554,6 +3668,55 @@ public:
 					if (Debug) {
 						printf("Final = {%d, %d}\n", Final[0], Final[1]);
 					}
+
+					 
+					if (true) {
+						if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
+							y1 = LEVEL_HEIGHT - 1;
+							y2 = y1;
+							ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+							if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
+								printf("%d", TOTALFRAMECOUNT);
+								printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
+								PAUSECOLLISIONJOSTLE[4] = 1;
+								SDL_Delay(10000);
+							}
+						} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
+						if (y1 <= 0) {
+							y1 = 0;
+							y2 = y1;
+							ObjectSprite->ExVel[1] = 0;
+							if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
+								printf("%d", TOTALFRAMECOUNT);
+								printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
+								PAUSECOLLISIONJOSTLE[5] = 1;
+								SDL_Delay(10000);
+							}
+						}
+						if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
+							x1 = LEVEL_WIDTH - 1;
+							x2 = x1;
+							ObjectSprite->ExVel[0] = 0;
+							if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
+								printf("%d", TOTALFRAMECOUNT);
+								printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
+								PAUSECOLLISIONJOSTLE[6] = 1;
+								SDL_Delay(10000);
+							}
+						}
+						if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
+							x1 = 0;
+							x2 = x1;
+							ObjectSprite->ExVel[0] = 0;
+							if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
+								printf("%d", TOTALFRAMECOUNT);
+								printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
+								PAUSECOLLISIONJOSTLE[7] = 1;
+								SDL_Delay(10000);
+							}
+						}
+					} 
+
 					ObjectSprite->Travel[0] -= absolute(Final[0]); //0 <= Final <=TW //or something like taht
 					ObjectSprite->Travel[1] -= absolute(Final[1]); //0 <= Final <=TH //or something like taht
 					if (Debug) {
@@ -3740,6 +3903,10 @@ public:
 						printf("CheckOverlap2\n");
 					}
 
+
+					//Behavior for velociities., just needs to be before measure. maybe before overlap.
+					AllSprites[i]->Behavior(); //only adjusted random move
+
 					//CheckOverlap2, CheckOverlapSTART2 <-NOTE, for now I'm storing all the sucessful end destinations, then erasing them all at the end of the Que handling. - however we may only ever need to store the most recent successful destination, or the last two.
 					if (i == 0) {
 						for (int s = 0; s < AllSprites.size(); s++) {
@@ -3751,7 +3918,7 @@ public:
 					else {
 						CheckOverlap2(AllSprites[i]); //Sets Extravel, exVec, and the Contort variables. For now just ExTravel and exVec
 					}
-
+					 
 
 					if (Debug) {
 						printf("RemoveSpriteFromMap2\n");
