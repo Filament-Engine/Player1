@@ -1858,48 +1858,28 @@ public:
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-				y1 = LEVEL_HEIGHT - 1;
+				y1 = LEVEL_HEIGHT*TILE_HEIGHT - 1;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-				if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[4] = 1;
-					SDL_Delay(10000);
-				}
+				 
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[5] = 1;
-					SDL_Delay(10000);
-				}
+				 
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-				x1 = LEVEL_WIDTH - 1;
+				x1 = LEVEL_WIDTH * TILE_WIDTH - 1;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[6] = 1;
-					SDL_Delay(10000);
-				}
+				 
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[7] = 1;
-					SDL_Delay(10000);
-				}
+			 
 			}
 		}
 
@@ -2129,48 +2109,28 @@ public:
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-				y1 = LEVEL_HEIGHT - 1;
+				y1 = LEVEL_HEIGHT * TILE_HEIGHT - 1;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-				if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[4] = 1;
-					SDL_Delay(10000);
-				}
+
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[5] = 1;
-					SDL_Delay(10000);
-				}
+
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-				x1 = LEVEL_WIDTH - 1;
+				x1 = LEVEL_WIDTH * TILE_WIDTH - 1;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[6] = 1;
-					SDL_Delay(10000);
-				}
+
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[7] = 1;
-					SDL_Delay(10000);
-				}
+
 			}
 		}
 
@@ -2403,48 +2363,28 @@ public:
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-				y1 = LEVEL_HEIGHT - 1;
+				y1 = LEVEL_HEIGHT * TILE_HEIGHT - 1;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-				if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[4] = 1;
-					SDL_Delay(10000);
-				}
+
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[5] = 1;
-					SDL_Delay(10000);
-				}
+
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-				x1 = LEVEL_WIDTH - 1;
+				x1 = LEVEL_WIDTH * TILE_WIDTH - 1;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[6] = 1;
-					SDL_Delay(10000);
-				}
+
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
-					printf("%d", TOTALFRAMECOUNT);
-					printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
-					PAUSECOLLISIONJOSTLE[7] = 1;
-					SDL_Delay(10000);
-				}
+
 			}
 		}
 		
@@ -2957,6 +2897,10 @@ public:
 				//WORK - these formulas aren't quite right for what I'm expecting. I'm expecting Final to be absolutely positive, but the additions and such to be correct
 
 				int x1, y1; //These are used to contain the resulting position, this also helps consider whether or not the sprite has mvoed beyond the limits of the map matrix.
+				if (Debug) { 
+					printf("Adjust the final destination to be as expected.\n");
+					printf("Measure == %d\n", Measure);
+				}
 				if (Measure == 5 || Measure == 7 || Measure == 13 || Measure == 15) { //ObjectSprite->LastDestination.push_back({ xPos+NewXDistance, yPos +NewYDistance});
 					//Diagonal ONLY
 					if (Measure == 15) {
@@ -3117,7 +3061,28 @@ public:
 								}
 							}
 						}
+
+						// What was missing
+						//{x,0},{0,0}
+						if (x != 0 && y == 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{x,0},{0,0}\n"); }
+							Final[0] = NewXDistance - x;
+							Final[1] = NewYDistance;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance - x;
+							y1 = yPos + NewYDistance; //Check when your clear, so that you can edit x appropriately
+						}
+						//{0,y},{0,0}
+						if (x == 0 && y != 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{0,y},{0,0}\n"); }
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance - y;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance - y; //Check when your clear, so that you can edit y appropriately
+						}
 					}
+					
 					if (Measure == 13) { //see commments above for fixes
 						//{0,y},{dx,dy}
 						if (x == 0 && y != 0 && (dx != 0 && dy != 0)) {
@@ -3275,7 +3240,28 @@ public:
 								}
 							}
 						}
+
+						// What was missing
+						//{x,0},{0,0}
+						if (x != 0 && y == 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{x,0},{0,0}\n"); }
+							Final[0] = NewXDistance - x;
+							Final[1] = NewYDistance;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance - x;
+							y1 = yPos + NewYDistance;
+						}
+						//{0,y},{0,0}
+						if (x == 0 && y != 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{0,y},{0,0}\n"); }
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance - y;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance + y;
+						}
 					}
+					
 					if (Measure == 5) { //see commments above for fixes
 						//{0,y},{dx,dy}
 						if (x == 0 && y != 0 && (dx != 0 && dy != 0)) {
@@ -3283,19 +3269,22 @@ public:
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance + dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance + dx, yPos + NewYDistance + dy });
+								x1 = xPos + NewXDistance + dx;
+								y1 = yPos + NewYDistance + dy; 
 							}
 							else if (y == dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance + y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance + y });
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance + y;
 							}
 							else if (y > dy) {
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance + y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
-								ObjectSprite->LastDestination.push_back({ xPos + NewXDistance, yPos + NewYDistance + y });
+								x1 = xPos + NewXDistance;
+								y1 = yPos + NewYDistance + y;
 							}
 						}
 						//{x,0},{dx,dy}
@@ -3431,11 +3420,34 @@ public:
 								}
 							}
 						}
+
+						// What was missing
+						//{x,0},{0,0}
+						if (x != 0 && y == 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{x,0},{0,0}\n"); }
+							Final[0] = NewXDistance + x;
+							Final[1] = NewYDistance;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance + x;
+							y1 = yPos + NewYDistance;
+						}
+						//{0,y},{0,0}
+						if (x == 0 && y != 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{0,y},{0,0}\n"); }
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance + y;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance + y;
+						}
 					}
 					if (Measure == 7) {
 						//{0,y},{dx,dy}
+						if (Debug) { printf("{%d, %d}, {%d, %d}\n", x, y, dx, dy); }
 						if (x == 0 && y != 0 && (dx != 0 && dy != 0)) {
+							if (Debug) { printf("{0,y},{dx,dy}\n"); }
 							if (y < dy) {
+								if (Debug) { printf("y<dy\n"); }
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3443,6 +3455,7 @@ public:
 								y1 = yPos + NewYDistance - dy; //this is slightly wrong. we want to glide UNLESS dx==dy
 							}
 							else if (y == dy) {
+								if (Debug) { printf("y==dy\n"); }
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3450,6 +3463,7 @@ public:
 								y1 = yPos + NewYDistance - y;
 							}
 							else if (y > dy) {
+								if (Debug) { printf("y>dy\n"); }
 								Final[0] = NewXDistance;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3459,7 +3473,9 @@ public:
 						}
 						//{x,0},{dx,dy}
 						if (x != 0 && y == 0 && (dx != 0 && dy != 0)) {
+							if (Debug) { printf("{x,0},{dx,dy}\n"); }
 							if (x < dx) {
+								if (Debug) { printf("x<dy\n"); }
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3467,6 +3483,7 @@ public:
 								y1 = yPos + NewYDistance - dy; //See previous
 							}
 							else if (x == dx) {
+								if (Debug) { printf("x==dy\n"); }
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3474,6 +3491,7 @@ public:
 								y1 = yPos + NewYDistance;
 							}
 							else if (x > dx) {
+								if (Debug) { printf("x>dy\n"); }
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3484,6 +3502,7 @@ public:
 						}
 						//{x,y}, {0,0}
 						if (x != 0 && y != 0 && (dx == 0 && dy == 0)) {
+							if (Debug) { printf("{x,y}, {0,0}\n"); }
 							Final[0] = NewXDistance + x;
 							Final[1] = NewYDistance - y;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3493,8 +3512,10 @@ public:
 						//{0,0},{dx, dy}
 						if (x == 0 && y == 0 && (dx != 0 && dy != 0)) {  //slight error here potentially. Check to see if overlap is the same and if so freeze there for a bit.
 
+							if (Debug) { printf("{0,0},{dx, dy}\n"); }
 							//freeze, perfect colllision
 							if (dx == dy) {
+								if (Debug) { printf("dx==dy\n"); }
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3503,6 +3524,7 @@ public:
 							}
 							//Tp on the dx, but slide down dy
 							else if (dx > dy) {
+								if (Debug) { printf("dx>dy\n"); }
 								Final[0] = NewXDistance + x;
 								Final[1] = NewYDistance - dy;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3511,6 +3533,7 @@ public:
 							}
 							//Tp on the dy, but slide down the dx
 							else if (dy > dx) {
+								if (Debug) { printf("dx<dy\n"); }
 								Final[0] = NewXDistance + dx;
 								Final[1] = NewYDistance - y;
 								SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3520,6 +3543,7 @@ public:
 						}
 						//{0,0},{0,0}
 						if (x == 0 && y == 0 && dx == 0 && dy == 0) {
+							if (Debug) { printf("{0,0},{0,0}\n"); }
 							Final[0] = NewXDistance ;
 							Final[1] = NewYDistance  ;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3528,8 +3552,11 @@ public:
 						}
 						//{x,y}{dx,dy}
 						if (x != 0 && y != 0 && (dx != 0 && dy != 0)) {
+							if (Debug) { printf("{x,y}{dx,dy}\n"); }
 							if (x >= dx) {
+								if (Debug) { printf("x >= dx\n"); }
 								if (y >= dy) {
+									if (Debug) { printf("y >= dy\n"); }
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3537,6 +3564,7 @@ public:
 									y1 = yPos + NewYDistance - y;
 								}
 								else if (y < dy) { //this is because we just slide down the side a small bit away on the x axis from the D. Insert a check to move if you'r free a bit on the x axis. (same as other ones for the same considerations)
+									if (Debug) { printf("y < dy\n"); }
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3545,7 +3573,9 @@ public:
 								}
 							}
 							else if (y >= dy) {
+								if (Debug) { printf("y >= dy\n"); }
 								if (x >= dx) {
+									if (Debug) { printf("x >= dx\n"); }
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3553,6 +3583,7 @@ public:
 									y1 = yPos + NewYDistance - y;
 								}
 								else if (x < dx) {
+									if (Debug) { printf("x < dx\n"); }
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3563,9 +3594,11 @@ public:
 							else if (dx > x && dy > y) { //yoink this code for earlier if statements
 								//Like the others, if there is a preference based on the rise over run, implementit here. 
 								//Also if it's perfect collision freeze it by default (freeze as in don't slide down a side or something)
+								if (Debug) { printf("dx > x && dy > y\n"); }
 
 								//freeze, perfect colllision
 								if (dx == dy) {
+									if (Debug) { printf("dx == dy\n"); }
 									Final[0] = NewXDistance + dx;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3574,6 +3607,7 @@ public:
 								}
 								//Tp on the dx, but slide down dy
 								else if (dx > dy) {
+									if (Debug) { printf("dx > dy\n"); }
 									Final[0] = NewXDistance + x;
 									Final[1] = NewYDistance - dy;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3582,6 +3616,7 @@ public:
 								}
 								//Tp on the dy, but slide down the dx
 								else if (dy > dx) {
+									if (Debug) { printf("dx < dy\n"); }
 									Final[0] = NewXDistance + dx;
 									Final[1] = NewYDistance - y;
 									SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
@@ -3589,6 +3624,26 @@ public:
 									y1 = yPos + NewYDistance - y;
 								}
 							}
+						}
+
+						// What was missing
+						//{x,0},{0,0}
+						if (x != 0 && y == 0 && dx == 0 && dy == 0){
+							if (Debug) { printf("{x,0},{0,0}\n"); }
+							Final[0] = NewXDistance + x;
+							Final[1] = NewYDistance;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance + x;
+							y1 = yPos + NewYDistance; //Check when your clear, so that you can edit x appropriately
+						}
+						//{0,y},{0,0}
+						if (x == 0 && y != 0 && dx == 0 && dy == 0){
+							if (Debug) { printf("{0,y},{0,0}\n"); }
+							Final[0] = NewXDistance;
+							Final[1] = NewYDistance - y;
+							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
+							x1 = xPos + NewXDistance;
+							y1 = yPos + NewYDistance - y; //Check when your clear, so that you can edit y appropriately
 						}
 					}
 				}
@@ -3604,7 +3659,7 @@ public:
 							y1 = yPos + NewYDistance; 
 						}
 						else {
-							Final[0] = NewXDistance  ;
+							Final[0] = NewXDistance;
 							Final[1] = NewYDistance;
 							SetTempStackableDebugInfo(TempStackable, D1, D2, Edge, Final);
 							x1 = xPos + NewXDistance;
@@ -3662,63 +3717,50 @@ public:
 						}
 					}
 				}
-
+				if (Debug) { printf("Success.\n"); }
 				//Adjust Travel (The amount of space left to go to fulfill the velocity given to the sprite
 				if (true) {
 					if (Debug) {
 						printf("Final = {%d, %d}\n", Final[0], Final[1]);
 					}
 
-					 
+					 //adjust final so that it makes actual sense, anddoesn't go out of matrix.
 					if (true) {
 						if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-							y1 = LEVEL_HEIGHT - 1;
-							y2 = y1;
-							ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-							if (Debug && PAUSECOLLISIONJOSTLE[4] == 0) {
-								printf("%d", TOTALFRAMECOUNT);
-								printf(" Sprite%d can no longer go further down\n", ObjectSprite->OrderCreation + 1);
-								PAUSECOLLISIONJOSTLE[4] = 1;
-								SDL_Delay(10000);
-							}
+							y1 = (LEVEL_HEIGHT- 1) * TILE_HEIGHT;
+							//don't change it's actual ExVel incase someone bases a tile or interaction off of it, instead we are going to state that that direction can no longer be travelled completely, and mark it as 'finished' for that travel
+							ObjectSprite->Travel[1] = 0;
+							///ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+							  
 						} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 						if (y1 <= 0) {
-							y1 = 0;
-							y2 = y1;
-							ObjectSprite->ExVel[1] = 0;
-							if (Debug && PAUSECOLLISIONJOSTLE[5] == 0) {
-								printf("%d", TOTALFRAMECOUNT);
-								printf(" Sprite%d can no longer go further up\n", ObjectSprite->OrderCreation + 1);
-								PAUSECOLLISIONJOSTLE[5] = 1;
-								SDL_Delay(10000);
-							}
+							y1 = 0; 
+							ObjectSprite->Travel[1] = 0;
+							//ObjectSprite->ExVel[1] = 0; 
+							 
 						}
 						if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-							x1 = LEVEL_WIDTH - 1;
-							x2 = x1;
-							ObjectSprite->ExVel[0] = 0;
-							if (Debug && PAUSECOLLISIONJOSTLE[6] == 0) {
-								printf("%d", TOTALFRAMECOUNT);
-								printf(" Sprite%d can no longer go further right\n", ObjectSprite->OrderCreation + 1);
-								PAUSECOLLISIONJOSTLE[6] = 1;
-								SDL_Delay(10000);
-							}
+							x1 = (LEVEL_WIDTH  - 1)* TILE_WIDTH;
+							ObjectSprite->Travel[1] = 0;
+							//ObjectSprite->ExVel[0] = 0; 
+							 
 						}
 						if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
-							x1 = 0;
-							x2 = x1;
-							ObjectSprite->ExVel[0] = 0;
-							if (Debug && PAUSECOLLISIONJOSTLE[7] == 0) {
-								printf("%d", TOTALFRAMECOUNT);
-								printf(" Sprite%d can no longer go further left\n", ObjectSprite->OrderCreation + 1);
-								PAUSECOLLISIONJOSTLE[7] = 1;
-								SDL_Delay(10000);
-							}
+							x1 = 0; 
+							ObjectSprite->Travel[1] = 0; 
+							//ObjectSprite->ExVel[0] = 0;
+							 
 						}
+						ObjectSprite->LastDestination.push_back({ x1,y1 });
 					} 
+					if (ObjectSprite->Travel[0] != 0) {
+						ObjectSprite->Travel[0] -= absolute(Final[0]); //0 <= Final <=TW //or something like taht
+					}
+					if (ObjectSprite->Travel[1] != 0) {
+						ObjectSprite->Travel[1] -= absolute(Final[1]); //0 <= Final <=TH //or something like taht
 
-					ObjectSprite->Travel[0] -= absolute(Final[0]); //0 <= Final <=TW //or something like taht
-					ObjectSprite->Travel[1] -= absolute(Final[1]); //0 <= Final <=TH //or something like taht
+					}
+					
 					if (Debug) {
 						printf("Object%d Travel = {%d, %d}\n", ObjectSprite->OrderCreation + 1, ObjectSprite->Travel[0], ObjectSprite->Travel[1]);
 						//SDL_Delay(500);
@@ -3733,15 +3775,7 @@ public:
 					}
 				}
 
-
-
 				//Should we jostle, push to stack, or complete? (in moveallsprites)
-
-
-
-
-
-
 
 				//WORK - figure out how to move now that we have Edge, Greater Diagonal, Lesser Diagonal overlaps,
 
@@ -3750,14 +3784,9 @@ public:
 				//should update travel based on the EXVel that we're able to move in. For now, let's only remove the ones we are capable of moving in the direction of (moveAllSprites3).
 				//then update FinalDestination
 
-
-
-
 				//TempStackable
 				//Up to 3 Sprite*'s for things we WOULD hit if moving to that position.
 				//Up to 2 integers, for the 'safe' position to TP 
-
-
 
 				//EXIT guard
 				if (Debug) {
@@ -4017,8 +4046,8 @@ public:
 							printf("|D2={%d, %d}                      |\n", TempStackable->D2[0], TempStackable->D2[1]);
 							printf("|F={%d, %d}                       |\n", TempStackable->Final[0], TempStackable->Final[1]);
 							printf("_______________________________\n\n");
-							if (AllSprites[i]->OrderCreation == 0) {
-								SDL_Delay(500);
+							if (AllSprites[i]->OrderCreation == 0) { //if (Debug) {
+								//SDL_Delay(500);  
 							}
 						}
 
@@ -4052,17 +4081,35 @@ public:
 							// 4)Help verify that the checkfuture does not have infinite IC cases, since we desire everything to slide and freeze when desired.
 							//
 							if (InvestigateIndexs.size() > 0) { //WORK - need ot think about how to move with IC surrounded sprites, such that we don't get an infinite loop, nor get out of order (try to move sprites greater than what you can), and still resovle timely.s
-								if (Debug) { printf("Sprite Found. Attempt to move the other sprites\n"); }
+								if (Debug) { 
+									printf("Sprite Found. Attempt to move the other sprites\n"); 
+									printf("InvestigateIndexs.size() = %d\n", InvestigateIndexs.size());
+								}
 								for (int d = 0; d < InvestigateIndexs.size(); d++) {
+									if (Debug) { 
+										printf("Shoot\n"); 
+										printf("d = %d\n", d);
+										printf("Ivest[d] = %d\n", InvestigateIndexs[d]);
+										printf("Short Victim = Object%d\n", SpriteStacks[InvestigateIndexs[d]]->CurrentVictim->OrderCreation+1);
+									}
+
 									XYArr2* ShortenAddress = SpriteStacks[InvestigateIndexs[d]];
+									if (Debug) { printf("ShortAddress made\n"); }
 									if (ShortenAddress->HitSprites[0] == nullptr && ShortenAddress->HitSprites[2] == nullptr && ShortenAddress->HitSprites[2] == nullptr && ShortenAddress->HitSprites[3] == nullptr) {
+										if (Debug) { printf("OBJECT FREED\n"); }
 										//INSERT - this can be improved by asking for that victims measure first, then you only really need to check 1->4 per instead of all 4.
-										RemoveSpriteFromMap2(AllSprites[i]);
+										RemoveSpriteFromMap2(ShortenAddress->CurrentVictim);
+										if (Debug) { printf("OBJECT REMOVED FROM MAP\n"); }
 										ResetTempStackable(ShortenAddress);
+										if (Debug) { printf("OBJECT RESET TEMPSTACKABLE\n"); }
 										if (Debug) { printf("STACK: CheckFuture(Object%d)\n", ShortenAddress->CurrentVictim->OrderCreation + 1); }
 										CheckFuture3(ShortenAddress->CurrentVictim, ShortenAddress, ShortenAddress->CurrentVictim->Measure); //objectsprite, tempstackable, Measure. 
-									
+										if (Debug) { printf("OBJECT CHECKED FUTURE\n"); }
 										ReMapSprite2(ShortenAddress->CurrentVictim);
+										if (Debug) { printf("OBJECT REMAPPED\n"); }
+									}
+									else {
+										if (Debug) { printf("Object%d was not entirely Free'd\n", ShortenAddress->CurrentVictim->OrderCreation+1); }
 									}
 								}
 
@@ -4088,8 +4135,8 @@ public:
 							printf("|D2={%d, %d}                      |\n", 0, 0);
 							printf("|F={%d, %d}                       |\n", 0, 0);
 							printf("_______________________________\n\n");
-							if (AllSprites[i]->OrderCreation == 0) {
-								SDL_Delay(500);
+							if (AllSprites[i]->OrderCreation == 0) { //if (Debug) {
+								//SDL_Delay(500);
 							}
 						}
 					}
