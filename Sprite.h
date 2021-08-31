@@ -1858,28 +1858,28 @@ public:
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-				y1 = LEVEL_HEIGHT*TILE_HEIGHT - 1;
+				y1 = (LEVEL_HEIGHT - 1) * TILE_HEIGHT;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-				 
+
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0;
-				 
+
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-				x1 = LEVEL_WIDTH * TILE_WIDTH - 1;
+				x1 = (LEVEL_WIDTH - 1) * TILE_WIDTH;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-				 
+
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-			 
+
 			}
 		}
 
@@ -2109,7 +2109,7 @@ public:
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-				y1 = LEVEL_HEIGHT * TILE_HEIGHT - 1;
+				y1 = (LEVEL_HEIGHT - 1) * TILE_HEIGHT ;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
 
@@ -2121,7 +2121,7 @@ public:
 
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-				x1 = LEVEL_WIDTH * TILE_WIDTH - 1;
+				x1 = (LEVEL_WIDTH - 1)* TILE_WIDTH  ;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
 
@@ -2363,7 +2363,7 @@ public:
 		//NOTE - gaurds from map/matrix overflow - NEW 8/19 - since I edited it, becaue the moves seem to guard against going out of bounds in the first place, I made it so that this guards the directions, so it's easier to process. Odd behavior is that once the original is adjusted, it stays adjused until the key is pressed again. Don't think I like that. It's stays that way because the =, but I can't just get rid of it. Maybe I'll make a case when it's on vs when it's off the very edge, so that it's only triggered once per button press or something...
 		if (true) {
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
-				y1 = LEVEL_HEIGHT * TILE_HEIGHT - 1;
+				y1 = (LEVEL_HEIGHT - 1) * TILE_HEIGHT;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
 
@@ -2375,7 +2375,7 @@ public:
 
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
-				x1 = LEVEL_WIDTH * TILE_WIDTH - 1;
+				x1 = (LEVEL_WIDTH - 1) * TILE_WIDTH;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
 
@@ -2744,6 +2744,9 @@ public:
 
 		}
 
+		if (yPos > 100 && xPos>10) {
+			SDL_Delay(5000);
+		}
 	}
 	
 	
@@ -3722,6 +3725,7 @@ public:
 				if (true) {
 					if (Debug) {
 						printf("Final = {%d, %d}\n", Final[0], Final[1]);
+						printf("ExVel = {%d, %d}\n", ObjectSprite->ExVel[0], ObjectSprite->ExVel[1]);
 					}
 
 					 //adjust final so that it makes actual sense, anddoesn't go out of matrix.
@@ -3752,13 +3756,15 @@ public:
 							 
 						}
 						ObjectSprite->LastDestination.push_back({ x1,y1 });
+						if (Debug) { printf("NEW Last Des = {%d, %d}\n", x1, y1); }
 					} 
 					if (ObjectSprite->Travel[0] != 0) {
 						ObjectSprite->Travel[0] -= absolute(Final[0]); //0 <= Final <=TW //or something like taht
+						ObjectSprite->ExVel[0] -= Final[0]; //This is so that we don't end up continually going further and further each time we pick up from a tempstackable. If we initially want to go 5, but end up only going 3, then I want to go 2 next time it's available. The actual velocities are still stored as XVec andYVec, and so there might be some calculation there, and also restting the expected distance based on direction and travel, but eh.
 					}
 					if (ObjectSprite->Travel[1] != 0) {
 						ObjectSprite->Travel[1] -= absolute(Final[1]); //0 <= Final <=TH //or something like taht
-
+						ObjectSprite->ExVel[1] -= Final[1];
 					}
 					
 					if (Debug) {
@@ -3822,6 +3828,12 @@ public:
 						if (Debug) {
 							printf("C=%d, IC=%d\n", C, IC);
 						}
+						if (ObjectSprite->LastDestination[ObjectSprite->LastDestination.size()-2][0] == x1 && ObjectSprite->LastDestination[ObjectSprite->LastDestination.size()-2][1] == y1) {
+							// have to subtract two because we pushed back earlier the traveled distance, I could move everything inside here, but that's for later if I want to I guess.
+							if (Debug) { printf("Still ended up not moving.\n"); } //push to the stack, because it's still COULD travel, but if we base it off completeness and travel alone, we get infinite loop.
+							ObjectSprite->InStack = true;
+							return 0; 
+						}
 						if (ObjectSprite->Measure == 5 || ObjectSprite->Measure == 7 || ObjectSprite->Measure == 13 || ObjectSprite->Measure == 15) {
 							if (C == 2) {
 								//mark as complete
@@ -3878,10 +3890,7 @@ public:
 						}
 
 					}
-				}
-
-
-
+				} 
 			}
 			else { //Measure==10, there's no need to check it's future
 				return 1;
