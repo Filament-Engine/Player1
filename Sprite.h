@@ -2755,10 +2755,7 @@ public:
 			 
 
 		}
-
-		if (yPos > 100 && xPos>10) {
-			SDL_Delay(5000);
-		}
+		 
 	}
 	
 	//
@@ -3820,7 +3817,7 @@ public:
 					}
 					printf("}\n");
 					printf("TotalFrame=%d\n", TOTALFRAMECOUNT);
-					SDL_Delay(5000);
+					//SDL_Delay(5000);
 				}
 				if (true) {
 					int C = 0; //completed sprites hit
@@ -4155,7 +4152,10 @@ public:
 										if (Debug) { printf("OBJECT RESET TEMPSTACKABLE\n"); }
 										if (Debug) { printf("STACK: CheckFuture(Object%d)\n", ShortenAddress->CurrentVictim->OrderCreation + 1); }
 										CheckFuture3(ShortenAddress->CurrentVictim, ShortenAddress, ShortenAddress->CurrentVictim->Measure); //objectsprite, tempstackable, Measure.
-										if (Debug) { printf("STACKED (Object%d)<- IF THIS MESSAGE IS SEEN MORE THAN ONCE IN A INFINITE LOOP, THE RETURN 0 IS NOT WORKING IN THE CHECKFUTURE3 PROGRESS CHECK\n SEEN=%d\n", ShortenAddress->CurrentVictim->OrderCreation + 1, d); SDL_Delay(5000); }
+										if (Debug) {
+											printf("STACKED (Object%d)<- IF THIS MESSAGE IS SEEN MORE THAN ONCE IN A INFINITE LOOP, THE RETURN 0 IS NOT WORKING IN THE CHECKFUTURE3 PROGRESS CHECK\n SEEN=%d\n", ShortenAddress->CurrentVictim->OrderCreation + 1, d);
+											//SDL_Delay(5000); 
+										}
 										if (Debug) { printf("OBJECT CHECKED FUTURE\n"); }
 										ReMapSprite2(ShortenAddress->CurrentVictim);
 										if (Debug) { printf("OBJECT REMAPPED\n"); }
