@@ -2761,7 +2761,7 @@ public:
 		}
 	}
 	
-	
+	//
 	//WORK - figure out when you want to jostle again
 	//figure out when we want to update position
 	//figure out when we want to stack (or end early)
