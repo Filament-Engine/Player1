@@ -1861,25 +1861,25 @@ public:
 				y1 = (LEVEL_HEIGHT - 1) * TILE_HEIGHT;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-
+				ObjectSprite->Travel[1] = 0;
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0;
-
+				ObjectSprite->Travel[1] = 0;
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 				x1 = (LEVEL_WIDTH - 1) * TILE_WIDTH;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-
+				ObjectSprite->Travel[0] = 0;
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-
+				ObjectSprite->Travel[0] = 0;
 			}
 		}
 
@@ -2112,25 +2112,26 @@ public:
 				y1 = (LEVEL_HEIGHT - 1) * TILE_HEIGHT ;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+				ObjectSprite->Travel[1] = 0;
 
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
 				ObjectSprite->ExVel[1] = 0;
-
+				ObjectSprite->Travel[1] = 0;
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 				x1 = (LEVEL_WIDTH - 1)* TILE_WIDTH  ;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-
+				ObjectSprite->Travel[0] = 0;
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-
+				ObjectSprite->Travel[0] = 0;
 			}
 		}
 
@@ -2365,26 +2366,27 @@ public:
 			if (y1 >= (LEVEL_WIDTH - 1) * TILE_HEIGHT) {
 				y1 = (LEVEL_HEIGHT - 1) * TILE_HEIGHT;
 				y2 = y1;
-				ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
-
+				 ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+				 ObjectSprite->Travel[1] = 0;
 			} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 			if (y1 <= 0) {
 				y1 = 0;
 				y2 = y1;
-				ObjectSprite->ExVel[1] = 0;
-
+				 ObjectSprite->ExVel[1] = 0;
+				 ObjectSprite->Travel[1] = 0;
 			}
 			if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 				x1 = (LEVEL_WIDTH - 1) * TILE_WIDTH;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
+				ObjectSprite->Travel[0] = 0;
 
 			}
 			if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 				x1 = 0;
 				x2 = x1;
 				ObjectSprite->ExVel[0] = 0;
-
+				ObjectSprite->Travel[0] = 0;
 			}
 		}
 		
@@ -2625,7 +2627,7 @@ public:
 		}
 
 
-
+		
 		//Now I want to mergeSort it into SpriteOverlapX and SpriteOverlapY by how 'close' it is, and then sort via order creation.
 
 		//Then, once we sorted it by most aggressive overlap by least, we then want to ensure that it's an actual dimension.
@@ -3734,30 +3736,33 @@ public:
 							y1 = (LEVEL_HEIGHT- 1) * TILE_HEIGHT;
 							//don't change it's actual ExVel incase someone bases a tile or interaction off of it, instead we are going to state that that direction can no longer be travelled completely, and mark it as 'finished' for that travel
 							ObjectSprite->Travel[1] = 0;
-							///ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
+							ObjectSprite->ExVel[1] = 0; //NEW - after we tried to jostle, I noted that there is a special bug that happens when your going diagonal into a wall. Because a null is passed for both, it doesn't try to jostle.
 							  
 						} //NOTE - this fix cannot be moved lower, because we need to trigger the jostle initially by setting at least one of the diagonals 'edges' to be not a nullptr, OR just let it slide down the sides of the edge of the map.
 						if (y1 <= 0) {
 							y1 = 0; 
 							ObjectSprite->Travel[1] = 0;
-							//ObjectSprite->ExVel[1] = 0; 
+							ObjectSprite->ExVel[1] = 0; 
 							 
 						}
 						if (x1 >= (LEVEL_WIDTH - 1) * TILE_WIDTH) {
 							x1 = (LEVEL_WIDTH  - 1)* TILE_WIDTH;
-							ObjectSprite->Travel[1] = 0;
-							//ObjectSprite->ExVel[0] = 0; 
+							ObjectSprite->Travel[0] = 0;
+							ObjectSprite->ExVel[0] = 0; 
 							 
 						}
 						if (x1 <= 0) { //NEW - 8/19/21 This is done because the move's already track the bounds of hte level, so here I want to know whether the mod is higher than it should be or the actual position is less (because the mod is not solid enough)
 							x1 = 0; 
 							ObjectSprite->Travel[1] = 0; 
-							//ObjectSprite->ExVel[0] = 0;
+							ObjectSprite->ExVel[0] = 0;
 							 
 						}
+
 						ObjectSprite->LastDestination.push_back({ x1,y1 });
 						if (Debug) { printf("NEW Last Des = {%d, %d}\n", x1, y1); }
 					} 
+
+
 					if (ObjectSprite->Travel[0] != 0) {
 						ObjectSprite->Travel[0] -= absolute(Final[0]); //0 <= Final <=TW //or something like taht
 						ObjectSprite->ExVel[0] -= Final[0]; //This is so that we don't end up continually going further and further each time we pick up from a tempstackable. If we initially want to go 5, but end up only going 3, then I want to go 2 next time it's available. The actual velocities are still stored as XVec andYVec, and so there might be some calculation there, and also restting the expected distance based on direction and travel, but eh.
@@ -3937,14 +3942,12 @@ public:
 					printf("For AllSprites \n");
 				}
 				if (AllSprites[i]->Completed == 0 && AllSprites[i]->InStack == false) { //If a sprite has not finished, and not in the stack
+					
+
+					
 					if (Debug) {
 						printf("CheckOverlap2\n");
 					}
-
-
-					//Behavior for velociities., just needs to be before measure. maybe before overlap.
-					AllSprites[i]->Behavior(); //only adjusted random move
-
 					//CheckOverlap2, CheckOverlapSTART2 <-NOTE, for now I'm storing all the sucessful end destinations, then erasing them all at the end of the Que handling. - however we may only ever need to store the most recent successful destination, or the last two.
 					if (i == 0) {
 						for (int s = 0; s < AllSprites.size(); s++) {
@@ -3956,7 +3959,14 @@ public:
 					else {
 						CheckOverlap2(AllSprites[i]); //Sets Extravel, exVec, and the Contort variables. For now just ExTravel and exVec
 					}
-					 
+
+
+					if (Debug) {
+						printf("Behavior\n");
+					}
+					//Behavior for velociities., just needs to be before measure. maybe before overlap.
+					AllSprites[i]->Behavior(); //only adjusted random move
+
 
 					if (Debug) {
 						printf("RemoveSpriteFromMap2\n");
@@ -4060,12 +4070,26 @@ public:
 							}
 						}
 
+						//NOTE - likely will actually put into the end of CheckFuture3, after travel is edited, and have it break when it's time to mark as completed or push to stack
+					// using a while loop to conitnously jostle it until then.
+					//Should we jostle, push to stack, or complete?
 
+
+
+
+
+
+
+
+						if (Debug) {
+							printf("Remapped Sprite.\n");
+						}
+						ReMapSprite2(AllSprites[i]);
 
 
 
 						if (AllSprites[i]->xPos != AllSprites[i]->LastDestination.back()[0] || AllSprites[i]->yPos != AllSprites[i]->LastDestination.back()[1]) {
-							if (Debug) { printf("Sprite Moved, even if it did not complete it's movement! Check the Stack\n"); } 
+							if (Debug) { printf("Sprite Moved, even if it did not complete it's movement! Check the Stack\n"); }
 							std::vector<int> InvestigateIndexs = {};
 							//search for the moved sprite in the stack
 							for (int d = 0; d < SpriteStacks.size(); d++) {
@@ -4090,16 +4114,16 @@ public:
 							// 4)Help verify that the checkfuture does not have infinite IC cases, since we desire everything to slide and freeze when desired.
 							//
 							if (InvestigateIndexs.size() > 0) { //WORK - need ot think about how to move with IC surrounded sprites, such that we don't get an infinite loop, nor get out of order (try to move sprites greater than what you can), and still resovle timely.s
-								if (Debug) { 
-									printf("Sprite Found. Attempt to move the other sprites\n"); 
+								if (Debug) {
+									printf("Sprite Found. Attempt to move the other sprites\n");
 									printf("InvestigateIndexs.size() = %d\n", InvestigateIndexs.size());
 								}
 								for (int d = 0; d < InvestigateIndexs.size(); d++) {
-									if (Debug) { 
-										printf("Shoot\n"); 
+									if (Debug) {
+										printf("Shoot\n");
 										printf("d = %d\n", d);
 										printf("Ivest[d] = %d\n", InvestigateIndexs[d]);
-										printf("Short Victim = Object%d\n", SpriteStacks[InvestigateIndexs[d]]->CurrentVictim->OrderCreation+1);
+										printf("Short Victim = Object%d\n", SpriteStacks[InvestigateIndexs[d]]->CurrentVictim->OrderCreation + 1);
 									}
 
 									XYArr2* ShortenAddress = SpriteStacks[InvestigateIndexs[d]];
@@ -4118,7 +4142,7 @@ public:
 										if (Debug) { printf("OBJECT REMAPPED\n"); }
 									}
 									else {
-										if (Debug) { printf("Object%d was not entirely Free'd\n", ShortenAddress->CurrentVictim->OrderCreation+1); }
+										if (Debug) { printf("Object%d was not entirely Free'd\n", ShortenAddress->CurrentVictim->OrderCreation + 1); }
 									}
 								}
 
@@ -4150,38 +4174,15 @@ public:
 						}
 					}
 
-				
-
+				 
 					 
-
-
-
-
-
-					 
-
-
-
-					//NOTE - likely will actually put into the end of CheckFuture3, after travel is edited, and have it break when it's time to mark as completed or push to stack
-					// using a while loop to conitnously jostle it until then.
-					//Should we jostle, push to stack, or complete?
-					 
-
-
-
-
-
-
-
-
-					ReMapSprite2(AllSprites[i]);
 					//if all HitCollision is compelte, or nothing, update Latest 'viable positoin'.
 					//then pause, 
 					//if Travel is empty, then mark as completed.
 					//remap (based on last viable position) 
 					//If you updated viable position, push self to stack, Search the stack, remove any children, investigate, handle victim list
 					if (Debug) {
-						printf("Remapped Sprite.\nThat's all\n");
+						printf("That's all\n");
 					}
 				}
 				else if (Debug) {
