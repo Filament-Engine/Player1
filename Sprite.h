@@ -1065,6 +1065,7 @@ public:
 		}
 	}
 	void RemoveSpriteFromMap(Sprite* ObjectSprite) {
+		bool Debug = false;
 		// printf("RemoveSpriteFromMap\n");
 		int x1 = NULL;
 		int x2 = NULL;
@@ -1109,22 +1110,31 @@ public:
 			x2 = x1;
 		}
 
+		if (Debug) { printf("Initial for RemoveSpriteFromMap finished\n"); }
+		if (Debug) { printf("Object%d going to be looked for, pos={%d, %d}\n", ObjectSprite->OrderCreation+1, x1, y1); }
 
 		//find, if it doesn't find the item,  returns the LAST element of the vector. CAREFUL - this was a major error thattook us a while to find. you'd think find would return null or end() when it fails.
 		if (true) {
-			// printf("Erasing Object%d, from UL", ObjectSprite->OrderCreation + 1);
+			if (Debug) { printf("UL\n"); }
+			if (Debug) { printf("%d\n", LM[y1][x1].size()); }
+			 
 			LM[y1][x1].erase(find(LM[y1][x1].begin(), LM[y1][x1].end() - 1, ObjectSprite));
 		}
 		if (x1 != x2) {
+			if (Debug) { printf("UR\n"); }
 			LM[y1][x2].erase(find(LM[y1][x2].begin(), LM[y1][x2].end() - 1, ObjectSprite));
 		}
 		if (y1 != y2) {
+			if (Debug) { printf("LL\n"); }
 			LM[y2][x1].erase(find(LM[y2][x1].begin(), LM[y2][x1].end() - 1, ObjectSprite));
 			if (x1 != x2) {
+				if (Debug) { printf("LR\n"); }
 				LM[y2][x2].erase(find(LM[y2][x2].begin(), LM[y2][x2].end() - 1, ObjectSprite));
 			}
 
 		}
+
+		if (Debug) { printf("Found and Remvoed the sprite from various points.\n"); }
 
 
 		// printf("Erased all\n");
@@ -3950,13 +3960,14 @@ public:
 					}
 					//CheckOverlap2, CheckOverlapSTART2 <-NOTE, for now I'm storing all the sucessful end destinations, then erasing them all at the end of the Que handling. - however we may only ever need to store the most recent successful destination, or the last two.
 					if (i == 0) {
+						if (Debug) { printf("Checkoverlap Start set's LD for everything. Very important, since that will be the reference for every other function during any point in time. We could potentially just run it once, and then before clearing store the last end of the vector... but for now lets not get ahead of ourselves\n"); }
 						for (int s = 0; s < AllSprites.size(); s++) {
 							CheckOverlapSTART2(AllSprites[s]); //presets the last destination, so taht it'll always work from the get go.
 						   //at the end of handlingthe stack, we should ensure that the last successsful destination is set totheir current position, or do so at the start of the functioneach time, besides through checkoverlap. maybe it's unnecessary to call here.. :/
-							if (Debug) { printf("Checkoverlap Start set's LD for everything. Very important, since that will be the reference for every other function during any point in time. We could potentially just run it once, and then before clearing store the last end of the vector... but for now lets not get ahead of ourselves\n"); }
 						}
 					}
 					else {
+						if (Debug) { printf("Checkoverlap Normal\n"); }
 						CheckOverlap2(AllSprites[i]); //Sets Extravel, exVec, and the Contort variables. For now just ExTravel and exVec
 					}
 
@@ -4156,6 +4167,10 @@ public:
 					}
 					else {
 						if (Debug) {
+							printf("Remapped Sprite.\n");
+						}
+						ReMapSprite2(AllSprites[i]);
+						if (Debug) {
 							printf("\n_______________________________\n");
 							printf("|TempStackable:N/A              |\n");
 							printf("|CurrentVictim = Object%d        |\n", AllSprites[i]->OrderCreation + 1);
@@ -4172,6 +4187,7 @@ public:
 								//SDL_Delay(500);
 							}
 						}
+						 
 					}
 
 				 
