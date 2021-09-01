@@ -2705,7 +2705,7 @@ public:
 
 
 					if (EarlyBreak1 && EarlyBreak2) {
-						//at the end of each of these vectors is the sprite wit hthe most overlap 
+						//at the end of each of these vectors is the sprite wit hthe most overlap //
 						if (SpriteOverlapX[xItter] == SpriteOverlapY[yItter]) {
 							//There is only one diagonal we need to consider
 							D1[0] = SpriteX[xItter];
