@@ -3813,6 +3813,15 @@ public:
 				if (Debug) {
 					printf("Attempt to figure out whether to Jostle, Complete, or Stack\n");
 				}
+				if (Debug && ObjectSprite->OrderCreation + 1 == 4) {
+					printf("ObjectSprite LastDestination=={");
+					for (int j = 0; j < ObjectSprite->LastDestination.size(); j++) {
+						printf("{%d, %d},  ", ObjectSprite->LastDestination[j][0], ObjectSprite->LastDestination[j][1]);
+					}
+					printf("}\n");
+					printf("TotalFrame=%d\n", TOTALFRAMECOUNT);
+					SDL_Delay(5000);
+				}
 				if (true) {
 					int C = 0; //completed sprites hit
 					int IC = 0; //incompleted sprites hit
@@ -3823,7 +3832,7 @@ public:
 						return 1;
 					}
 					else if (ObjectSprite->InStack==false) {
-							if (Debug) { printf("HitSprites="); }
+						if (Debug) { printf("HitSprites="); }
 						for (int n = 0; n < 4; n++) {
 							if (TempStackable->HitSprites[n] != nullptr) {
 								if (Debug) { printf(".  "); }
@@ -3845,7 +3854,7 @@ public:
 						}
 						if (ObjectSprite->LastDestination[ObjectSprite->LastDestination.size()-2][0] == x1 && ObjectSprite->LastDestination[ObjectSprite->LastDestination.size()-2][1] == y1) {
 							// have to subtract two because we pushed back earlier the traveled distance, I could move everything inside here, but that's for later if I want to I guess.
-							if (Debug) { printf("Still ended up not moving.\n"); } //push to the stack, because it's still COULD travel, but if we base it off completeness and travel alone, we get infinite loop.
+							if (Debug) { printf("Still ended up not moving. BACK TO THE STACK\n"); } //push to the stack, because it's still COULD travel, but if we base it off completeness and travel alone, we get infinite loop.
 							ObjectSprite->InStack = true;
 							return 0; 
 						}
@@ -4088,10 +4097,6 @@ public:
 
 
 
-
-
-
-
 						if (Debug) {
 							printf("Remapped Sprite.\n");
 						}
@@ -4141,13 +4146,16 @@ public:
 									if (Debug) { printf("ShortAddress made\n"); }
 									if (ShortenAddress->HitSprites[0] == nullptr && ShortenAddress->HitSprites[2] == nullptr && ShortenAddress->HitSprites[2] == nullptr && ShortenAddress->HitSprites[3] == nullptr) {
 										if (Debug) { printf("OBJECT FREED\n"); }
+										//Remove from Stack, so mark tat it's not in the stack no more?
+										ShortenAddress->CurrentVictim->InStack = false;
 										//INSERT - this can be improved by asking for that victims measure first, then you only really need to check 1->4 per instead of all 4.
 										RemoveSpriteFromMap2(ShortenAddress->CurrentVictim);
 										if (Debug) { printf("OBJECT REMOVED FROM MAP\n"); }
 										ResetTempStackable(ShortenAddress);
 										if (Debug) { printf("OBJECT RESET TEMPSTACKABLE\n"); }
 										if (Debug) { printf("STACK: CheckFuture(Object%d)\n", ShortenAddress->CurrentVictim->OrderCreation + 1); }
-										CheckFuture3(ShortenAddress->CurrentVictim, ShortenAddress, ShortenAddress->CurrentVictim->Measure); //objectsprite, tempstackable, Measure. 
+										CheckFuture3(ShortenAddress->CurrentVictim, ShortenAddress, ShortenAddress->CurrentVictim->Measure); //objectsprite, tempstackable, Measure.
+										if (Debug) { printf("STACKED (Object%d)<- IF THIS MESSAGE IS SEEN MORE THAN ONCE IN A INFINITE LOOP, THE RETURN 0 IS NOT WORKING IN THE CHECKFUTURE3 PROGRESS CHECK\n SEEN=%d\n", ShortenAddress->CurrentVictim->OrderCreation + 1, d); SDL_Delay(5000); }
 										if (Debug) { printf("OBJECT CHECKED FUTURE\n"); }
 										ReMapSprite2(ShortenAddress->CurrentVictim);
 										if (Debug) { printf("OBJECT REMAPPED\n"); }
